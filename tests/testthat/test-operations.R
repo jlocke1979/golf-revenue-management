@@ -40,6 +40,26 @@ test_that("seasonal overlays mark partial years and omit the isolated 2004 day",
   expect_s3_class(plot_participation(weekly), "ggplot")
 })
 
+test_that("course capacity counts starts inside the window and does not roll past midnight", {
+  capacity <- course_capacity(
+    date = as.Date(c("2024-01-05", "2024-01-06", "2024-01-07")),
+    window_start = "07:00",
+    window_end = c("15:00", "07:00", "06:30"),
+    tee_interval_minutes = 12,
+    players_per_start = 4
+  )
+  expect_equal(capacity$tee_times, c(floor(480 / 12), 0, 0))
+  expect_equal(capacity$player_slots, c(floor(480 / 12) * 4, 0, 0))
+  expect_error(
+    course_capacity(as.Date("2024-01-05"), "07:00", "15:00", NA, 4),
+    class = "golfops_input_error"
+  )
+  expect_error(
+    course_capacity(as.Date("2024-01-05"), "07:00", "15:00", 10, 0),
+    class = "golfops_input_error"
+  )
+})
+
 test_that("available rounds outrank a schedule, and a missing interval is not 15 minutes", {
   prepared <- prepare_dobson_rounds(toy_dobson_csv(tempfile(fileext = ".csv")))
   sample <- dobson_operating_daily(prepared)

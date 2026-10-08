@@ -79,6 +79,66 @@ operating_calendar <- function(
   out
 }
 
+#' Daily tee times and player slots from an operating window
+#'
+#' Counts starts inside the open window. The end clock closes the window. It
+#' is not an extra start, and a window that ends at or before it starts does
+#' not roll into the next day. That day has no starts. There is no default
+#' interval and no daylight, weather, or closure adjustment.
+#'
+#' Player slots are tee times multiplied by players per start. With blocked
+#' rounds of zero, that product is the schedule estimate used by
+#' [apply_operating_capacity()].
+#'
+#' @param date Dates to schedule.
+#' @param window_start,window_end Clock times as `"HH:MM"` or `"HH:MM:SS"`.
+#' @param tee_interval_minutes Minutes between starts. Required. There is no
+#'   default.
+#' @param players_per_start Players on one start. Required. There is no
+#'   default.
+#' @return A tibble with one row per date, including `tee_times` and
+#'   `player_slots`.
+#' @export
+course_capacity <- function(
+    date,
+    window_start,
+    window_end,
+    tee_interval_minutes,
+    players_per_start) {
+  date <- as.Date(date)
+  if (any(is.na(date))) {
+    abort("`date` must be complete.", class = "golfops_input_error")
+  }
+  n <- length(date)
+  window_start <- .recycle_atomic(window_start, n, "window_start")
+  window_end <- .recycle_atomic(window_end, n, "window_end")
+  tee_interval_minutes <- .recycle_atomic(
+    tee_interval_minutes, n, "tee_interval_minutes"
+  )
+  players_per_start <- .recycle_atomic(players_per_start, n, "players_per_start")
+  if (any(is.na(window_start) | !nzchar(window_start) | is.na(window_end) | !nzchar(window_end))) {
+    abort("`window_start` and `window_end` are required.", class = "golfops_input_error")
+  }
+  if (any(is.na(tee_interval_minutes) | tee_interval_minutes <= 0)) {
+    abort("`tee_interval_minutes` must be positive.", class = "golfops_input_error")
+  }
+  if (any(is.na(players_per_start) | players_per_start <= 0)) {
+    abort("`players_per_start` must be positive.", class = "golfops_input_error")
+  }
+  minutes <- .clock_minutes(window_end) - .clock_minutes(window_start)
+  minutes[minutes < 0] <- 0
+  tee_times <- floor(minutes / tee_interval_minutes)
+  tibble(
+    date = date,
+    window_start = as.character(window_start),
+    window_end = as.character(window_end),
+    tee_interval_minutes = as.numeric(tee_interval_minutes),
+    players_per_start = as.numeric(players_per_start),
+    tee_times = tee_times,
+    player_slots = tee_times * as.numeric(players_per_start)
+  )
+}
+
 #' Resolve capacity and operating status for prepared daily rows
 #'
 #' Precedence is published available rounds, then a schedule estimate from a
