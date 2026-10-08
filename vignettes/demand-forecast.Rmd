@@ -1,0 +1,77 @@
+---
+title: "Forecasting observed demand"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Forecasting observed demand}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.4
+)
+```
+
+```{r setup}
+library(golfops)
+```
+
+## Where this sits in the course
+
+`course_requirements()` separates the Module 1 proposal from the Module 5 checkpoint and the Module 10 package submission. The proposal is the written argument. This vignette is package evidence for the later stages: a rerunnable forecast with a chronological holdout.
+
+The checkpoint rubric is not in the local course files, so this vignette does not claim to satisfy it.
+
+## Dobson Ranch
+
+The series is the same operating sample as the Dobson Ranch vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit because their status is unknown, not because the file confirms a closure. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.
+
+```{r dobson}
+demand <- dobson_rounds_demand()
+attr(demand, "decisions")
+dobson <- forecast_dobson_rounds(demand)
+dobson$comparison
+```
+
+Read `rows_eligible_for_fit` when the question is open-day play. Read `all_rows` when closure days remain in the score. The baseline is the training mean for that weekday and month. The demand model is observed rounds on weekday and month. A lower error is a better description of observed play. It is not evidence for a price change.
+
+```{r dobson-plot, fig.alt = "Actual 2025 Dobson Ranch rounds against a seasonal baseline and a weekday-month regression."}
+plot_forecast(dobson)
+```
+
+```{r dobson-week, fig.alt = "Weekly sums of actual 2025 rounds against the seasonal baseline and the weekday-month regression."}
+plot_forecast(dobson, interval = "week")
+```
+
+```{r dobson-limits}
+dobson$limits
+```
+
+The same two fits can be read for a chosen week. March 3–9, 2025 is inside the holdout, so the horizon is the number of days after 2024-12-31. The band is the 10th and 90th percentile of eligible 2025 errors. Green-fee revenue multiplies the rounds estimate by training yield. That yield is not a posted price. No weather term is included. Passing weather observed on the day is refused when the role is a forecast.
+
+```{r horizon}
+week <- estimate_observed_activity(seq(as.Date("2025-03-03"), as.Date("2025-03-09"), by = "day"))
+week$estimates[
+  c("date", "horizon_days", "actual_rounds", "seasonal_baseline_rounds",
+    "demand_model_rounds", "demand_model_rounds_p10", "demand_model_rounds_p90",
+    "demand_model_green_fee")
+]
+```
+
+The participation spike on 2025-04-28 and the month-end range-revenue extremes are reviewed in the Dobson Ranch vignette. They are not given an event explanation here.
+
+## A hypothetical tournament
+
+The Cedar Municipal Classic is invented. Its ticket counts are not PGA sales and not Mesa revenue. The same split, baseline, score, and volume scenario are used. The demand model is fit separately, on weekday and days remaining until the event.
+
+```{r tickets}
+tickets <- forecast_tournament_tickets()
+tickets$comparison
+apply_volume_scenario(tickets$predictions$demand_model, volume_change = -0.05)
+```
+
+The ticket scores show that the workflow transfers. They do not describe a real tournament.

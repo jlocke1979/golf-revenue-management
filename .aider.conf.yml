@@ -1,0 +1,6 @@
+# Aider in this repo talks to LM Studio on this machine.
+# Cursor does not read this file. Both tools share the Git history.
+model: openai/qwen/qwen3.5-9b
+openai-api-base: http://127.0.0.1:1234/v1
+openai-api-key: lm-studio
+show-model-warnings: false

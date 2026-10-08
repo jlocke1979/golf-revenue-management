@@ -1,0 +1,10 @@
+^renv$
+^renv\.lock$
+^\.Rproj\.user$
+^\.Rhistory$
+^\.Rprofile$
+^\.RData$
+^.*\.Rproj$
+^\.DS_Store$
+^sources$
+^LICENSE\.md$

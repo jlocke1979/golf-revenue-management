@@ -1,0 +1,177 @@
+---
+title: "Unused capacity and pricing scenarios at Dobson Ranch"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Unused capacity and pricing scenarios at Dobson Ranch}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.6
+)
+```
+
+```{r setup}
+library(golfops)
+rounds <- prepare_dobson_rounds()
+sample <- dobson_operating_daily(rounds)
+```
+
+## Question
+
+The proposal asks when a course has unused capacity, and which pricing or promotional adjustments might be worth testing.
+
+Dobson Ranch can describe play against the city's daylight estimate. It cannot price a tee sheet. `Rounds Possible` is that daylight estimate, not sellable inventory. A pricing scenario uses a volume change the user types in. The file cannot estimate it.
+
+The City of Mesa publishes this extract as dataset `24g5-hb8k`. On October 3, 2026, the city's SODA endpoint matched this CSV on row count, date span, and 868,646 rounds played. One checked day, 2026-04-30, shows dollar rounding: the API reports \$55,134.93 and the CSV reports \$55,135.
+
+## What the audit keeps
+
+```{r audit}
+audit <- audit_golf_rounds(rounds)
+audit
+```
+
+The audit reads the full extract. That includes monthly totals, the identical extra copy of 2022-04-24, and the isolated daily row on 2004-12-10. Those records stay in the source. They are not operating days in the charts below.
+
+```{r sample-rules}
+attr(sample, "decisions")
+```
+
+Every Dobson chart and the Dobson forecast use this same daily sample: 2021-07-01 through 2026-04-30, one copy of 2022-04-24, and no invented 2024-12-10. A zero-round day stays in the sample with unknown status. It is not counted as a confirmed closure or as unused sellable capacity unless a calendar says the course was open or closed. No such calendar is in the extract.
+
+```{r definitions}
+metric_definitions()
+```
+
+## Participation through the year
+
+2022, 2023, and 2025 are complete calendar years in the sample. 2024 is missing December 10. 2021 starts on July 1, and 2026 ends on April 30.
+
+```{r annual}
+annual <- summarize_golf_rounds(sample, by = "year", duplicates = "drop_extra")
+annual[
+  c("period", "n_rows", "rounds_played", "utilization",
+    "green_fee_per_played_round", "total_revenue_per_played_round")
+]
+```
+
+```{r seasonal-rounds, fig.height = 5, fig.alt = "Average daily rounds by month, with one line for each year from 2021 through 2026."}
+plot_seasonal_overlay(sample, "rounds")
+```
+
+Open points are months with a missing date or a zero-round day whose status is unknown. The average itself uses days with play, so an October stretch of zeros does not look like a month of empty tee times. Partial years are named in the legend. The isolated 2004 row is not on this chart.
+
+```{r weekly-rounds, fig.alt = "Weekly rounds played from July 2021 through April 2026."}
+plot_participation(summarize_golf_rounds(sample, by = "week", duplicates = "drop_extra"))
+```
+
+```{r weekday, fig.alt = "Bar chart of average rounds played by weekday."}
+plot_participation(
+  summarize_golf_rounds(sample, by = "weekday", duplicates = "drop_extra")
+)
+```
+
+## Utilization
+
+The heatmap uses the daylight estimate because no operating calendar was supplied. Grey is the missing day. Orange is a zero-round day of unknown status. Crosses are days above the estimate. The fill continues past 100 percent. Months before July 2021 and after April 2026 are blank because they are outside the sample, not because play was zero.
+
+```{r heatmap, fig.width = 7.2, fig.height = 8.4, fig.alt = "Year panels of a calendar heatmap showing daily utilization of the daylight estimate."}
+plot_utilization_heatmap(sample)
+```
+
+```{r seasonal-utilization, fig.height = 5, fig.alt = "Daylight utilization by month, with one line for each year."}
+plot_seasonal_overlay(sample, "utilization")
+```
+
+An optional calendar can replace the daylight estimate when the course supplies available rounds, or a complete set of opening hours, tee interval, players per start, and blocked rounds. A missing interval is not treated as 15 minutes. That function is `operating_calendar()`. Dobson does not yet have those fields.
+
+## Revenue relationships
+
+```{r seasonal-revenue, fig.height = 5, fig.alt = "Average daily facility revenue by month, with one line for each year."}
+plot_seasonal_overlay(sample, "total_revenue")
+```
+
+```{r monthly-yield, fig.alt = "Line chart of green-fee yield and total revenue per played round by month."}
+plot_revenue(summarize_golf_rounds(sample, by = "year_month", duplicates = "drop_extra"))
+```
+
+The ratios below are category revenue per dollar of green-fee revenue. Each one is a ratio of sums on rows where both amounts exist. Days with zero rounds stay in the sums. A period whose green fees sum to zero would be unavailable, not an infinite ratio.
+
+```{r ratios}
+ratios <- revenue_relationships(sample, by = "all")
+ratios[
+  c("category", "category_revenue", "green_fee_revenue_matched",
+    "ratio_per_green_fee_dollar", "ratio_status", "n_rows_matched",
+    "n_zero_round_rows_in_match")
+]
+```
+
+These are historical relationships in the extract. They are not spending per golfer, and they are not a reason to scale food, range, or cart revenue when rounds change. Cart revenue is a separate published column. The file still does not say whether a posted green fee included a cart. The same calculation accepts a revenue table when participation rows are absent.
+
+## Two days that need a source, not a story
+
+```{r anomalies}
+review_dobson_anomalies(rounds)
+```
+
+The busiest day and the large range-revenue days are different patterns. Range extremes sit on month-end dates while rounds those days look ordinary, which raises a posting-date question the file does not answer. Nothing here assigns either pattern to a tournament or a broadcast weekend.
+
+## One price and volume illustration
+
+Calendar year 2025 is a complete year in the operating sample. The volume changes are inputs.
+
+```{r scenario}
+y2025 <- sample[sample$calendar_year == 2025, ]
+cases <- list(
+  c(price_change = 0.10, volume_change = 0),
+  c(price_change = 0.10, volume_change = -0.05),
+  c(price_change = -0.10, volume_change = 0.05)
+)
+totals <- lapply(cases, function(case) {
+  simulate_price_volume(
+    y2025,
+    price_change = case[["price_change"]],
+    volume_change = case[["volume_change"]],
+    ancillary = "hold_constant"
+  )$totals
+})
+comparison <- do.call(rbind, totals)
+comparison[
+  c("price_change", "volume_change", "baseline_total_revenue",
+    "scenario_total_revenue", "change_total_revenue",
+    "n_days_capped", "n_zero_round_days")
+]
+```
+
+```{r assumptions}
+simulate_price_volume(y2025, price_change = 0.10, volume_change = -0.05)$assumptions
+```
+
+## A full-day tournament baseline
+
+The dates below are an illustration of the calculator. They are not a scheduled event. The baseline compares hypothetical event revenue with the green-fee revenue those days actually recorded. Contribution is omitted because event costs, variable cost per round, and an ancillary margin were not supplied. Ancillary sales on those days are shown and are not assumed to vanish. A partial-day block would need an explicit displacement share. The package will not spread the day evenly across hours.
+
+```{r breakeven}
+illustration_dates <- as.Date(c("2025-01-06", "2025-01-07", "2025-01-08"))
+tournament_breakeven(
+  sample,
+  event_dates = illustration_dates,
+  event_revenue = 25000
+)
+```
+
+## What this does not decide
+
+A price test needs the posted rate, the time of day, and a comparison that can separate price from season, weather, and closures. This extract has none of those. No weather series is included. Observed weather would be valid only for a retrospective description, and a forecast could use only weather known at prediction time. Neither is estimated here.
+
+There is no confirmed operating calendar, so unused sellable capacity is not computed for the orange days on the heatmap. Country-club dues are a different product. foreUP, Lightspeed Golf, and GolfNow are possible operator exports later. They are not importers in this version.
+
+```{r future-sources}
+future_operator_exports()
+```
