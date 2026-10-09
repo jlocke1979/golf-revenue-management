@@ -139,6 +139,161 @@ course_capacity <- function(
   )
 }
 
+#' Daily tee-sheet use against a course capacity schedule
+#'
+#' Compares groups on a tee sheet with the daily supply from
+#' [course_capacity()]. One row is one group at one start. Groups that share
+#' a start count as one occupied tee time, and their players add together.
+#' A single player on a foursome start occupies the tee time and one player
+#' slot.
+#'
+#' `tee_time_occupancy` is occupied tee times divided by scheduled tee times.
+#' `slot_utilization` is players divided by player slots. Both are shares.
+#' Neither is capped at 1. A day with no scheduled starts has no share,
+#' because the denominator is zero. A day in the schedule with no groups is
+#' zero use. A group on a date that is not in the schedule is an error.
+#'
+#' This is not the Dobson daylight comparison. That file has no tee time and
+#' no players per group. Daily rounds stay on [utilization_calendar()].
+#'
+#' @param bookings Tee-sheet rows with `date`, `tee_time` (`"HH:MM"` or
+#'   `"HH:MM:SS"`), and `players`.
+#' @param capacity A result from [course_capacity()], one row per date.
+#' @return A tibble with one row per scheduled date, including
+#'   `tee_time_occupancy` and `slot_utilization`.
+#' @export
+daily_utilization <- function(bookings, capacity) {
+  bookings <- .tee_sheet_bookings(bookings)
+  capacity <- .capacity_schedule(capacity)
+  if (any(duplicated(capacity$date))) {
+    abort(
+      "course_capacity() dates must be unique before utilization is calculated.",
+      class = "golfops_input_error"
+    )
+  }
+  extra <- setdiff(unique(bookings$date), capacity$date)
+  if (length(extra) > 0) {
+    abort(
+      "Bookings include dates that are not in course_capacity().",
+      class = "golfops_input_error"
+    )
+  }
+  summary <- .tee_sheet_daily(bookings)
+  out <- merge(
+    capacity[, c("date", "tee_times", "player_slots")],
+    summary,
+    by = "date",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  out$occupied_tee_times[is.na(out$occupied_tee_times)] <- 0
+  out$players[is.na(out$players)] <- 0
+  out$tee_time_occupancy <- ifelse(
+    out$tee_times > 0,
+    out$occupied_tee_times / out$tee_times,
+    NA_real_
+  )
+  out$slot_utilization <- ifelse(
+    out$player_slots > 0,
+    out$players / out$player_slots,
+    NA_real_
+  )
+  out <- out[order(out$date), c(
+    "date", "tee_times", "player_slots", "occupied_tee_times", "players",
+    "tee_time_occupancy", "slot_utilization"
+  ), drop = FALSE]
+  as_tibble(out)
+}
+
+.tee_sheet_bookings <- function(bookings) {
+  if (!is.data.frame(bookings)) {
+    abort("`bookings` must be a table.", class = "golfops_input_error")
+  }
+  required <- c("date", "tee_time", "players")
+  missing <- setdiff(required, names(bookings))
+  if (length(missing) > 0) {
+    abort(
+      paste0("Tee-sheet bookings need ", paste(missing, collapse = ", "), "."),
+      class = "golfops_input_error"
+    )
+  }
+  date <- as.Date(bookings$date)
+  if (any(is.na(date))) {
+    abort("`date` must be complete.", class = "golfops_input_error")
+  }
+  players <- bookings$players
+  if (!is.numeric(players) || any(is.na(players) | players < 0)) {
+    abort("`players` must be zero or positive.", class = "golfops_input_error")
+  }
+  tee_time <- as.character(bookings$tee_time)
+  if (any(is.na(tee_time) | !nzchar(tee_time))) {
+    abort("`tee_time` is required.", class = "golfops_input_error")
+  }
+  tibble(
+    date = date,
+    tee_minutes = .clock_minutes(tee_time),
+    players = as.numeric(players)
+  )
+}
+
+.capacity_schedule <- function(capacity) {
+  if (!is.data.frame(capacity)) {
+    abort("`capacity` must be a table from course_capacity().", class = "golfops_input_error")
+  }
+  required <- c("date", "tee_times", "player_slots")
+  missing <- setdiff(required, names(capacity))
+  if (length(missing) > 0) {
+    abort(
+      paste0("Capacity needs ", paste(missing, collapse = ", "), "."),
+      class = "golfops_input_error"
+    )
+  }
+  date <- as.Date(capacity$date)
+  if (any(is.na(date))) {
+    abort("`date` must be complete.", class = "golfops_input_error")
+  }
+  tee_times <- capacity$tee_times
+  player_slots <- capacity$player_slots
+  if (!is.numeric(tee_times) || any(is.na(tee_times) | tee_times < 0)) {
+    abort("`tee_times` must be zero or positive.", class = "golfops_input_error")
+  }
+  if (!is.numeric(player_slots) || any(is.na(player_slots) | player_slots < 0)) {
+    abort("`player_slots` must be zero or positive.", class = "golfops_input_error")
+  }
+  tibble(
+    date = date,
+    tee_times = as.numeric(tee_times),
+    player_slots = as.numeric(player_slots)
+  )
+}
+
+.tee_sheet_daily <- function(bookings) {
+  empty <- tibble(
+    date = as.Date(character()),
+    occupied_tee_times = numeric(),
+    players = numeric()
+  )
+  if (nrow(bookings) == 0) {
+    return(empty)
+  }
+  starts <- aggregate(
+    players ~ date + tee_minutes,
+    data = bookings,
+    FUN = sum
+  )
+  starts <- starts[starts$players > 0, , drop = FALSE]
+  players <- aggregate(players ~ date, data = bookings, FUN = sum)
+  if (nrow(starts) == 0) {
+    players$occupied_tee_times <- 0
+    return(as_tibble(players[, c("date", "occupied_tee_times", "players")]))
+  }
+  occupied <- aggregate(tee_minutes ~ date, data = starts, FUN = length)
+  names(occupied)[names(occupied) == "tee_minutes"] <- "occupied_tee_times"
+  out <- merge(players, occupied, by = "date", all.x = TRUE, sort = FALSE)
+  out$occupied_tee_times[is.na(out$occupied_tee_times)] <- 0
+  as_tibble(out[, c("date", "occupied_tee_times", "players")])
+}
+
 #' Resolve capacity and operating status for prepared daily rows
 #'
 #' Precedence is published available rounds, then a schedule estimate from a

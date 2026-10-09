@@ -60,6 +60,41 @@ test_that("course capacity counts starts inside the window and does not roll pas
   )
 })
 
+test_that("daily utilization keeps slot use and tee-time occupancy separate", {
+  capacity <- course_capacity(
+    date = as.Date(c("2024-06-01", "2024-06-02", "2024-06-03")),
+    window_start = "07:00",
+    window_end = c("07:40", "07:10", "07:00"),
+    tee_interval_minutes = 10,
+    players_per_start = 4
+  )
+  bookings <- data.frame(
+    date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01", "2024-06-01", "2024-06-02")),
+    tee_time = c("07:00", "07:00", "07:10", "07:20", "07:00"),
+    players = c(4, 0, 1, 4, 5)
+  )
+  use <- daily_utilization(bookings, capacity)
+  saturday <- use[use$date == as.Date("2024-06-01"), ]
+  expect_equal(saturday$occupied_tee_times, 3)
+  expect_equal(saturday$players, 9)
+  expect_equal(saturday$tee_time_occupancy, 3 / 4)
+  expect_equal(saturday$slot_utilization, 9 / 16)
+  sunday <- use[use$date == as.Date("2024-06-02"), ]
+  expect_equal(sunday$slot_utilization, 5 / 4)
+  expect_equal(sunday$tee_time_occupancy, 1)
+  closed <- use[use$date == as.Date("2024-06-03"), ]
+  expect_equal(closed$players, 0)
+  expect_true(is.na(closed$slot_utilization))
+  expect_true(is.na(closed$tee_time_occupancy))
+  expect_error(
+    daily_utilization(
+      data.frame(date = as.Date("2024-06-04"), tee_time = "07:00", players = 2),
+      capacity
+    ),
+    class = "golfops_input_error"
+  )
+})
+
 test_that("available rounds outrank a schedule, and a missing interval is not 15 minutes", {
   prepared <- prepare_dobson_rounds(toy_dobson_csv(tempfile(fileext = ".csv")))
   sample <- dobson_operating_daily(prepared)
