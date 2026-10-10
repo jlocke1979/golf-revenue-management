@@ -1,0 +1,60 @@
+---
+title: "Price"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Price}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5.5
+)
+```
+
+```{r setup}
+library(golfops)
+sample <- dobson_operating_daily()
+prices <- revenue_per_golfer(sample)
+```
+
+Each figure is dollars of recorded revenue per golfer, on days with at least one golfer. That is an average amount, not a posted price. One day mixes 9-hole and 18-hole play, weekday and weekend, and any discounted rate.
+
+```{r price-table, echo = FALSE, results = "asis"}
+price_table <- tapply(
+  prices$dollars_per_golfer,
+  list(prices$category, prices$year_label),
+  identity
+)
+knitr::kable(
+  price_table,
+  digits = 2,
+  caption = "Dollars per golfer. * 2021 is July through December, and 2026 is January through April. Cart revenue is blank through September 30, 2021, so those golfers sit in the 2021 denominator without cart dollars. The recorded cart rate from October 2021 through 2024 is $16."
+)
+```
+
+Total revenue is the sum of the six categories. The charts below draw those six and leave total off the stack, so it is not counted twice.
+
+## Average price
+
+The height of each bar is revenue per golfer. The segments show which category supplies that amount.
+
+```{r price-stack, fig.alt = "Stacked bars of dollars per golfer by revenue type for 2021 through 2026. Cart shrinks in 2025 while the bar stays about as tall."}
+plot_revenue_mix(sample)
+```
+
+Through 2024 the bar grows, from about $76 per golfer in 2022 to about $99 in 2024. In 2025 the total barely moves, to about $102, because the cart segment falls from about $13 to about $4 while green fees, food and beverage, and range grow. The 2026 bar is taller because that year in the extract is only January through April, the expensive months.
+
+## Mix
+
+The same segments, scaled so each year is 100 percent. This is the share of the average, independent of how tall the bar is.
+
+```{r price-share, fig.alt = "One hundred percent stacked bars showing each revenue type's share of dollars per golfer, 2021 through 2026."}
+plot_revenue_mix(sample, scale = "share")
+```
+
+Cart's share drops in 2025 and stays small in early 2026. Green fees remain the largest slice. Range's share grows from 2022 through 2024 and then levels off. The 2026 shares describe January through April only.

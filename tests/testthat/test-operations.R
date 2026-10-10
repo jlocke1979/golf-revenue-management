@@ -25,6 +25,24 @@ test_that("the utilization calendar keeps missing days distinct and does not cap
   expect_gt(max(calendar$scale_utilization, na.rm = TRUE), 1)
   expect_false(as.Date("2004-12-10") %in% calendar$date)
   expect_s3_class(plot_utilization_heatmap(sample), "ggplot")
+  expect_s3_class(plot_calendar_day(sample, "capacity"), "ggplot")
+  expect_s3_class(plot_calendar_day(sample, "utilization"), "ggplot")
+  combined <- plot_capacity_demand(sample)
+  expect_s3_class(combined, "golfops_capacity_demand_plot")
+  expect_equal(combined$unit, "golfers")
+  expect_length(combined$capacity, length(combined$years))
+  expect_length(combined$utilization, length(combined$years))
+  expect_length(combined$heatmap, length(combined$years))
+  expect_s3_class(combined$capacity[[1]], "ggplot")
+  expect_s3_class(combined$utilization[[1]], "ggplot")
+  expect_s3_class(combined$heatmap[[1]], "ggplot")
+  expect_gt(combined$median_utilization, 0)
+  expect_lt(combined$median_utilization, 1)
+  slots <- plot_capacity_demand(sample, unit = "slots")
+  expect_equal(slots$unit, "slots")
+  expect_lt(slots$scale_max, combined$scale_max / 3)
+  expect_gt(slots$median_utilization, 0)
+  expect_lt(slots$median_utilization, 1)
 })
 
 test_that("seasonal overlays mark partial years and omit the isolated 2004 day", {
@@ -56,6 +74,41 @@ test_that("course capacity counts starts inside the window and does not roll pas
   )
   expect_error(
     course_capacity(as.Date("2024-01-05"), "07:00", "15:00", 10, 0),
+    class = "golfops_input_error"
+  )
+})
+
+test_that("daily utilization keeps slot use and tee-time occupancy separate", {
+  capacity <- course_capacity(
+    date = as.Date(c("2024-06-01", "2024-06-02", "2024-06-03")),
+    window_start = "07:00",
+    window_end = c("07:40", "07:10", "07:00"),
+    tee_interval_minutes = 10,
+    players_per_start = 4
+  )
+  bookings <- data.frame(
+    date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01", "2024-06-01", "2024-06-02")),
+    tee_time = c("07:00", "07:00", "07:10", "07:20", "07:00"),
+    players = c(4, 0, 1, 4, 5)
+  )
+  use <- daily_utilization(bookings, capacity)
+  saturday <- use[use$date == as.Date("2024-06-01"), ]
+  expect_equal(saturday$occupied_tee_times, 3)
+  expect_equal(saturday$players, 9)
+  expect_equal(saturday$tee_time_occupancy, 3 / 4)
+  expect_equal(saturday$slot_utilization, 9 / 16)
+  sunday <- use[use$date == as.Date("2024-06-02"), ]
+  expect_equal(sunday$slot_utilization, 5 / 4)
+  expect_equal(sunday$tee_time_occupancy, 1)
+  closed <- use[use$date == as.Date("2024-06-03"), ]
+  expect_equal(closed$players, 0)
+  expect_true(is.na(closed$slot_utilization))
+  expect_true(is.na(closed$tee_time_occupancy))
+  expect_error(
+    daily_utilization(
+      data.frame(date = as.Date("2024-06-04"), tee_time = "07:00", players = 2),
+      capacity
+    ),
     class = "golfops_input_error"
   )
 })

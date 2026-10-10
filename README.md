@@ -1,26 +1,12 @@
 # Golf tee time pricing and utilization
 
-The Module 1 proposal asks: when does a course have unused capacity, and what pricing or promotional adjustments might be worth testing?
-
-`golfops` 0.3.0 answers that question for Dobson Ranch with the City of Mesa daily operating extract. Operating charts share one daily sample. The package prepares the file, shows utilization of the daylight estimate, summarizes revenue relationships, runs pricing scenarios whose volume changes are typed in by the user, and compares a seasonal baseline with one interpretable forecast of observed daily rounds.
+`golfops` 0.3.0 summarizes unused capacity and revenue for Dobson Ranch from the City of Mesa daily operating extract. Operating charts share one daily sample. The package prepares the file, shows utilization of the daylight estimate, summarizes revenue relationships, runs pricing scenarios whose volume changes are typed in by the user, and compares a seasonal baseline with one interpretable forecast of observed daily rounds.
 
 The extract has no tee time, posted rate, or booking timestamp. Scenarios are accounting illustrations. They are not price elasticities and not recommended tee-time prices. Forecasts predict observed rounds. They do not estimate latent demand on days at or above the daylight capacity.
 
-## Course stages
-
-The syllabus grades the final project in three stages. They are not one deadline.
-
-| Stage | What it asks for | This package |
-| --- | --- | --- |
-| Module 1 proposal | The written proposal | Already the proposal document. The package does not replace it. |
-| Module 5 checkpoint | A checkpoint whose rubric is not in the local course files | Not claimed. Do not treat the proposal date as this checkpoint. |
-| Module 10 submission | An R package with documentation | In progress: functions, tests, example data, and two vignettes. No website or CRAN release. |
-
-`course_requirements()` returns that map from inside R. Module 6 is a separate documentation assignment, not the final submission.
-
 ## Why this dataset
 
-The course proposal started from municipal tee-sheet operations. Tee-sheet files from course operators were not available for this version. Dobson Ranch is public, has a published data dictionary, and is usable for participation and revenue once the grain of the file is respected.
+Tee-sheet files from course operators were not available for this version. Dobson Ranch is public, has a published data dictionary, and is usable for participation and revenue once the grain of the file is respected.
 
 Catalog: [Dobson Ranch Golf Rounds](https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k) (`24g5-hb8k`). The catalog says the course is operated by Paradigm Golf Group. On October 3, 2026 the SODA endpoint returned:
 
@@ -86,12 +72,8 @@ vignette("dobson-ranch", package = "golfops")
 
 The raw export lives in `sources/` and is read-only. The package reads `inst/extdata/dobson_ranch_golf_rounds.csv`, a byte copy of that CSV.
 
-## Outside this deadline
+## Outside this version
 
-Country-club equity, cart GPS, and a live scoring app are outside the proposal's current scope. A tee sheet would be required before a posted-price test. Peoria's pass comparison remains the fallback named in the proposal if a second course file is added later.
-
-## Course note
-
-This package is the MSDS 457 project toolkit. The syllabus asks for a documented R package built around a sports-business question. Development of the code was assisted by Cursor's coding agent. The data checks, metric definitions, and scenario assumptions were reviewed against the city catalog and this extract.
+Country-club equity, cart GPS, and a live scoring app are outside this version. A tee sheet would be required before a posted-price test.
 
 City of Mesa. "Dobson Ranch Golf Rounds." Mesa Open Data, dataset 24g5-hb8k. Accessed October 3, 2026. https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k.

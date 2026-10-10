@@ -1,0 +1,15 @@
+date,weekday,rounds_played,capacity_rounds,capacity_basis,utilization,operating_status,unused_sellable_rounds
+2025-06-01,Sunday,304,400,daylight_estimate,0.76,played,96
+2025-06-02,Monday,259,400,daylight_estimate,0.6475,played,141
+2025-06-03,Tuesday,282,400,daylight_estimate,0.705,played,118
+2025-06-04,Wednesday,253,400,daylight_estimate,0.6325,played,147
+2025-06-05,Thursday,287,400,daylight_estimate,0.7175,played,113
+2025-06-06,Friday,291,400,daylight_estimate,0.7275,played,109
+2025-06-07,Saturday,331,400,daylight_estimate,0.8275,played,69
+2025-06-08,Sunday,303,400,daylight_estimate,0.7575,played,97
+2025-06-09,Monday,243,400,daylight_estimate,0.6075,played,157
+2025-06-10,Tuesday,263,400,daylight_estimate,0.6575,played,137
+2025-06-11,Wednesday,252,404,daylight_estimate,0.6237623762376238,played,152
+2025-06-12,Thursday,299,404,daylight_estimate,0.7400990099009901,played,105
+2025-06-13,Friday,339,404,daylight_estimate,0.8391089108910891,played,65
+2025-06-14,Saturday,361,404,daylight_estimate,0.8935643564356436,played,43
