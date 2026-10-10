@@ -64,9 +64,9 @@ renv/lock/
 renv/python/
 renv/staging/
 
-# Aider local state. The project config stays tracked.
-.aider.chat.history.md
-.aider.input.history
-.aider.tags.cache.v3/
-.aider.tags.cache.v4/
+# Aider local state
 .aider*
+
+# Accidental plot devices
+Rplots.pdf
+tests/testthat/Rplots.pdf

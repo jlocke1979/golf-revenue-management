@@ -20,12 +20,6 @@ knitr::opts_chunk$set(
 library(golfops)
 ```
 
-## Where this sits in the course
-
-`course_requirements()` separates the Module 1 proposal from the Module 5 checkpoint and the Module 10 package submission. The proposal is the written argument. This vignette is package evidence for the later stages: a rerunnable forecast with a chronological holdout.
-
-The checkpoint rubric is not in the local course files, so this vignette does not claim to satisfy it.
-
 ## Dobson Ranch
 
 The series is the same operating sample as the Dobson Ranch vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit because their status is unknown, not because the file confirms a closure. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.

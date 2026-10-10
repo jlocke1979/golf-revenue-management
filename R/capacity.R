@@ -276,18 +276,18 @@ daily_utilization <- function(bookings, capacity) {
   if (nrow(bookings) == 0) {
     return(empty)
   }
-  starts <- aggregate(
+  starts <- stats::aggregate(
     players ~ date + tee_minutes,
     data = bookings,
     FUN = sum
   )
   starts <- starts[starts$players > 0, , drop = FALSE]
-  players <- aggregate(players ~ date, data = bookings, FUN = sum)
+  players <- stats::aggregate(players ~ date, data = bookings, FUN = sum)
   if (nrow(starts) == 0) {
     players$occupied_tee_times <- 0
     return(as_tibble(players[, c("date", "occupied_tee_times", "players")]))
   }
-  occupied <- aggregate(tee_minutes ~ date, data = starts, FUN = length)
+  occupied <- stats::aggregate(tee_minutes ~ date, data = starts, FUN = length)
   names(occupied)[names(occupied) == "tee_minutes"] <- "occupied_tee_times"
   out <- merge(players, occupied, by = "date", all.x = TRUE, sort = FALSE)
   out$occupied_tee_times[is.na(out$occupied_tee_times)] <- 0

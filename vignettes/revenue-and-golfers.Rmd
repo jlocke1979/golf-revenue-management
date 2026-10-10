@@ -1,0 +1,101 @@
+---
+title: "Revenue and golfers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Revenue and golfers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 9,
+  fig.height = 8
+)
+```
+
+```{r setup}
+library(golfops)
+sample <- dobson_operating_daily()
+played <- sample[!is.na(sample$rounds_played) & sample$rounds_played > 0, ]
+categories <- c(
+  "Total revenue" = "total_revenue",
+  "Green fees" = "green_fee_revenue",
+  "Food and beverage" = "food_beverage_revenue",
+  "Merchandise" = "merchandise_revenue",
+  "Range" = "range_revenue",
+  "Cart" = "cart_revenue",
+  "Club rental" = "club_revenue"
+)
+revenue_correlation <- function(block) {
+  round(vapply(categories, function(column) {
+    stats::cor(block$rounds_played, block[[column]], use = "complete.obs")
+  }, numeric(1)), 2)
+}
+```
+
+```{r correlation-table, echo = FALSE, results = "asis"}
+years <- 2021:2026
+correlation_table <- sapply(years, function(year) {
+  revenue_correlation(played[played$calendar_year == year, ])
+})
+colnames(correlation_table) <- c("2021*", "2022", "2023", "2024", "2025", "2026*")
+knitr::kable(
+  correlation_table,
+  caption = "Correlation of golfers with each daily revenue amount. * 2021 and 2026 are half years: 2021 is July through December, and 2026 is January through April."
+)
+```
+
+## Annual revenue
+
+Each chart is one revenue type. The horizontal axis is the year, and the bar is that year's revenue. Total revenue is the last chart. Pale bars are half years: 2021 is July through December, and 2026 is January through April.
+
+```{r annual, fig.width = 7.2, fig.height = 12, fig.alt = "Seven bar charts of annual revenue, one revenue type each, with total revenue last. 2021 and 2026 are marked as half years."}
+plot_annual_revenue(sample)
+```
+
+The city file records daily total revenue, green fees, food and beverage, merchandise, range, cart rental, and club rental, along with golfers, from 2021-07-01 through the latest day in the extract. Food and beverage is one amount. Dining is not split from alcohol.
+
+Mesa's annual comprehensive financial report does not publish that split for Dobson Ranch either. The course's restaurant and shop are run by a concessionaire. The daily open-data file is the source for these categories.
+
+Each section is one calendar year. Each point is one day with at least one golfer. The horizontal axis is golfers. The line in each panel is a straight fit to that year's days. 2021 starts on July 1, and the latest year ends with the extract.
+
+## 2021
+
+```{r year-2021, fig.alt = "2021 daily revenue against golfers, seven panels, from July 1."}
+plot_revenue_by_golfers(sample, year = 2021)
+```
+
+## 2022
+
+```{r year-2022, fig.alt = "2022 daily revenue against golfers, seven panels."}
+plot_revenue_by_golfers(sample, year = 2022)
+```
+
+## 2023
+
+```{r year-2023, fig.alt = "2023 daily revenue against golfers, seven panels."}
+plot_revenue_by_golfers(sample, year = 2023)
+```
+
+## 2024
+
+```{r year-2024, fig.alt = "2024 daily revenue against golfers, seven panels."}
+plot_revenue_by_golfers(sample, year = 2024)
+```
+
+## 2025
+
+```{r year-2025, fig.alt = "2025 daily revenue against golfers, seven panels."}
+plot_revenue_by_golfers(sample, year = 2025)
+```
+
+## 2026
+
+```{r year-2026, fig.alt = "2026 daily revenue against golfers, seven panels, through the last day in the extract."}
+plot_revenue_by_golfers(sample, year = 2026)
+```
+
+These are associations in the recorded days. They are not evidence that an extra golfer causes the extra spending, and they are not a price.
