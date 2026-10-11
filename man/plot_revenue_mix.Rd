@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_revenue_mix}
 \alias{plot_revenue_mix}
-\title{Revenue mix per golfer}
+\title{Dollars per golfer, stacked}
 \usage{
 plot_revenue_mix(data, scale = c("dollars", "share"))
 }
@@ -17,6 +17,7 @@ A ggplot object.
 \description{
 One bar per calendar year. Each segment is one revenue type. \code{dollars}
 stacks the average recorded amount per golfer. \code{share} scales each year
-to 100 percent. Total revenue is the height of the dollar bar and is not
-drawn as its own segment.
+to 100 percent of those dollars per golfer. This is not the mix of total
+revenue; see \code{\link[=plot_annual_revenue_mix]{plot_annual_revenue_mix()}}. Total revenue is the height of
+the dollar bar and is not drawn as its own segment.
 }

@@ -1,0 +1,63 @@
+---
+title: "Rate fences"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Rate fences}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5.5
+)
+```
+
+```{r setup}
+library(golfops)
+fences <- synthetic_rate_fences()
+card <- synthetic_park_rate_card()
+```
+
+A fence is one posted price for one kind of round. The courses are fictional: Ridge, Prairie, and Oak are 18 holes, and Orchard is 9. The dollars are invented. They are not Peoria's rate card and not a survey of Central Illinois.
+
+Peoria does post a twilight rate, so this card has one too. Twilight is a lower adult or senior green fee after a posted hour. It is three quarters of that course's day rate for the same golfer and the same weekday or weekend, rounded to the dollar. Young adult and junior keep one fee all day. A pass round has a green fee of zero in the day and at twilight. The cart fee does not change at twilight. A riding round pays the green fee plus the cart, so "adult, weekday, twilight, with a cart" is two fences added together, not a separate posted price.
+
+Prairie's day rates are 85 percent of Ridge's, and Oak's are 70 percent, rounded to the dollar. Orchard has its own 9-hole card.
+
+## Segments
+
+Senior, young adult, and junior mean the ages the district posts. Those ages are not in this table.
+
+```{r fences, echo = FALSE, results = "asis"}
+knitr::kable(
+  fences,
+  col.names = c("Segment", "What is priced", "Rule"),
+  caption = "The fences. Twilight is a daypart on the adult and senior daily fees."
+)
+```
+
+## Posted prices
+
+Adult and senior each have four green fees per course: weekday day, weekday twilight, weekend day, and weekend twilight. Young adult and junior have one green fee per course. With the three passes and the two cart fees, the card is `r nrow(card)` posted prices. Quantity is an invented total for one season. On a green fee it is rounds. On a pass it is passes sold, not rounds played. On a cart it is rentals: 72 percent of the 18-hole rounds and 45 percent of the 9-hole rounds, rounded. Revenue is price times quantity.
+
+```{r posted-prices, echo = FALSE, results = "asis"}
+shown <- card[, c("course", "holes", "segment", "day", "daypart", "price", "quantity", "revenue", "unit")]
+shown$segment <- as.character(shown$segment)
+shown$holes <- ifelse(is.na(shown$holes), "Any", as.character(shown$holes))
+knitr::kable(
+  shown,
+  digits = 0,
+  row.names = FALSE,
+  format.args = list(big.mark = ","),
+  col.names = c("Course", "Holes", "Segment", "Day", "Daypart", "Price", "Quantity", "Revenue", "Unit"),
+  caption = "Synthetic posted prices, quantities, and revenue. Twilight is 75 percent of the matching day rate, rounded to the dollar. Revenue is price times quantity."
+)
+```
+
+A round's label can still combine fences the card does not price on its own. Adult weekday twilight with a cart is the twilight green fee plus the 18-hole cart. That combination is how a played round gets counted. It is not an extra row above.
+
+The mix charts are not drawn here. They need a season of rounds labeled with these fences. The comparisons worth drawing are the share of rounds, and of green-fee dollars, by month, by day of week, and by day versus twilight. The same shares on tee times that sold out show which fence is sitting on the scarce times.

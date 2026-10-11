@@ -19,83 +19,68 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(golfops)
 sample <- dobson_operating_daily()
-played <- sample[!is.na(sample$rounds_played) & sample$rounds_played > 0, ]
-categories <- c(
-  "Total revenue" = "total_revenue",
-  "Green fees" = "green_fee_revenue",
-  "Food and beverage" = "food_beverage_revenue",
-  "Merchandise" = "merchandise_revenue",
-  "Range" = "range_revenue",
-  "Cart" = "cart_revenue",
-  "Club rental" = "club_revenue"
-)
-revenue_correlation <- function(block) {
-  round(vapply(categories, function(column) {
-    stats::cor(block$rounds_played, block[[column]], use = "complete.obs")
-  }, numeric(1)), 2)
-}
 ```
 
-```{r correlation-table, echo = FALSE, results = "asis"}
-years <- 2021:2026
-correlation_table <- sapply(years, function(year) {
-  revenue_correlation(played[played$calendar_year == year, ])
-})
-colnames(correlation_table) <- c("2021*", "2022", "2023", "2024", "2025", "2026*")
-knitr::kable(
-  correlation_table,
-  caption = "Correlation of golfers with each daily revenue amount. * 2021 and 2026 are half years: 2021 is July through December, and 2026 is January through April."
-)
+## Golfers
+
+A round in the city file is one golfer who played the course. Someone who only used the range is not in that count. Range sales are recorded in dollars. The file has no count of range customers.
+
+```{r annual-golfers, fig.width = 7.2, fig.height = 4.2, fig.alt = "Line chart of golfers by year, 2021 through 2026. 2021 and 2026 are marked as half years."}
+plot_annual_golfers(sample)
+```
+
+Cart rentals are a count of carts, not a count of golfers. The 2025 drop is fewer recorded rentals, not fewer rounds.
+
+```{r annual-carts, fig.width = 7.2, fig.height = 4.2, fig.alt = "Line chart of cart rentals by year, 2021 through 2026. 2021 and 2026 are marked as half years."}
+plot_annual_carts(sample)
 ```
 
 ## Annual revenue
 
-Each chart is one revenue type. The horizontal axis is the year, and the bar is that year's revenue. Total revenue is the last chart. Pale bars are half years: 2021 is July through December, and 2026 is January through April.
+Each chart is one revenue type, in that type's color. The bar is that year's revenue. It is not dollars per golfer. Total revenue is the last chart. Pale bars are half years: 2021 is July through December, and 2026 is January through April.
 
 ```{r annual, fig.width = 7.2, fig.height = 12, fig.alt = "Seven bar charts of annual revenue, one revenue type each, with total revenue last. 2021 and 2026 are marked as half years."}
 plot_annual_revenue(sample)
+```
+
+## Revenue mix
+
+The charts above are one category at a time. Here the same six categories are stacked, and the height is the year's revenue. Green fees are at the bottom, then cart, food and beverage, range, merchandise, and club rental. Total revenue is the full bar and is not drawn again. A half year is shorter because it covers fewer months. Dollars per golfer, on its own page, divides these amounts by golfers who played.
+
+```{r revenue-mix, fig.width = 7.2, fig.height = 5.5, fig.alt = "Stacked bars of annual revenue by type, 2021 through 2026. 2021 and 2026 are half years."}
+plot_annual_revenue_mix(sample)
+```
+
+The next chart is each category's share of that year's revenue. Cart's share falls in 2025. Green fees stay the largest slice. Range's share grows through 2024.
+
+```{r revenue-share, fig.width = 7.2, fig.height = 5.5, fig.alt = "One hundred percent stacked bars of each revenue type's share of annual revenue, 2021 through 2026."}
+plot_annual_revenue_mix(sample, scale = "share")
+```
+
+## RevPATR
+
+RevPATR divides the year's revenue by the rounds the course could have sold. Dollars per golfer divides by the golfers who played. In this file the available rounds are the city's daylight estimate, including days with no golfers. The file has no tee time, so the denominator is that estimate.
+
+```{r revpatr-table, echo = FALSE, results = "asis"}
+available <- revenue_per_available_round(sample)
+revpatr_table <- tapply(
+  available$dollars_per_available_round,
+  list(available$category, available$year_label),
+  identity
+)
+knitr::kable(
+  revpatr_table,
+  digits = 2,
+  caption = "RevPATR, in dollars per available round. The available rounds are the daylight estimate. * 2021 is July through December, and 2026 is January through April."
+)
+```
+
+```{r revpatr, fig.width = 7.2, fig.height = 4.2, fig.alt = "Line chart of revenue per available round by year, for total revenue and green fees. 2021 and 2026 are marked as half years."}
+plot_revpatr(sample)
 ```
 
 The city file records daily total revenue, green fees, food and beverage, merchandise, range, cart rental, and club rental, along with golfers, from 2021-07-01 through the latest day in the extract. Food and beverage is one amount. Dining is not split from alcohol.
 
 Mesa's annual comprehensive financial report does not publish that split for Dobson Ranch either. The course's restaurant and shop are run by a concessionaire. The daily open-data file is the source for these categories.
 
-Each section is one calendar year. Each point is one day with at least one golfer. The horizontal axis is golfers. The line in each panel is a straight fit to that year's days. 2021 starts on July 1, and the latest year ends with the extract.
-
-## 2021
-
-```{r year-2021, fig.alt = "2021 daily revenue against golfers, seven panels, from July 1."}
-plot_revenue_by_golfers(sample, year = 2021)
-```
-
-## 2022
-
-```{r year-2022, fig.alt = "2022 daily revenue against golfers, seven panels."}
-plot_revenue_by_golfers(sample, year = 2022)
-```
-
-## 2023
-
-```{r year-2023, fig.alt = "2023 daily revenue against golfers, seven panels."}
-plot_revenue_by_golfers(sample, year = 2023)
-```
-
-## 2024
-
-```{r year-2024, fig.alt = "2024 daily revenue against golfers, seven panels."}
-plot_revenue_by_golfers(sample, year = 2024)
-```
-
-## 2025
-
-```{r year-2025, fig.alt = "2025 daily revenue against golfers, seven panels."}
-plot_revenue_by_golfers(sample, year = 2025)
-```
-
-## 2026
-
-```{r year-2026, fig.alt = "2026 daily revenue against golfers, seven panels, through the last day in the extract."}
-plot_revenue_by_golfers(sample, year = 2026)
-```
-
-These are associations in the recorded days. They are not evidence that an extra golfer causes the extra spending, and they are not a price.
+How those daily amounts move with the number of golfers is in Correlations and relationships.

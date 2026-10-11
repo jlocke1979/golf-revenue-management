@@ -22,5 +22,6 @@ revenue. Food and beverage is a single amount. Alcohol is not separated
 from dining.
 A line on each panel is a straight fit. It describes the cloud of days.
 It is not a causal effect of an extra golfer. Each panel also prints the
-correlation of golfers with that amount, rounded to two decimals.
+correlation of golfers with that amount, rounded to two decimals. A chart
+of one year draws each panel in that revenue type's color.
 }

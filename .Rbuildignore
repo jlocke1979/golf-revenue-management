@@ -12,3 +12,7 @@
 ^Rplots\.pdf$
 ^tests/testthat/Rplots\.pdf$
 ^outputs$
+^dev$
+^vignettes/.*\.html$
+^vignettes/.*_files$
+^vignettes/.*_cache$

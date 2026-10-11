@@ -1,3 +1,32 @@
+test_that("the synthetic park card prices twilight below the day rate", {
+  fences <- synthetic_rate_fences()
+  card <- synthetic_park_rate_card()
+  expect_true(isTRUE(attr(card, "synthetic")))
+  expect_true("Twilight" %in% fences$segment)
+  expect_true(nrow(card) >= 30 && nrow(card) <= 50)
+  expect_false("hour" %in% names(card))
+  expect_true(all(card$price > 0))
+  split_fees <- card[card$segment %in% c("Adult daily", "Senior daily"), ]
+  expect_setequal(split_fees$daypart, c("Day", "Twilight"))
+  paired <- merge(
+    split_fees[split_fees$daypart == "Day", c("course", "segment", "day", "price")],
+    split_fees[split_fees$daypart == "Twilight", c("course", "segment", "day", "price")],
+    by = c("course", "segment", "day"),
+    suffixes = c("_day", "_twilight")
+  )
+  expect_true(all(paired$price_twilight < paired$price_day))
+  flat <- card[card$segment %in% c("Young adult daily", "Junior daily"), ]
+  expect_true(all(flat$daypart == "All day"))
+  passes <- card[grepl("pass$", as.character(card$segment)), ]
+  expect_true(all(passes$unit == "per season"))
+  expect_true(all(passes$daypart == "Any"))
+  carts <- card[card$segment == "Cart", ]
+  expect_equal(nrow(carts), 2)
+  expect_true(all(carts$daypart == "Any"))
+  expect_equal(card$revenue, card$price * card$quantity)
+  expect_true(all(card$quantity > 0))
+})
+
 test_that("a chronological split does not put future rows in the training period", {
   tickets <- synthetic_tournament_tickets()
   parts <- split_chronological(tickets, as.Date("2025-01-01"))

@@ -1,8 +1,8 @@
 ---
-title: "Price"
+title: "Dollars per golfer"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Price}
+  %\VignetteIndexEntry{Dollars per golfer}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,7 +22,11 @@ sample <- dobson_operating_daily()
 prices <- revenue_per_golfer(sample)
 ```
 
-Each figure is dollars of recorded revenue per golfer, on days with at least one golfer. That is an average amount, not a posted price. One day mixes 9-hole and 18-hole play, weekday and weekend, and any discounted rate.
+Each figure is recorded revenue divided by golfers who played the course, on days with at least one golfer. The denominator is those golfers. It is not open tee times, and it does not include someone who only used the range.
+
+Green fees and cart rentals are the closest of these figures to an average amount paid. One day still mixes 9-hole and 18-hole play, weekday and weekend, and any discounted rate. Food and beverage is spending recorded per golfer. Dining is not split from alcohol. Range, merchandise, and club rental are facility dollars spread across every golfer, including golfers who bought none of them.
+
+The year's revenue, before dividing by golfers, is in Revenue and golfers. RevPATR, on that page, divides by the daylight estimate of rounds the course could have sold.
 
 ```{r price-table, echo = FALSE, results = "asis"}
 price_table <- tapply(
@@ -37,11 +41,9 @@ knitr::kable(
 )
 ```
 
-Total revenue is the sum of the six categories. The charts below draw those six and leave total off the stack, so it is not counted twice.
+## By type
 
-## Average price
-
-The height of each bar is revenue per golfer. The segments show which category supplies that amount.
+The bar is dollars per golfer. Each segment is one category. Total revenue is the sum of the six and is left off the stack.
 
 ```{r price-stack, fig.alt = "Stacked bars of dollars per golfer by revenue type for 2021 through 2026. Cart shrinks in 2025 while the bar stays about as tall."}
 plot_revenue_mix(sample)
@@ -49,12 +51,12 @@ plot_revenue_mix(sample)
 
 Through 2024 the bar grows, from about $76 per golfer in 2022 to about $99 in 2024. In 2025 the total barely moves, to about $102, because the cart segment falls from about $13 to about $4 while green fees, food and beverage, and range grow. The 2026 bar is taller because that year in the extract is only January through April, the expensive months.
 
-## Mix
+## Share of dollars per golfer
 
-The same segments, scaled so each year is 100 percent. This is the share of the average, independent of how tall the bar is.
+The same segments, scaled so each year is 100 percent. This is the share of dollars per golfer. The share of the year's revenue is the chart titled "Share of annual revenue."
 
 ```{r price-share, fig.alt = "One hundred percent stacked bars showing each revenue type's share of dollars per golfer, 2021 through 2026."}
 plot_revenue_mix(sample, scale = "share")
 ```
 
-Cart's share drops in 2025 and stays small in early 2026. Green fees remain the largest slice. Range's share grows from 2022 through 2024 and then levels off. The 2026 shares describe January through April only.
+Cart's share of dollars per golfer drops in 2025 and stays small in early 2026. Green fees remain the largest slice. Range's share grows from 2022 through 2024 and then levels off. The 2026 shares describe January through April only.
