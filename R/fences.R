@@ -1,192 +1,185 @@
-#' Rate fences on a synthetic park-district card
+#' Rate fences on the Peoria posted card
 #'
-#' Each row is one fence. A fence is one posted price for one kind of round.
-#' Daily adult and senior fees differ by course, by weekday or weekend, and
-#' by day or twilight. Young adult and junior fees differ by course only.
-#' A pass is one season price, and a round played on that pass has no further
-#' green fee. The cart is a flat fee on top of the green fee.
+#' Each row is one column on the Peoria weekday and weekend price sheet,
+#' version 2. A fence is one posted price for one kind of round. Blank
+#' columns stay in this list because the sheet has the column and leaves
+#' every cell empty.
 #'
-#' @return A data frame of segment names and the rule for each.
+#' @return A data frame of fence names, what is priced, and the rule.
+#'   `posted` is FALSE when every cell in that column is empty.
 #' @export
-synthetic_rate_fences <- function() {
+#' @examples
+#' peoria_rate_fences()
+peoria_rate_fences <- function() {
   data.frame(
     segment = c(
-      "Adult daily",
-      "Senior daily",
-      "Young adult daily",
-      "Junior daily",
-      "Twilight",
-      "Adult pass",
-      "Senior pass",
-      "Young adult pass",
-      "Cart"
+      "Adult",
+      "Adult twilight",
+      "Senior",
+      "Junior",
+      "Junior twilight",
+      "Military",
+      "Adult with cart",
+      "Holiday 18 with cart",
+      "Cart",
+      "Pull cart",
+      "Club per club",
+      "Club rental"
     ),
     prices = c(
       "Green fee for one round",
       "Green fee for one round",
       "Green fee for one round",
       "Green fee for one round",
-      "Green fee for one round after the posted hour",
-      "One payment for the season",
-      "One payment for the season",
-      "One payment for the season",
-      "Cart for one round, added to the green fee"
+      "Green fee for one round",
+      "Green fee for one round",
+      "Green fee and cart for one adult round",
+      "Green fee and cart for one 18-hole round",
+      "Cart for one round",
+      "Pull cart for one round",
+      "One club",
+      "Club rental"
     ),
     rule = c(
-      "An adult without a pass. Weekday and weekend each have a day rate.",
-      "The district's senior age, without a pass. Below the adult rate for the same course, day, and daypart.",
-      "The district's young-adult age, without a pass. One fee per course, all week and all day.",
-      "The district's junior age, without a pass. One fee per course, all week and all day.",
-      "A lower adult or senior green fee after a posted hour. The same hour on weekday and weekend. Young adult and junior do not have a separate twilight fee.",
-      "One season price for an adult. A round on the pass has a green fee of zero at every course, including twilight.",
-      "One season price for a senior. A round on the pass has a green fee of zero at every course, including twilight.",
-      "One season price for a young adult. A round on the pass has a green fee of zero at every course, including twilight.",
-      "A flat cart fee for 9 holes or for 18 holes. It does not change at twilight. A riding round pays this plus the green fee."
+      "Weekday and weekend each have an adult green fee on every product.",
+      "Posted on Kellogg Executive, Kellogg Back 9, and Madison Back 9, for weekday and weekend. The other products leave the cell blank.",
+      "Weekday and weekend each have a senior green fee on every product.",
+      "Posted on Kellogg Executive and on each 18-hole course. The weekday fee and the weekend fee are the same. Front 9 and Back 9 leave the cell blank.",
+      "The sheet has the column. Every cell is blank.",
+      "The sheet has a weekday column and a weekend column. Every cell is blank.",
+      "A posted adult price that includes a cart. On a weekday it equals that product's adult green fee plus its cart fee. On a weekend it is its own posted price.",
+      "The column header names a Saturday and Sunday holiday rate for 18 holes with a cart, from May 11 through September 29. Every cell is blank.",
+      "Eighteen-hole courses are $17. Nine-hole products are $12. The sheet does not split the cart fee by weekday or weekend.",
+      "Five dollars on every product.",
+      "One dollar per club on every product.",
+      "Kellogg 18 and Newman 18 are $20. Every other product, including Madison 18, is $10."
+    ),
+    posted = c(
+      TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE
     ),
     stringsAsFactors = FALSE
   )
 }
 
-.synthetic_twilight_price <- function(day_price) {
-  as.integer(round(day_price * 0.75))
-}
-
-.synthetic_round_quantity <- function(course, segment, day, daypart) {
-  base <- c(
-    "Adult daily|Weekday|Day" = 4800,
-    "Adult daily|Weekday|Twilight" = 1600,
-    "Adult daily|Weekend|Day" = 3600,
-    "Adult daily|Weekend|Twilight" = 800,
-    "Senior daily|Weekday|Day" = 2000,
-    "Senior daily|Weekday|Twilight" = 2400,
-    "Senior daily|Weekend|Day" = 1200,
-    "Senior daily|Weekend|Twilight" = 1000,
-    "Young adult daily|Any|All day" = 1800,
-    "Junior daily|Any|All day" = 600
-  )
-  scale <- c(Ridge = 1, Prairie = 0.8, Oak = 0.55, Orchard = 0.35)
-  key <- paste(segment, day, daypart, sep = "|")
-  as.integer(round(unname(base[key]) * unname(scale[course])))
-}
-
-.attach_synthetic_sales <- function(rows) {
-  rows$quantity <- .synthetic_round_quantity(
-    rows$course,
-    as.character(rows$segment),
-    rows$day,
-    rows$daypart
-  )
-  rows$revenue <- rows$price * rows$quantity
-  rows
-}
-
-#' Synthetic prices for the park-district fences
+#' Posted prices from the Peoria rate sheet
 #'
-#' Invented prices for three fictional 18-hole courses and one fictional
-#' 9-hole course. Ridge is the base 18-hole card. Prairie is 85 percent of
-#' Ridge's day rates and Oak is 70 percent, rounded to the dollar. Twilight
-#' is 75 percent of that course's own day rate for the same golfer and the
-#' same weekday or weekend. Each row also carries an invented season quantity
-#' and the revenue from that quantity. The dollars are not a park district's
-#' rate card and not a survey of Central Illinois.
+#' Ten products from the Peoria weekday and weekend price sheet, version 2:
+#' Kellogg, Madison, and Newman, each with an 18-hole course and a front nine
+#' and a back nine, plus Kellogg Executive. The sheet key for Newman is
+#' spelled Neuman. Dollars are the posted cells. Empty cells are omitted.
+#' The sheet has no rounds and no revenue.
 #'
-#' @return A data frame with one posted price per course, segment, day, and
-#'   daypart. `quantity` is an invented season total: rounds for a green fee,
-#'   passes sold for a pass, and cart rentals for a cart. `revenue` is price
-#'   times quantity. The attribute `synthetic` is TRUE.
+#' Twilight is an adult daypart. It is posted on three products. On Kellogg
+#' Executive and Madison Back 9 the twilight green fee is above that
+#' product's day rate.
+#'
+#' @return A data frame with one posted price per product, segment, day, and
+#'   daypart. `sheet_name` is the course key on the sheet. The attribute
+#'   `source` names the sheet.
 #' @export
-synthetic_park_rate_card <- function() {
-  fences <- synthetic_rate_fences()
-  ridge <- data.frame(
-    segment = c("Adult daily", "Senior daily", "Young adult daily", "Junior daily"),
-    weekday = c(48, 38, 32, 16),
-    weekend = c(58, 46, 32, 16),
+#' @examples
+#' card <- peoria_rate_card()
+#' card[card$facility == "Kellogg" & card$product == "18 holes" &
+#'   card$segment == "Adult", c("day", "daypart", "price")]
+peoria_rate_card <- function() {
+  # Row order is the sheet order.
+  products <- data.frame(
+    facility_id = c(1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
+    facility = c(
+      "Kellogg", "Kellogg", "Kellogg", "Kellogg",
+      "Madison", "Madison", "Madison",
+      "Newman", "Newman", "Newman"
+    ),
+    product = c(
+      "Executive 9", "18 holes", "Front 9", "Back 9",
+      "18 holes", "Front 9", "Back 9",
+      "18 holes", "Front 9", "Back 9"
+    ),
+    holes = c(9, 18, 9, 9, 18, 9, 9, 18, 9, 9),
+    sheet_name = c(
+      "Kellogg_Executive_09",
+      "Kellogg_18_Hole_Course",
+      "Kellogg_Front_09",
+      "Kellogg_Back_09",
+      "Madison_18_Hole_Course",
+      "Madison_Front_09",
+      "Madison_Back_09",
+      "Neuman_18_Hole_Course",
+      "Neuman_Front_09",
+      "Neuman_Back_09"
+    ),
+    adult_weekday = c(24, 42, 30, 30, 26, 20, 20, 35, 27, 27),
+    twilight_weekday = c(30, NA, NA, 20, NA, NA, 27, NA, NA, NA),
+    senior_weekday = c(22, 36, 28, 28, 24, 20, 20, 32, 26, 26),
+    junior_weekday = c(10, 15, NA, NA, 15, NA, NA, 15, NA, NA),
+    with_cart_weekday = c(36, 59, 42, 42, 43, 32, 32, 52, 39, 39),
+    adult_weekend = c(24, 42, 30, 30, 26, 20, 20, 35, 27, 27),
+    twilight_weekend = c(30, NA, NA, 20, NA, NA, 27, NA, NA, NA),
+    senior_weekend = c(22, 36, 28, 28, 24, 20, 20, 32, 26, 26),
+    junior_weekend = c(10, 15, NA, NA, 15, NA, NA, 15, NA, NA),
+    with_cart_weekend = c(48, 76, 54, 54, 60, 44, 44, 68, 51, 51),
+    cart = c(12, 17, 12, 12, 17, 12, 12, 17, 12, 12),
+    pull_cart = c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
+    club_per_club = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    club_rental = c(10, 20, 10, 10, 10, 10, 10, 20, 10, 10),
     stringsAsFactors = FALSE
   )
-  orchard <- data.frame(
-    segment = c("Adult daily", "Senior daily", "Young adult daily", "Junior daily"),
-    weekday = c(18, 14, 14, 8),
-    weekend = c(22, 16, 14, 8),
-    stringsAsFactors = FALSE
-  )
-  courses <- data.frame(
-    course = c("Ridge", "Prairie", "Oak", "Orchard"),
-    holes = c(18, 18, 18, 9),
-    scale = c(1, 0.85, 0.70, NA_real_),
-    stringsAsFactors = FALSE
-  )
-  split_daypart <- c("Adult daily", "Senior daily")
-  pieces <- lapply(seq_len(nrow(courses)), function(i) {
-    base <- if (courses$course[i] == "Orchard") orchard else ridge
-    day_prices <- base
-    if (courses$course[i] != "Orchard") {
-      day_prices$weekday <- as.integer(round(base$weekday * courses$scale[i]))
-      day_prices$weekend <- as.integer(round(base$weekend * courses$scale[i]))
-    }
-    rows <- lapply(seq_len(nrow(day_prices)), function(j) {
-      segment <- day_prices$segment[j]
-      if (segment %in% split_daypart) {
-        day_rates <- data.frame(
-          course = courses$course[i],
-          holes = courses$holes[i],
-          segment = segment,
-          day = c("Weekday", "Weekend"),
-          daypart = "Day",
-          price = c(day_prices$weekday[j], day_prices$weekend[j]),
-          unit = "per round",
-          stringsAsFactors = FALSE
-        )
-        twilight <- day_rates
-        twilight$daypart <- "Twilight"
-        twilight$price <- .synthetic_twilight_price(day_rates$price)
-        rbind(day_rates, twilight)
-      } else {
-        data.frame(
-          course = courses$course[i],
-          holes = courses$holes[i],
-          segment = segment,
-          day = "Any",
-          daypart = "All day",
-          price = day_prices$weekday[j],
-          unit = "per round",
-          stringsAsFactors = FALSE
-        )
-      }
-    })
-    do.call(rbind, rows)
-  })
-  rounds <- .attach_synthetic_sales(do.call(rbind, pieces))
-  passes <- data.frame(
-    course = "All courses",
-    holes = NA_integer_,
-    segment = c("Adult pass", "Senior pass", "Young adult pass"),
-    day = "Any",
-    daypart = "Any",
-    price = c(600, 480, 300),
-    unit = "per season",
-    quantity = c(420, 380, 210),
-    stringsAsFactors = FALSE
-  )
-  passes$revenue <- passes$price * passes$quantity
-  carts <- data.frame(
-    course = "All courses",
-    holes = c(18, 9),
-    segment = "Cart",
-    day = "Any",
-    daypart = "Any",
-    price = c(18, 10),
-    unit = "per round",
-    quantity = c(
-      as.integer(round(0.72 * sum(rounds$quantity[rounds$holes == 18]))),
-      as.integer(round(0.45 * sum(rounds$quantity[rounds$holes == 9])))
+  spec <- data.frame(
+    column = c(
+      "adult_weekday", "twilight_weekday", "senior_weekday", "junior_weekday",
+      "with_cart_weekday",
+      "adult_weekend", "twilight_weekend", "senior_weekend", "junior_weekend",
+      "with_cart_weekend",
+      "cart", "pull_cart", "club_per_club", "club_rental"
+    ),
+    segment = c(
+      "Adult", "Adult", "Senior", "Junior", "Adult with cart",
+      "Adult", "Adult", "Senior", "Junior", "Adult with cart",
+      "Cart", "Pull cart", "Club per club", "Club rental"
+    ),
+    day = c(
+      "Weekday", "Weekday", "Weekday", "Weekday", "Weekday",
+      "Weekend", "Weekend", "Weekend", "Weekend", "Weekend",
+      "Any", "Any", "Any", "Any"
+    ),
+    daypart = c(
+      "Day", "Twilight", "Day", "Day", "Day",
+      "Day", "Twilight", "Day", "Day", "Day",
+      "Any", "Any", "Any", "Any"
+    ),
+    unit = c(
+      "per round", "per round", "per round", "per round", "per round",
+      "per round", "per round", "per round", "per round", "per round",
+      "per round", "per round", "per club", "club rental"
     ),
     stringsAsFactors = FALSE
   )
-  carts$revenue <- carts$price * carts$quantity
-  card <- rbind(rounds, passes, carts)
-  card$segment <- factor(card$segment, levels = setdiff(fences$segment, "Twilight"))
-  card <- card[order(card$holes, card$course, card$segment, card$day, card$daypart), , drop = FALSE]
+  rows <- lapply(seq_len(nrow(spec)), function(i) {
+    price <- products[[spec$column[i]]]
+    keep <- !is.na(price)
+    data.frame(
+      facility_id = products$facility_id[keep],
+      facility = products$facility[keep],
+      product = products$product[keep],
+      holes = products$holes[keep],
+      sheet_name = products$sheet_name[keep],
+      segment = spec$segment[i],
+      day = spec$day[i],
+      daypart = spec$daypart[i],
+      price = price[keep],
+      unit = spec$unit[i],
+      stringsAsFactors = FALSE
+    )
+  })
+  card <- do.call(rbind, rows)
+  card$segment <- factor(
+    card$segment,
+    levels = c(
+      "Adult", "Senior", "Junior", "Adult with cart",
+      "Cart", "Pull cart", "Club per club", "Club rental"
+    )
+  )
   rownames(card) <- NULL
-  attr(card, "synthetic") <- TRUE
+  attr(card, "source") <- "Peoria weekday and weekend prices, version 2"
   card
 }
