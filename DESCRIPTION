@@ -8,8 +8,9 @@ Description: Summarizes municipal golf participation, daylight-estimated
     utilization, and revenue for City of Mesa Dobson Ranch. Operating charts
     use one documented daily sample. Revenue ratios are historical
     relationships, and tournament results are break-even baselines. Forecasts
-    of observed rounds are not latent demand and not price elasticities. A
-    labeled synthetic ticket series remains a secondary example.
+    of observed rounds are not latent demand and not price elasticities.
+    Labeled synthetic examples cover a tournament ticket series and one
+    municipal tee sheet.
 License: MIT + file LICENSE
 URL: https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k
 Encoding: UTF-8
@@ -32,3 +33,4 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.1
+LazyData: true
