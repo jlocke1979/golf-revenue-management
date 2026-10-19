@@ -29,19 +29,22 @@
 #' Realized revenue is the green fee collected at check-in:
 #' `players_checked_in * price_per_player`. Cancelled and no-show
 #' reservations realize zero. There is no no-show fee and no cancellation
-#' fee. Reserved reservations have not been played, and this sheet does not
-#' model prepayment, so `revenue` is missing. Prices are synthetic dollars
-#' per player. They are not a Peoria posted card
-#' and not Dobson Ranch revenue divided by rounds. The assumed card is
-#' stored in attribute `rate_card`. Carts, tax, and golfer names are absent.
+#' fee. On a `reserved` row, `players_booked * price_per_player` is future
+#' booking value. It is not realized revenue. This sheet does not model
+#' prepayment, so `revenue` is missing for those rows. Prices are synthetic
+#' dollars per player. They are not a Peoria posted card and not Dobson
+#' Ranch revenue divided by rounds. The assumed card is stored in attribute
+#' `rate_card`. Carts, tax, and golfer names are absent.
 #'
 #' [daily_utilization()] asks for `date`, `tee_time`, and `players`, and it
-#' has no course id. This sample has one course. To measure play, pass
-#' `players_checked_in` for `completed` rows. To measure slots held by
-#' reservations, including no-shows and reservations that have not been
-#' played, drop `cancelled` rows and pass `players_booked`. Groups on the
-#' same start count as one occupied tee time. A start whose supplied player
-#' counts sum to zero is not occupied.
+#' has no course id. This sample has one course. Realized player utilization
+#' uses `players_checked_in` on `completed` rows, and only play dates through
+#' the extract, 2026-06-19. `slot_utilization` is those players divided by
+#' player slots. Reservations after the extract have not been played, so
+#' checked-in counts are zero there. Evaluate those future bookings with
+#' booked utilization: drop `cancelled` rows and pass `players_booked`.
+#' Groups on the same start count as one occupied tee time. A start whose
+#' supplied player counts sum to zero is not occupied.
 #'
 #' @format A `golfops_tee_sheet` data frame with 735 rows and 14 variables:
 #' \describe{
@@ -72,7 +75,9 @@
 #'   \item{booking_date}{Date the reservation was made. On or before
 #'     `play_date`, and on or before the extract date.}
 #'   \item{revenue}{Realized green-fee dollars. Missing while `reserved`.
-#'     Zero when `cancelled` or `no_show`. Otherwise
+#'     The posted fee on those rows, `players_booked * price_per_player`,
+#'     is future booking value and is not stored in this column. Zero when
+#'     `cancelled` or `no_show`. Otherwise
 #'     `players_checked_in * price_per_player`.}
 #' }
 #' Attributes `synthetic`, `seed` (704), `as_of`, the operating window,
@@ -99,26 +104,29 @@
 #'   and do not include an export layout.
 #' @examples
 #' data(sample_tee_sheet)
-#' str(sample_tee_sheet)
-#' played <- sample_tee_sheet[sample_tee_sheet$booking_status == "completed", ]
-#' play_dates <- sort(unique(played$play_date))
-#' weekend <- as.POSIXlt(play_dates)$wday %in% c(0L, 6L)
+#' sheet <- sample_tee_sheet
+#' as_of <- attr(sheet, "as_of")
+#' dates <- sort(unique(sheet$play_date[sheet$play_date <= as_of]))
+#' weekend <- as.POSIXlt(dates)$wday %in% c(0L, 6L)
 #' capacity <- course_capacity(
-#'   date = play_dates,
+#'   date = dates,
 #'   window_start = ifelse(
 #'     weekend,
-#'     attr(sample_tee_sheet, "weekend_window_start"),
-#'     attr(sample_tee_sheet, "weekday_window_start")
+#'     attr(sheet, "weekend_window_start"),
+#'     attr(sheet, "weekday_window_start")
 #'   ),
 #'   window_end = ifelse(
 #'     weekend,
-#'     attr(sample_tee_sheet, "weekend_window_end"),
-#'     attr(sample_tee_sheet, "weekday_window_end")
+#'     attr(sheet, "weekend_window_end"),
+#'     attr(sheet, "weekday_window_end")
 #'   ),
-#'   tee_interval_minutes = attr(sample_tee_sheet, "tee_interval_minutes"),
-#'   players_per_start = attr(sample_tee_sheet, "players_per_start")
+#'   tee_interval_minutes = attr(sheet, "tee_interval_minutes"),
+#'   players_per_start = attr(sheet, "players_per_start")
 #' )
-#' daily_utilization(
+#' played <- sheet[
+#'   sheet$booking_status == "completed" & sheet$play_date <= as_of,
+#' ]
+#' use <- daily_utilization(
 #'   data.frame(
 #'     date = played$play_date,
 #'     tee_time = played$tee_time,
@@ -126,4 +134,5 @@
 #'   ),
 #'   capacity
 #' )
+#' use[, c("date", "players", "player_slots", "slot_utilization")]
 "sample_tee_sheet"
