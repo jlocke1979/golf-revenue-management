@@ -2,20 +2,18 @@ Package: golfops
 Title: Golf Participation and Revenue Summaries
 Version: 0.3.0
 Authors@R:
-    person("Justin", "Locke", email = "justinrlocke@gmail.com",
+    person("Justin", "Locke", , "justinrlocke@gmail.com",
            role = c("aut", "cre"))
 Description: Summarizes municipal golf participation, daylight-estimated
-    utilization, and revenue for City of Mesa Dobson Ranch. Operating charts
-    use one documented daily sample. Revenue ratios are historical
-    relationships, and tournament results are break-even baselines. Forecasts
-    of observed rounds are not latent demand and not price elasticities.
-    Labeled synthetic examples cover a tournament ticket series and one
-    municipal tee sheet.
+    utilization, and revenue for City of Mesa Dobson Ranch. Operating
+    charts use one documented daily sample. Revenue ratios are historical
+    relationships, and tournament results are break-even baselines.
+    Forecasts of observed rounds are not latent demand and not price
+    elasticities. Labeled synthetic examples cover a tournament ticket
+    series and one municipal tee sheet.
 License: MIT + file LICENSE
-URL: https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k
-Encoding: UTF-8
-Language: en-US
-Roxygen: list(markdown = TRUE)
+URL: 
+    https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k
 Depends:
     R (>= 4.1.0)
 Imports:
@@ -30,7 +28,11 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 Config/roxygen2/version: 8.1.1
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-US
 LazyData: true
+Roxygen: list(markdown = TRUE)

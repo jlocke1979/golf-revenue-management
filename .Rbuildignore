@@ -17,3 +17,4 @@
 ^vignettes/.*_files$
 ^vignettes/.*_cache$
 ^data-raw$
+^submission$
