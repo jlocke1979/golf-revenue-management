@@ -1,0 +1,27 @@
+---
+title: "Dobson Ranch report"
+output: rmarkdown::html_vignette
+params:
+  start_date: "2021-07-01"
+  end_date: "2026-04-30"
+  toc_html: ""
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+This report reads the City of Mesa daily extract for Dobson Ranch. A round is one golfer who played the course. Utilization is those golfers divided by the city's daylight estimate. The city sets that estimate from sunrise to sunset. Tee-sheet occupancy would require a tee time, and this extract has daily counts.
+
+The daily sample runs from `r params$start_date` through `r params$end_date`. A year that does not run from January 1 through December 31 is partial. October days with no play are course closures in the capacity chapter, and those days are left out of the utilization rates.
+
+The first four chapters describe participation, revenue, and how the two move together. The last chapter turns the same figures into questions to investigate. This report does not forecast demand, estimate a price response, or project revenue.
+
+## Contents
+
+The page number is where the chapter starts.
+
+```{r contents, results = "asis"}
+cat(params$toc_html)
+```

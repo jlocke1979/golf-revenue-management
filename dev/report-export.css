@@ -1,0 +1,78 @@
+body {
+  max-width: 7.4in;
+  margin: 0 auto;
+  padding: 0 0.1in 0.4in;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #222;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1, h2, h3 {
+  page-break-after: avoid;
+}
+
+.opportunity {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin: 0 0 0.45em;
+}
+
+.opportunity h3 {
+  margin: 0 0 0.15em;
+  font-size: 12pt;
+}
+
+.opportunity p {
+  margin: 0.12em 0;
+}
+
+.closing {
+  margin: 0.7em 0 0;
+}
+
+.closing h2 {
+  margin: 0 0 0.2em;
+}
+
+.closing p {
+  margin: 0;
+}
+
+.figure,
+img {
+  page-break-inside: avoid;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+th, td {
+  padding: 2px 8px 4px 0;
+  vertical-align: top;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+caption {
+  caption-side: bottom;
+  text-align: left;
+  font-size: 9pt;
+  color: #444;
+}
+
+table.contents td.where {
+  width: 2.6em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+table.contents td span {
+  color: #444;
+}

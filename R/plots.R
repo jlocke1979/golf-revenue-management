@@ -55,6 +55,293 @@ plot_participation <- function(summary, metric = c("rounds_played", "utilization
     theme(plot.caption = ggplot2::element_text(size = 8, color = "grey30"))
 }
 
+#' Daily share of the daylight estimate
+#'
+#' Each played day is golfers divided by the city's daylight estimate for
+#' that day. The box is the middle half of those days. Whiskers follow the
+#' usual rule, one and a half times the height of the box. A day is marked
+#' when it sits at least 5 percentage points beyond a whisker. The date is
+#' the furthest such day in that month or weekday. `time_of_day` draws an
+#' empty panel: the Dobson extract has no tee time.
+#'
+#' @param data Daily rows from [dobson_operating_daily()].
+#' @param by `month_of_year`, `weekday` (or `day_of_week`), or `time_of_day`.
+#' @return A ggplot object.
+#' @export
+#' @examples
+#' daily <- dobson_operating_daily()
+#' plot_daylight_share(daily, "month_of_year")
+#' plot_daylight_share(daily, "time_of_day")
+plot_daylight_share <- function(
+    data,
+    by = c("month_of_year", "weekday", "day_of_week", "time_of_day")) {
+  by <- match.arg(by)
+  if (by == "time_of_day") {
+    return(.daylight_share_placeholder())
+  }
+  if (by == "day_of_week") {
+    by <- "weekday"
+  }
+  data <- .require_rounds(data)
+  if (any(data$grain == "month", na.rm = TRUE)) {
+    abort(
+      "Daylight-share charts use daily rows.",
+      class = "golfops_input_error"
+    )
+  }
+  if (any(duplicated(data$date))) {
+    abort(
+      "Drop duplicate dates before plotting the daylight share.",
+      class = "golfops_duplicate_error"
+    )
+  }
+  grouping <- if (by == "month_of_year") "month" else "weekday"
+  if (!grouping %in% names(data)) {
+    abort(
+      paste0("Daylight-share charts need a ", grouping, " column."),
+      class = "golfops_input_error"
+    )
+  }
+  played <- data[
+    !is.na(data$rounds_played) & data$rounds_played > 0 &
+      !is.na(data$rounds_possible) & data$rounds_possible > 0,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(played) == 0) {
+    abort(
+      "Daylight-share charts need at least one played day.",
+      class = "golfops_input_error"
+    )
+  }
+  levels <- if (by == "month_of_year") month_names() else weekday_names()
+  played$period <- factor(played[[grouping]], levels = levels)
+  played <- played[!is.na(played$period), , drop = FALSE]
+  stats <- .daylight_share_stats(
+    period = played$period,
+    share = played$rounds_played / played$rounds_possible,
+    date = played$date
+  )
+  subtitle <- if (by == "month_of_year") "month_of_year" else "day_of_week"
+  chart <- ggplot2::ggplot() +
+    ggplot2::geom_boxplot(
+      data = stats$boxes,
+      ggplot2::aes(
+        x = .data$period,
+        ymin = .data$ymin,
+        lower = .data$lower,
+        middle = .data$middle,
+        upper = .data$upper,
+        ymax = .data$ymax
+      ),
+      stat = "identity",
+      width = 0.62,
+      fill = "#D0E4F5",
+      color = "#0072B2",
+      linewidth = 0.4
+    )
+  if (nrow(stats$outliers) > 0) {
+    chart <- chart +
+      ggplot2::geom_point(
+        data = stats$outliers,
+        ggplot2::aes(x = .data$period, y = .data$share),
+        color = "#222222",
+        size = 1.3
+      )
+  }
+  if (nrow(stats$labels) > 0) {
+    chart <- chart +
+      ggplot2::geom_label(
+        data = .daylight_share_label_positions(stats$labels, nlevels(played$period)),
+        ggplot2::aes(
+          x = .data$period,
+          y = .data$label_y,
+          label = .data$label,
+          hjust = .data$hjust
+        ),
+        vjust = 0.5,
+        size = 2.5,
+        color = "grey20",
+        fill = "white",
+        label.size = 0.15,
+        label.padding = grid::unit(0.12, "lines"),
+        show.legend = FALSE
+      )
+  }
+  chart +
+    ggplot2::scale_y_continuous(
+      labels = label_percent(accuracy = 1),
+      limits = c(0, NA),
+      expand = ggplot2::expansion(mult = c(0.03, 0.16))
+    ) +
+    ggplot2::labs(
+      title = "Share of daylight-estimated rounds played",
+      subtitle = subtitle,
+      x = NULL,
+      y = "Share of daylight-estimated rounds",
+      caption = "The date is the furthest day at least 5 percentage points past the whisker."
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(
+        angle = if (by == "month_of_year") 40 else 0,
+        hjust = if (by == "month_of_year") 1 else 0.5,
+        vjust = if (by == "month_of_year") 1 else 0.5
+      ),
+      plot.caption = ggplot2::element_text(size = 8, color = "grey30", hjust = 0)
+    )
+}
+
+.daylight_share_placeholder <- function() {
+  ggplot2::ggplot() +
+    ggplot2::annotate(
+      "rect",
+      xmin = 0,
+      xmax = 1,
+      ymin = 0,
+      ymax = 1,
+      fill = "grey85",
+      color = NA
+    ) +
+    ggplot2::annotate(
+      "text",
+      x = 0.5,
+      y = 0.55,
+      label = "Time of day",
+      color = "grey35",
+      size = 4.2,
+      fontface = "bold"
+    ) +
+    ggplot2::annotate(
+      "text",
+      x = 0.5,
+      y = 0.42,
+      label = "Empty until the extract has tee times.",
+      color = "grey40",
+      size = 3.4
+    ) +
+    ggplot2::scale_x_continuous(limits = c(0, 1), breaks = NULL, expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(limits = c(0, 1), breaks = NULL, expand = c(0, 0)) +
+    ggplot2::labs(
+      title = "Share of daylight-estimated rounds played",
+      subtitle = "time_of_day",
+      x = NULL,
+      y = NULL,
+      caption = "Dobson Ranch daily rows have a date and a golfer count. They have no start time, so morning and afternoon stay in one day."
+    ) +
+    ggplot2::coord_cartesian(clip = "off") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.background = ggplot2::element_rect(fill = "grey85", color = NA),
+      plot.caption = ggplot2::element_text(size = 8, color = "grey30", hjust = 0)
+    )
+}
+
+# High dates sit above the point. Low dates sit below it, unless that
+# would crowd the axis, in which case they sit just above the point.
+# Edge months grow inward so the date stays inside the panel.
+.daylight_share_label_positions <- function(labels, n_periods) {
+  labels <- labels[order(as.integer(labels$period)), , drop = FALSE]
+  pos <- as.integer(labels$period)
+  above <- labels$side == "high" | labels$share < 0.22
+  labels$label_y <- labels$share + ifelse(above, 0.055, -0.055)
+  labels$hjust <- ifelse(pos == 1, 0, ifelse(pos == n_periods, 1, 0.5))
+  if (nrow(labels) > 1) {
+    for (i in seq_len(nrow(labels) - 1L)) {
+      adjacent <- pos[i + 1L] - pos[i] == 1
+      close <- abs(labels$label_y[i + 1L] - labels$label_y[i]) < 0.07
+      if (adjacent && close) {
+        labels$label_y[i + 1L] <- labels$label_y[i + 1L] + ifelse(above[i + 1L], 0.09, -0.09)
+      }
+    }
+  }
+  labels
+}
+
+# Box is the interquartile range. Whiskers use the usual 1.5 rule.
+# A day is an outlier only when it clears that whisker by `gap`
+# (5 percentage points). The label is the furthest outlier in the group.
+.daylight_share_stats <- function(period, share, date, gap = 0.05, coef = 1.5) {
+  groups <- split(seq_along(period), period, drop = TRUE)
+  boxes <- lapply(names(groups), function(name) {
+    idx <- groups[[name]]
+    x <- share[idx]
+    q <- stats::quantile(x, c(0.25, 0.5, 0.75), names = FALSE)
+    iqr <- q[3] - q[1]
+    fence_lo <- q[1] - coef * iqr
+    fence_hi <- q[3] + coef * iqr
+    past_hi <- x - fence_hi
+    past_lo <- fence_lo - x
+    past <- pmax(past_hi, past_lo, 0)
+    outlier <- past >= gap
+    inliers <- x[!outlier]
+    if (length(inliers) == 0) {
+      inliers <- x
+    }
+    side <- rep("low", sum(outlier))
+    if (any(outlier)) {
+      side[past_hi[outlier] >= past_lo[outlier]] <- "high"
+      outliers <- data.frame(
+        period = name,
+        date = as.Date(date[idx][outlier]),
+        share = x[outlier],
+        past = past[outlier],
+        side = side,
+        stringsAsFactors = FALSE
+      )
+    } else {
+      outliers <- data.frame(
+        period = character(),
+        date = as.Date(character()),
+        share = numeric(),
+        past = numeric(),
+        side = character(),
+        stringsAsFactors = FALSE
+      )
+    }
+    list(
+      box = data.frame(
+        period = name,
+        ymin = min(inliers),
+        lower = q[1],
+        middle = q[2],
+        upper = q[3],
+        ymax = max(inliers),
+        stringsAsFactors = FALSE
+      ),
+      outliers = outliers
+    )
+  })
+  box_rows <- do.call(rbind, lapply(boxes, `[[`, "box"))
+  outlier_rows <- do.call(rbind, lapply(boxes, `[[`, "outliers"))
+  if (is.null(outlier_rows) || nrow(outlier_rows) == 0) {
+    outlier_rows <- data.frame(
+      period = character(),
+      date = as.Date(character()),
+      share = numeric(),
+      past = numeric(),
+      side = character(),
+      stringsAsFactors = FALSE
+    )
+  }
+  box_rows$period <- factor(box_rows$period, levels = levels(period))
+  outlier_rows$period <- factor(outlier_rows$period, levels = levels(period))
+  label_rows <- outlier_rows[0, , drop = FALSE]
+  if (nrow(outlier_rows) > 0) {
+    label_rows <- do.call(rbind, lapply(split(outlier_rows, outlier_rows$period, drop = TRUE), function(block) {
+      block[which.max(block$past), , drop = FALSE]
+    }))
+    label_rows$label <- sprintf(
+      "%s %d, %d",
+      format(label_rows$date, "%b"),
+      as.integer(format(label_rows$date, "%d")),
+      as.integer(format(label_rows$date, "%Y"))
+    )
+    label_rows$period <- factor(label_rows$period, levels = levels(period))
+  }
+  list(boxes = box_rows, outliers = outlier_rows, labels = label_rows)
+}
+
 #' Plot realized revenue per round from a summary
 #'
 #' @param summary A `golfops_summary` from [summarize_golf_rounds()].

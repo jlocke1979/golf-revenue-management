@@ -1,0 +1,311 @@
+---
+title: "Operational Opportunities and Next Steps"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Operational Opportunities and Next Steps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7.2,
+  fig.height = 5.4
+)
+```
+
+```{r prepare}
+library(golfops)
+sample <- dobson_operating_daily()
+open <- sample[sample$rounds_played > 0, ]
+month <- summarize_golf_rounds(open, by = "month_of_year", duplicates = "drop_extra")
+weekday <- summarize_golf_rounds(open, by = "weekday", duplicates = "drop_extra")
+prices <- revenue_per_golfer(sample)
+
+period_row <- function(summary, name) {
+  summary[as.character(summary$period) == name, , drop = FALSE]
+}
+pct <- function(x) scales::label_percent(accuracy = 1)(x)
+pct1 <- function(x) scales::label_percent(accuracy = 0.1)(x)
+dollars <- function(x) paste0("$", formatC(x, format = "f", digits = 2))
+golfers_of <- function(summary, name) round(period_row(summary, name)$rounds_per_row)
+util_of <- function(summary, name) period_row(summary, name)$utilization
+days_of <- function(summary, name) period_row(summary, name)$n_rows
+above_of <- function(summary, name) period_row(summary, name)$n_above_capacity_rows
+price_of <- function(category, year_label) {
+  hit <- prices$dollars_per_golfer[
+    prices$category == category & as.character(prices$year_label) == year_label
+  ]
+  hit[[1]]
+}
+cor_year <- function(year, column) {
+  block <- open[open$calendar_year == year, ]
+  stats::cor(block$rounds_played, block[[column]], use = "complete.obs")
+}
+year_cart <- function(year) {
+  block <- open[open$calendar_year == year, ]
+  carts <- sum(block$cart_rentals, na.rm = TRUE)
+  revenue <- sum(block$cart_revenue, na.rm = TRUE)
+  golfers <- sum(block$rounds_played, na.rm = TRUE)
+  c(
+    per_cart = revenue / carts,
+    per_golfer = revenue / golfers,
+    carts_per_golfer = carts / golfers
+  )
+}
+carts <- vapply(2022:2026, year_cart, numeric(3))
+colnames(carts) <- as.character(2022:2026)
+
+cells <- stats::aggregate(
+  cbind(rounds_played, rounds_possible) ~ month + weekday,
+  data = open,
+  FUN = sum
+)
+cells$month <- factor(as.character(cells$month), levels = levels(open$month))
+cells$weekday <- factor(as.character(cells$weekday), levels = levels(open$weekday))
+if (nrow(cells) != 12 * 7) {
+  stop("Month-by-weekday utilization is missing a cell.", call. = FALSE)
+}
+cells$utilization <- cells$rounds_played / cells$rounds_possible
+cells$shown <- round(100 * cells$utilization)
+cells$label <- sprintf("%d%%", cells$shown)
+cells$band <- cut(
+  cells$shown,
+  breaks = c(-Inf, 60, 65, 70, 75, 80, 85, 90, Inf),
+  labels = c(
+    "Under 60", "60-64", "65-69", "70-74",
+    "75-79", "80-84", "85-89", "90 and above"
+  ),
+  right = FALSE
+)
+cells$ink <- ifelse(cells$shown >= 80, "white", "#1a1a1a")
+cell_util <- function(month_name, weekday_name) {
+  cells$utilization[cells$month == month_name & cells$weekday == weekday_name]
+}
+```
+
+This chapter collects the operating questions raised by the earlier pages. Each action below is a hypothesis to investigate. The chapter has no forecast, no price elasticity, and no revenue estimate.
+
+Utilization is golfers divided by the city's daylight estimate. The city sets that estimate from sunrise to sunset. Golfers per day is the count of people who played. A day above one hundred percent ran past the estimate. Tee-sheet occupancy would require a tee time, and this extract has daily counts.
+
+The rates use the `r format(nrow(open), big.mark = ",")` days with at least one golfer, from `r format(min(sample$date), "%Y-%m-%d")` through `r format(max(sample$date), "%Y-%m-%d")`. A period rate is the sum of golfers divided by the sum of the daylight estimates, the same ratio as the capacity tables. October closures are omitted with every other day that has no play.
+
+## Where the open days sit
+
+```{r period-table, results = "asis"}
+pick <- function(summary, names, why) {
+  rows <- lapply(names, function(name) {
+    data.frame(
+      Period = name,
+      `Open days` = days_of(summary, name),
+      `Golfers per day` = golfers_of(summary, name),
+      `Daylight utilization` = pct(util_of(summary, name)),
+      `Days above the estimate` = above_of(summary, name),
+      `Why this row` = why[[name]],
+      check.names = FALSE,
+      stringsAsFactors = FALSE
+    )
+  })
+  do.call(rbind, rows)
+}
+shown <- rbind(
+  pick(month, c("July", "June", "August"), c(
+    July = "Lowest daylight share",
+    June = "Low daylight share",
+    August = "Low daylight share"
+  )),
+  pick(weekday, c("Wednesday", "Tuesday"), c(
+    Wednesday = "Lowest weekday",
+    Tuesday = "Next weekday"
+  )),
+  pick(weekday, "Sunday", c(Sunday = "Highest weekday")),
+  pick(month, "April", c(April = "Most golfers per open day")),
+  pick(month, c("February", "March"), c(
+    February = "Most days above the estimate",
+    March = "Highest daylight share"
+  ))
+)
+knitr::kable(
+  shown,
+  align = c("l", "r", "r", "r", "r", "l"),
+  caption = "Open days only. Utilization is the sum of golfers divided by the sum of daylight estimates. The last column is the reason the row is shown."
+)
+```
+
+June through August are the low share of the daylight estimate. June still has `r golfers_of(month, "June")` golfers per open day, against `r golfers_of(month, "December")` in December. May is `r pct(util_of(month, "May"))` and `r golfers_of(month, "May")` golfers. September is `r pct(util_of(month, "September"))` and `r golfers_of(month, "September")` golfers. Those two months sit between the summer group and October through April.
+
+Wednesday and Tuesday are the lower weekdays. Sunday is the highest. The gap from Wednesday to Sunday is `r round(100 * (util_of(weekday, "Sunday") - util_of(weekday, "Wednesday")))` percentage points. The gap from July to March is `r round(100 * (util_of(month, "March") - util_of(month, "July")))` percentage points. April has the most golfers per open day. February and March have the highest share, and the most days above the estimate.
+
+## Month and weekday together
+
+```{r utilization-heatmap, fig.height = 5.8, fig.alt = "Heatmap of daylight utilization for each month and weekday. Color steps by five percentage points. Summer weekdays are lighter. February and March are darker on most weekdays."}
+ggplot2::ggplot(cells, ggplot2::aes(x = .data$weekday, y = .data$month, fill = .data$band)) +
+  ggplot2::geom_tile(color = "white", linewidth = 0.6) +
+  ggplot2::geom_text(
+    ggplot2::aes(label = .data$label, color = .data$ink),
+    size = 2.7
+  ) +
+  ggplot2::scale_y_discrete(limits = rev(levels(cells$month))) +
+  ggplot2::scale_fill_manual(
+    values = c(
+      "Under 60" = "#deebf7",
+      "60-64" = "#c6dbef",
+      "65-69" = "#9ecae1",
+      "70-74" = "#6baed6",
+      "75-79" = "#4292c6",
+      "80-84" = "#2171b5",
+      "85-89" = "#08519c",
+      "90 and above" = "#08306b"
+    ),
+    drop = FALSE,
+    name = "Daylight share"
+  ) +
+  ggplot2::scale_color_identity() +
+  ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2, byrow = TRUE)) +
+  ggplot2::labs(
+    title = "Share of the daylight estimate by month and weekday",
+    caption = "Open days only. Each color step is five percentage points of the printed share."
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    panel.grid = ggplot2::element_blank(),
+    axis.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    legend.text = ggplot2::element_text(size = 8),
+    legend.key.height = ggplot2::unit(0.32, "cm"),
+    legend.key.width = ggplot2::unit(0.5, "cm"),
+    axis.text.x = ggplot2::element_text(angle = 30, hjust = 1),
+    plot.caption = ggplot2::element_text(hjust = 0, size = 8),
+    plot.title = ggplot2::element_text(size = 12)
+  )
+```
+
+Each color step is five percentage points of the printed share. August, the highest of the low months, is `r pct1(util_of(month, "August"))`. September, the next month, is `r pct1(util_of(month, "September"))`. May is `r pct1(util_of(month, "May"))`. November, the start of the October through April group, is `r pct1(util_of(month, "November"))`. Summer weekends sit above the summer weekdays. February Wednesday is `r pct(cell_util("February", "Wednesday"))`. March Wednesday is `r pct(cell_util("March", "Wednesday"))`.
+
+## Opportunities to investigate
+
+Each block is a hypothesis to investigate.
+
+```{r opportunities, results = "asis"}
+summer_green <- range(c(
+  period_row(month, "June")$green_fee_per_played_round,
+  period_row(month, "July")$green_fee_per_played_round,
+  period_row(month, "August")$green_fee_per_played_round
+))
+winter_green <- range(c(
+  period_row(month, "February")$green_fee_per_played_round,
+  period_row(month, "March")$green_fee_per_played_round
+))
+prior_cart <- carts[, c("2022", "2023", "2024")]
+if (any(abs(prior_cart["per_cart", ] - 16) > 0.005)) {
+  stop("The 2022-2024 cart receipt is no longer $16.00.", call. = FALSE)
+}
+cart_cor <- vapply(2022:2025, cor_year, numeric(1), column = "cart_revenue")
+names(cart_cor) <- as.character(2022:2025)
+y2026 <- sample[sample$calendar_year == 2026, ]
+evidence <- c(
+  sprintf(
+    "July is %s of the daylight estimate (%s golfers per open day). June is %s (%s). August is %s (%s). December is %s (%s golfers).",
+    pct(util_of(month, "July")), golfers_of(month, "July"),
+    pct(util_of(month, "June")), golfers_of(month, "June"),
+    pct(util_of(month, "August")), golfers_of(month, "August"),
+    pct(util_of(month, "December")), golfers_of(month, "December")
+  ),
+  sprintf(
+    "February is %s, with %s of %s open days above the estimate. March is %s, with %s of %s. April has %s golfers per open day, the most, at %s. Realized green fees are about $%s to $%s per golfer in February and March, and about $%s to $%s in June through August. Daily green fees correlate with golfers at %.2f in 2024 and %.2f in 2025.",
+    pct(util_of(month, "February")), above_of(month, "February"), days_of(month, "February"),
+    pct(util_of(month, "March")), above_of(month, "March"), days_of(month, "March"),
+    golfers_of(month, "April"), pct(util_of(month, "April")),
+    round(min(winter_green)), round(max(winter_green)),
+    round(min(summer_green)), round(max(summer_green)),
+    cor_year(2024, "green_fee_revenue"), cor_year(2025, "green_fee_revenue")
+  ),
+  sprintf(
+    "Wednesday is %s and Tuesday is %s, against Sunday at %s. That weekday gap is %s percentage points. July to March is %s. February Wednesday is %s, and March Wednesday is %s.",
+    pct(util_of(weekday, "Wednesday")), pct(util_of(weekday, "Tuesday")),
+    pct(util_of(weekday, "Sunday")),
+    round(100 * (util_of(weekday, "Sunday") - util_of(weekday, "Wednesday"))),
+    paste(round(100 * (util_of(month, "March") - util_of(month, "July"))), "percentage points"),
+    pct(cell_util("February", "Wednesday")), pct(cell_util("March", "Wednesday"))
+  ),
+  sprintf(
+    "In 2022, 2023, and 2024 the receipt per recorded cart is %s. Carts per golfer run from %.2f to %.2f, and cart dollars per golfer run from %s to %s. In 2025 those figures are %s, %.2f, and %s. The city catalog says the cart count is derived from cart revenue. From %s through %s 2026, cart dollars per golfer are %s. Total dollars per golfer move from %s in 2024 to %s in 2025.",
+    dollars(prior_cart["per_cart", 1]),
+    min(prior_cart["carts_per_golfer", ]), max(prior_cart["carts_per_golfer", ]),
+    dollars(min(prior_cart["per_golfer", ])), dollars(max(prior_cart["per_golfer", ])),
+    dollars(carts["per_cart", "2025"]), carts["carts_per_golfer", "2025"],
+    dollars(carts["per_golfer", "2025"]),
+    format(min(y2026$date), "%B"), format(max(y2026$date), "%B"),
+    dollars(carts["per_golfer", "2026"]),
+    dollars(price_of("Total revenue", "2024")), dollars(price_of("Total revenue", "2025"))
+  ),
+  sprintf(
+    "Range dollars per golfer are %s in 2022 and %s in 2025. The correlation with daily golfers is %.2f in 2022 and %.2f in 2025.",
+    dollars(price_of("Range", "2022")), dollars(price_of("Range", "2025")),
+    cor_year(2022, "range_revenue"), cor_year(2025, "range_revenue")
+  )
+)
+hypothesis <- c(
+  "Summer fills a smaller share of a longer daylight estimate. Headcount on those open days stays near the winter months.",
+  "The winter receipt per golfer is already higher. This file cannot show whether a higher posted rate would hold the headcount.",
+  "The soft weekday is concentrated in summer. One Tuesday rate would also cover months that are already in the high band.",
+  sprintf(
+    "The cart product, the cart price, or the derivation of the cart count changed in 2025. Cart revenue correlates with golfers at %.2f to %.2f in 2022 through 2024, and at %.2f in 2025.",
+    min(cart_cor[c("2022", "2023", "2024")]),
+    max(cart_cor[c("2022", "2023", "2024")]),
+    cart_cor["2025"]
+  ),
+  "Range receipts rose while moving less closely with the golfer count. Someone who only used the range is not in that count."
+)
+investigation <- c(
+  "Look at summer afternoons, and at the mix of 9-hole and 18-hole play, before treating the whole day as unused.",
+  "Compare the rate card with the rate codes used in February, March, and April before any peak-rate test.",
+  "Review Tuesday and Wednesday one month at a time before writing a standing weekday rate.",
+  "Reconcile 2025 cart tenders and the derivation rule before treating the drop as lower demand for carts.",
+  "Ask what changed in the range price, the range volume, or who can buy range balls."
+)
+needed <- c(
+  "Tee times, hole counts, and prices paid by time of day.",
+  "Prices paid, rate code, 9-hole and 18-hole mix, and any count of golfers who could not get a time.",
+  "Tee times by hour, booking lead time, and the customer segment on those days.",
+  "The posted cart price, whether the cart is included in the green fee, and a cart count taken independently of revenue.",
+  "Range transactions separated from rounds."
+)
+titles <- c(
+  "Summer daylight share",
+  "February, March, and April",
+  "Tuesday and Wednesday",
+  "Cart receipts in 2025",
+  "Range receipts"
+)
+escape_html <- function(x) {
+  gsub("&", "&amp;", gsub("<", "&lt;", gsub(">", "&gt;", x, fixed = TRUE), fixed = TRUE), fixed = TRUE)
+}
+sections <- vapply(seq_along(titles), function(i) {
+  paste0(
+    '<div class="opportunity">',
+    "<h3>", escape_html(titles[[i]]), "</h3>",
+    "<p><strong>Evidence. </strong>", escape_html(evidence[[i]]), "</p>",
+    "<p><strong>Hypothesis. </strong>", escape_html(hypothesis[[i]]), "</p>",
+    "<p><strong>Potential investigation. </strong>", escape_html(investigation[[i]]), "</p>",
+    "<p><strong>Additional data needed. </strong>", escape_html(needed[[i]]), "</p>",
+    "</div>"
+  )
+}, character(1))
+cat(sections, sep = "\n")
+```
+
+```{r unlock, results = "asis"}
+cat(
+  '<div class="closing">',
+  "<h2>What Additional Data Would Unlock</h2>",
+  "<p>Reservation-level tee times would place open summer daylight. Booking lead times would show if February and March fill early. Prices paid, with the rate code, would separate winter and summer green fees. Cancellations, customer segments (resident, junior, 9-hole, and 18-hole), and weather would cover a full sheet, who plays, and how much of the gap follows the heat.</p>",
+  "</div>",
+  sep = "\n"
+)
+```

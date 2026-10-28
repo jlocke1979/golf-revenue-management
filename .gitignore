@@ -67,6 +67,16 @@ renv/staging/
 # Aider local state
 .aider*
 
+# Experimental ellmer transcripts
+dev/ellmer/test-output/
+
+# Private readings. Kept off the report and out of git.
+dev/private/
+
 # Accidental plot devices
 Rplots.pdf
 tests/testthat/Rplots.pdf
+
+# Rendered Dobson Ranch report. The CSVs in outputs/ stay tracked.
+outputs/*.pdf
+outputs/*.html

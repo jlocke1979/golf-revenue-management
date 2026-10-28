@@ -19,14 +19,33 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(golfops)
 sample <- dobson_operating_daily()
+october_closures <- operating_calendar(
+  date = sample$date[sample$flag_zero_rounds & sample$month == "October"],
+  status = "closed"
+)
+other_zero <- sample$date[sample$flag_zero_rounds & sample$month != "October"]
+other_zero_note <- if (length(other_zero) == 0) {
+  "Every zero-round day in this sample falls in October."
+} else {
+  paste0(
+    "The other zero-round ",
+    if (length(other_zero) == 1) "day is " else "days are ",
+    paste(format(other_zero, "%Y-%m-%d"), collapse = ", "),
+    ". Nobody played, so ",
+    if (length(other_zero) == 1) "that day is " else "those days are ",
+    "left out of the table too."
+  )
+}
 ```
+
+October days with zero rounds are course closures. The operating sample has five Octobers, 2021 through 2025, and each has 11 consecutive zero-round days. The stretch starts one day earlier each year, from October 11–21 in 2021 to October 6–16 in 2025. The city file does not mark them closed. The charts below pass those dates as closed, and the utilization table leaves out every day with no play.
 
 ## Golfers
 
 A round in this file is one golfer. Gray is the city's daylight estimate of how many golfers could play. Green is golfers who played. Purple is golfers divided by that estimate. This is not a count of tee times.
 
 ```{r golfers, fig.width = 11, fig.height = 14, fig.alt = "Each year is a row of golfer capacity, golfer demand, golfer utilization, and a daily heatmap."}
-plot_capacity_demand(sample, unit = "golfers")
+plot_capacity_demand(sample, calendar = october_closures, unit = "golfers")
 ```
 
 ## Golf slots
@@ -42,9 +61,69 @@ played <- sample[sample$rounds_played > 0, ]
 On a typical played day this sample has `r format(round(median(played$rounds_played)), big.mark = ",")` golfers and a daylight estimate of `r format(round(median(played$rounds_possible)), big.mark = ",")` golfers. That estimate is about `r format(round(median(played$rounds_possible) / 4), big.mark = ",")` foursome slots. The fewest slots for the golfers who played is about `r format(round(median(ceiling(played$rounds_played / 4))), big.mark = ",")`.
 
 ```{r slots, fig.width = 11, fig.height = 14, fig.alt = "Each year is a row of foursome slot capacity, the fewest slots that could hold the golfers, that utilization, and a daily heatmap."}
-plot_capacity_demand(sample, unit = "slots")
+plot_capacity_demand(sample, calendar = october_closures, unit = "slots")
 ```
 
 ## What the charts use
 
-Each year is one row. The utilization axis runs from 0 to 120 percent, and a cross marks a day above 120 percent. The heatmap uses the same utilization. Green is below the median played day, purple is above it, and red is above 100 percent. The light band is the median. Black is a missing date, and medium-dark gray is a zero-round day whose status is unknown. Those gray days fall in October. A typed opening time, closing time, and tee interval can count real tee times, from `course_capacity()`. A tee sheet with players per group can separate occupied slots from golfers, from `daily_utilization()`. This extract has daily golfer counts, not tee times.
+Each year is one row. The utilization axis runs from 0 to 120 percent, and a cross marks a day above 120 percent. The heatmap uses the same utilization. Green is below the median played day, purple is above it, and red is above 100 percent. The light band is the median. Black is a missing date. October closures are marked closed and sit off that scale. A zero-round day outside October stays off the scale as status unknown. A typed opening time, closing time, and tee interval can count real tee times, from `course_capacity()`. A tee sheet with players per group can separate occupied slots from golfers, from `daily_utilization()`. This extract has daily golfer counts, not tee times.
+
+## Utilization by period
+
+Utilization here is played rounds divided by the city's daylight estimate, pooled across the operating sample. It is a ratio of sums. A higher share means the daylight estimate was fuller. Golfers per day is the other column: how many people played, without dividing by the length of the day. October closures are omitted. So is any other day with no play. `r other_zero_note`
+
+The tables are sorted from the least full period to the most full. The charts keep calendar order and show each open day on its own.
+
+```{r periods, results = "hide"}
+open <- sample[sample$rounds_played > 0, ]
+weekday <- summarize_golf_rounds(open, by = "weekday", duplicates = "drop_extra")
+month <- summarize_golf_rounds(open, by = "month_of_year", duplicates = "drop_extra")
+season <- summarize_golf_rounds(open, by = "season", duplicates = "drop_extra")
+```
+
+```{r utilization-tables, echo = FALSE, results = "asis"}
+show_utilization <- function(summary, caption) {
+  summary <- summary[order(summary$utilization), , drop = FALSE]
+  shown <- data.frame(
+    Period = as.character(summary$period),
+    Days = summary$n_rows,
+    `Golfers per day` = round(summary$rounds_per_row),
+    Utilization = scales::label_percent(accuracy = 1)(summary$utilization),
+    `Days above daylight` = summary$n_above_capacity_rows,
+    check.names = FALSE
+  )
+  cat(knitr::kable(shown, align = c("l", "r", "r", "r", "r"), caption = caption), sep = "\n")
+  cat("\n\n")
+}
+show_utilization(
+  month,
+  "Month utilization on days with play. October closures are omitted. Sorted from the least full month to the most full."
+)
+show_utilization(
+  weekday,
+  "Weekday utilization on days with play. Sorted from the least full weekday to the most full."
+)
+show_utilization(
+  season,
+  "Season utilization on days with play. October closures are omitted."
+)
+```
+
+June, July, and August are the low band. May and September are the shoulder. On days the course is open, October sits with November through April in the high band. February and March are the fullest. Those two months also have the most days above the daylight estimate, so the high end is cut off by the estimate.
+
+Monday, Tuesday, and Wednesday sit a little below Thursday through Sunday. Friday is with the weekend. The gap across the week is smaller than the gap from summer to late winter.
+
+Golfers per day follows a different order. April is the busiest played day. A summer day can have as many golfers as a winter day and still leave a larger share of the daylight estimate unused, because the estimate is longer in summer. The bands above follow utilization.
+
+Share of daylight-estimated rounds is the golfers who played divided by the city's daylight estimate for that same day. The city sets the estimate from the hours between sunrise and sunset. Eighty percent means eighty of every hundred estimated rounds were played. A day above one hundred percent ran past the estimate.
+
+The box on each chart is the middle half of open days in that month or weekday. The line is the median day. Whiskers reach the furthest day still inside the usual spread of that middle half, one and a half times the height of the box. A dot is a day at least five percentage points past a whisker. The date names the furthest of those days. Days with no play are omitted, including the October closures. The extract has no tee time, so this chapter has no time-of-day chart.
+
+```{r month-utilization, fig.width = 7.2, fig.height = 5.6, fig.alt = "Box plot of the daily share of the daylight estimate by month. Winter days sit higher than summer days, and a few dates sit well outside the whiskers."}
+plot_daylight_share(open, "month_of_year")
+```
+
+```{r weekday-utilization, fig.width = 7.2, fig.height = 5.2, fig.alt = "Box plot of the daily share of the daylight estimate by weekday. Thursday through Sunday sit a little higher than Monday through Wednesday."}
+plot_daylight_share(open, "weekday")
+```
+

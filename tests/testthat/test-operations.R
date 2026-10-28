@@ -58,6 +58,39 @@ test_that("seasonal overlays mark partial years and omit the isolated 2004 day",
   expect_s3_class(plot_participation(weekly), "ggplot")
 })
 
+test_that("daylight share boxes mark days at least 5 points past the whisker", {
+  sample <- dobson_operating_daily()
+  month <- plot_daylight_share(sample, "month_of_year")
+  weekday <- plot_daylight_share(sample, "day_of_week")
+  placeholder <- plot_daylight_share(sample, "time_of_day")
+  expect_s3_class(month, "ggplot")
+  expect_s3_class(weekday, "ggplot")
+  expect_s3_class(placeholder, "ggplot")
+  expect_equal(month$labels$subtitle, "month_of_year")
+  expect_equal(weekday$labels$subtitle, "day_of_week")
+  expect_equal(placeholder$labels$subtitle, "time_of_day")
+
+  text_rows <- function(chart) {
+    layers <- Filter(function(layer) inherits(layer$geom, "GeomLabel"), chart$layers)
+    do.call(rbind, lapply(layers, function(layer) layer$data))
+  }
+  point_rows <- function(chart) {
+    layers <- Filter(function(layer) inherits(layer$geom, "GeomPoint"), chart$layers)
+    do.call(rbind, lapply(layers, function(layer) layer$data))
+  }
+  month_labels <- text_rows(month)
+  expect_true(as.Date("2025-04-28") %in% month_labels$date)
+  expect_false("August" %in% as.character(month_labels$period))
+  weekday_points <- point_rows(weekday)
+  expect_false(any(as.character(weekday_points$period) %in% c("Tuesday", "Wednesday", "Thursday")))
+  expect_true(as.Date("2025-04-28") %in% text_rows(weekday)$date)
+  expect_length(Filter(function(layer) inherits(layer$geom, "GeomBoxplot"), placeholder$layers), 0)
+  expect_error(
+    plot_daylight_share(prepare_dobson_rounds(), "month_of_year"),
+    class = "golfops_input_error"
+  )
+})
+
 test_that("course capacity counts starts inside the window and does not roll past midnight", {
   capacity <- course_capacity(
     date = as.Date(c("2024-01-05", "2024-01-06", "2024-01-07")),
