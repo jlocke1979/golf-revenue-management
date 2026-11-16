@@ -11,6 +11,8 @@ Summarizes municipal golf participation, daylight-estimated utilization, and rev
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://jlocke1979.github.io/golf-revenue-management}
+  \item \url{https://github.com/jlocke1979/golf-revenue-management}
   \item \url{https://data.mesaaz.gov/Parks-Recreation-and-Community-Facilities/Dobson-Ranch-Golf-Rounds/24g5-hb8k}
 }
 
