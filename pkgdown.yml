@@ -1,0 +1,15 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  correlations-and-relationships: correlations-and-relationships.html
+  demand-forecast: demand-forecast.html
+  dobson-ranch: dobson-ranch.html
+  dollars-per-golfer: dollars-per-golfer.html
+  operational-opportunities: operational-opportunities.html
+  rate-fences: rate-fences.html
+  revenue-and-golfers: revenue-and-golfers.html
+last_built: 2026-11-16T21:26Z
+urls:
+  reference: https://jlocke1979.github.io/golf-revenue-management/reference
+  article: https://jlocke1979.github.io/golf-revenue-management/articles

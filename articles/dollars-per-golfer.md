@@ -1,0 +1,79 @@
+# Dollars per golfer
+
+``` r
+
+library(golfops)
+sample <- dobson_operating_daily()
+prices <- revenue_per_golfer(sample)
+```
+
+Each figure is recorded revenue divided by golfers who played the
+course, on days with at least one golfer. The denominator is those
+golfers. It is not open tee times, and it does not include someone who
+only used the range.
+
+Green fees and cart rentals are the closest of these figures to an
+average amount paid. One day still mixes 9-hole and 18-hole play,
+weekday and weekend, and any discounted rate. Food and beverage is
+spending recorded per golfer. Dining is not split from alcohol. Range,
+merchandise, and club rental are facility dollars spread across every
+golfer, including golfers who bought none of them.
+
+The year’s revenue, before dividing by golfers, is in Revenue and
+golfers. RevPATR, on that page, divides by the daylight estimate of
+rounds the course could have sold.
+
+|                   | 2021\* |  2022 |  2023 |  2024 |   2025 | 2026\* |
+|:------------------|-------:|------:|------:|------:|-------:|-------:|
+| Total revenue     |  61.05 | 76.12 | 92.08 | 99.41 | 101.99 | 121.33 |
+| Green fees        |  28.63 | 29.43 | 33.31 | 33.74 |  38.94 |  53.18 |
+| Food and beverage |  14.71 | 17.25 | 21.74 | 22.44 |  26.73 |  29.22 |
+| Merchandise       |   4.10 |  4.65 |  5.86 |  5.80 |   4.25 |   5.26 |
+| Range             |   7.72 | 11.63 | 18.17 | 24.13 |  27.13 |  28.73 |
+| Cart              |   5.56 | 12.74 | 12.50 | 12.77 |   4.41 |   4.09 |
+| Club rental       |   0.33 |  0.41 |  0.49 |  0.54 |   0.54 |   0.86 |
+
+Dollars per golfer. \* 2021 is July through December, and 2026 is
+January through April. Cart revenue is blank through September 30, 2021,
+so those golfers sit in the 2021 denominator without cart dollars. The
+recorded cart rate from October 2021 through 2024 is \$16. {.table}
+
+## By type
+
+The bar is dollars per golfer. Each segment is one category. Total
+revenue is the sum of the six and is left off the stack.
+
+``` r
+
+plot_revenue_mix(sample)
+```
+
+![Stacked bars of dollars per golfer by revenue type for 2021 through
+2026. Cart shrinks in 2025 while the bar stays about as
+tall.](dollars-per-golfer_files/figure-html/price-stack-1.png)
+
+Through 2024 the bar grows, from about \$76 per golfer in 2022 to about
+\$99 in 2024. In 2025 the total barely moves, to about \$102, because
+the cart segment falls from about \$13 to about \$4 while green fees,
+food and beverage, and range grow. The 2026 bar is taller because that
+year in the extract is only January through April, the expensive months.
+
+## Share of dollars per golfer
+
+The same segments, scaled so each year is 100 percent. This is the share
+of dollars per golfer. The share of the year’s revenue is the chart
+titled “Share of annual revenue.”
+
+``` r
+
+plot_revenue_mix(sample, scale = "share")
+```
+
+![One hundred percent stacked bars showing each revenue type's share of
+dollars per golfer, 2021 through
+2026.](dollars-per-golfer_files/figure-html/price-share-1.png)
+
+Cart’s share of dollars per golfer drops in 2025 and stays small in
+early 2026. Green fees remain the largest slice. Range’s share grows
+from 2022 through 2024 and then levels off. The 2026 shares describe
+January through April only.
