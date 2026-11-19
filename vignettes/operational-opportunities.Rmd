@@ -89,7 +89,7 @@ cell_util <- function(month_name, weekday_name) {
 }
 ```
 
-This chapter collects the operating questions raised by the earlier pages. Each action below is a hypothesis to investigate. The chapter has no forecast, no price elasticity, and no revenue estimate.
+This chapter collects the operating questions raised by the earlier pages. Each action below is a hypothesis to investigate. The chapter has no forecast, no price elasticity, and no revenue estimate. The weather and elasticity vignette is a separate synthetic exercise. It does not change the figures in this chapter.
 
 Utilization is golfers divided by the city's daylight estimate. The city sets that estimate from sunrise to sunset. Golfers per day is the count of people who played. A day above one hundred percent ran past the estimate. Tee-sheet occupancy would require a tee time, and this extract has daily counts.
 

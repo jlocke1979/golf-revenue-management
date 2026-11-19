@@ -1,0 +1,6 @@
+"role","station_id","station_name","latitude","longitude","elevation_m","distance_km","variables","coordinate_note","source_url","retrieved"
+"course","dobson_ranch","Dobson Ranch Golf Course",33.3717596,-111.8696999,,,"course centroid","OpenStreetMap relation 326342 centroid, retrieved 2026-11-19","https://www.openstreetmap.org/relation/326342","2026-11-19"
+"precipitation","US1AZMR0260","MESA 4.3 SW, AZ US",33.36797,-111.862241,367.3,0.81,"PRCP","GHCND station coordinate","https://www.ncei.noaa.gov/data/global-historical-climatology-network-daily/access/US1AZMR0260.csv","2026-11-19"
+"temperature","USW00023183","PHOENIX AIRPORT, AZ US",33.4278,-112.00365,339.2,13.91,"TMIN,TMAX","GHCND station coordinate","https://www.ncei.noaa.gov/data/global-historical-climatology-network-daily/access/USW00023183.csv","2026-11-19"
+"wind","USW00023183","PHOENIX AIRPORT, AZ US",33.4278,-112.00365,339.2,13.91,"AWND","GHCND station coordinate","https://www.ncei.noaa.gov/data/global-historical-climatology-network-daily/access/USW00023183.csv","2026-11-19"
+"airport_precipitation","USW00023183","PHOENIX AIRPORT, AZ US",33.4278,-112.00365,339.2,13.91,"PRCP","GHCND station coordinate","https://www.ncei.noaa.gov/data/global-historical-climatology-network-daily/access/USW00023183.csv","2026-11-19"

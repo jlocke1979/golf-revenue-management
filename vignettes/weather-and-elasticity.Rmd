@@ -1,0 +1,241 @@
+---
+title: "Weather, playable capacity, and price elasticity"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Weather, playable capacity, and price elasticity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.2
+)
+```
+
+```{r setup}
+library(golfops)
+```
+
+The capacity vignette compares Dobson Ranch rounds with the city's daylight estimate. This page leaves that estimate in place. It joins historical weather to the same days, shows what may reduce playable capacity, and then uses synthetic rows to show what a log-log price coefficient does and does not identify.
+
+`simulate_price_volume()` still applies a volume change typed in by the user. The forecast still predicts observed rounds from weekday and month. Neither function is a price elasticity.
+
+## Weather on the operating dates
+
+Temperature and wind are Phoenix Sky Harbor, GHCND station `USW00023183`. Local precipitation is the Mesa 4.3 SW CoCoRaHS gauge, `US1AZMR0260`. The gauge does not report temperature or wind. Airport precipitation is stored beside the local gauge and is not copied into it. The files were retrieved from NCEI on 2026-11-19. This vignette reads the bundled extract.
+
+```{r weather}
+weather <- prepare_dobson_weather()
+attr(weather, "stations")
+attr(weather, "coverage")
+```
+
+```{r weather-notes}
+attr(weather, "decisions")
+```
+
+`temp_avg_c` is the average of the daily minimum and maximum. GHCND did not publish an average temperature for Sky Harbor on these dates. Units are degrees Celsius, millimeters, and meters per second. A non-blank quality flag withdraws the value. A trace is stored as zero. A multiday accumulation is not assigned to one date. Local precipitation is missing on 139 of 1,765 days, and the gap is wider in 2026. Monsoon rain is convective, so the airport total can disagree with the course on a single day.
+
+Hot days show up in the rounds, not in the capacity denominator. The daylight estimate is not reduced because the maximum was high.
+
+```{r heat, fig.alt = "Played rounds against the average of the daily minimum and maximum temperature."}
+daily <- dobson_operating_daily()
+played <- merge(
+  daily[daily$rounds_played > 0, c("date", "rounds_played")],
+  weather[, c("date", "temp_avg_c")],
+  by = "date"
+)
+ggplot2::ggplot(played, ggplot2::aes(temp_avg_c, rounds_played)) +
+  ggplot2::geom_point(alpha = 0.25, color = "#3d5c4a") +
+  ggplot2::labs(
+    x = "Average of daily minimum and maximum temperature (C)",
+    y = "Rounds played",
+    caption = "Days with at least one round. High temperature is left on the demand side. It does not reduce playable capacity."
+  )
+```
+
+## Playable capacity
+
+Theoretical capacity is the column passed in. Here that column is the city's daylight estimate. A stated loss of hours reduces it in proportion to daylight hours. Those hours are a statement in the table. A daily rain total does not produce them.
+
+```{r hours}
+stated <- data.frame(
+  date = as.Date("2024-07-01"),
+  rounds_possible = 240,
+  daylight_hours = 14,
+  unavailable_hours = 3
+)
+playable_capacity(
+  stated,
+  unavailable_hours = "unavailable_hours",
+  daylight_hours = "daylight_hours"
+)
+```
+
+Three hours out of fourteen removes 3/14 of the 240-round estimate. That proportion is the assumption. It is not a tee sheet.
+
+October zero-round stretches are the closures already used in the capacity vignette. The city file does not label them. The calendar below is the same caller-supplied label. Weather does not invent it.
+
+```{r closures}
+october <- operating_calendar(
+  date = daily$date[daily$flag_zero_rounds & daily$month == "October"],
+  status = "closed"
+)
+closed <- playable_capacity(daily, calendar = october)
+table(closed$restriction_source)
+```
+
+A precipitation threshold is a different call and a different claim. At 10 mm or more, the day is treated as fully unavailable. Lost hours stay missing. The label is `weather_assumption`, not `observed_closure`.
+
+```{r rain-scenario}
+rainy <- playable_capacity(daily, weather = weather, precip_unplayable_mm = 10)
+table(rainy$restriction_source)
+```
+
+Days the local gauge missed stay missing under that scenario. They are not filled with the airport total unless the caller names `precip_mm_airport`. High temperature is not a threshold.
+
+## A log-log coefficient is an association
+
+Enz and Canina (2016) regress log rounds on log average daily price, course characteristics, minimum temperature, precipitation, location indicators, and a year fixed effect. Their standard errors are clustered by course. The equation is on page 8 of the Cornell working paper, https://hdl.handle.net/1813/72428. The transaction file is not public. The fits below are synthetic samples with a known data-generating process. They do not re-estimate the published coefficients.
+
+`estimate_price_elasticity()` uses `lm()`. The printed standard error is the ordinary least-squares standard error. It is not a clustered standard error. Rows with a missing, zero, or negative rounds or price value are dropped because a logarithm is defined only for positive numbers. The fit reports how many rows that removes.
+
+Dobson realized green-fee yield is an average of revenue received. It is not a posted price, and it mixes whoever played that day. This vignette does not regress Dobson rounds on that yield.
+
+```{r coef-helper}
+coef_row <- function(label, fit) {
+  data.frame(
+    fit = label,
+    elasticity = round(fit$elasticity, 3),
+    ols_se = round(fit$std_error, 3),
+    conf_low = round(fit$conf_low, 3),
+    conf_high = round(fit$conf_high, 3),
+    n_used = fit$n_used,
+    pct_excluded = fit$pct_excluded,
+    stringsAsFactors = FALSE
+  )
+}
+```
+
+### The equation that generated the rows
+
+Price in this sample is independent of the demand shock. The structural elasticity is -0.8. Weekend, temperature, and precipitation enter the rounds equation and the fitted equation.
+
+```{r correct}
+correct <- simulate_elasticity_sample(
+  "correct_specification",
+  n_days = 400,
+  elasticity = -0.8,
+  seed = 457
+)
+attr(correct, "dgp")
+correct_fit <- estimate_price_elasticity(
+  correct,
+  rounds = "rounds",
+  price = "price",
+  controls = c("weekend", "temp_min_c", "precip_mm")
+)
+coef_row("correct specification", correct_fit)
+```
+
+The estimate is close to -0.8 because the sample was built from that equation. That is a check of the estimator. It is not evidence about Dobson Ranch.
+
+### Price set in anticipation of demand
+
+In the next sample the course posts a higher price when it expects more play. Weekend and temperature are part of that expectation, and so is a shock that is not returned as a column. The structural elasticity is still -0.8.
+
+```{r endogenous}
+endogenous <- simulate_elasticity_sample("endogenous_price", elasticity = -0.8, seed = 457)
+naive <- estimate_price_elasticity(endogenous, "rounds", "price")
+controlled <- estimate_price_elasticity(
+  endogenous,
+  "rounds",
+  "price",
+  controls = c("weekend", "temp_min_c")
+)
+rbind(
+  coef_row("naive log-log", naive),
+  coef_row("weekend and temperature", controlled)
+)
+```
+
+The naive coefficient sits near zero. Weekend and temperature move it toward the structural value of -0.8 and leave it well short of that value, because the unobserved piece of anticipated demand is still in the price and in the residual. The controls do not establish a causal elasticity, and they do not justify a price change.
+
+### Customer mix with constant segment prices
+
+Residents pay 28 and visitors pay 75 on every date. Segment rounds do not depend on a price term. Visitors are a larger share of play in winter, so the round-weighted average price and the total rounds can rise together.
+
+```{r mix-constant}
+constant_mix <- simulate_elasticity_sample("segment_mix", seed = 457)
+constant_daily <- aggregate_segment_rounds(constant_mix)
+mix_fit <- estimate_price_elasticity(
+  constant_daily,
+  rounds = "rounds",
+  price = "price",
+  controls = "weekend"
+)
+coef_row("aggregate average price", mix_fit)
+resident_message <- tryCatch(
+  estimate_price_elasticity(
+    constant_mix[constant_mix$segment == "resident", ],
+    rounds = "rounds",
+    price = "price"
+  ),
+  error = function(e) conditionMessage(e)
+)
+resident_message
+```
+
+The aggregate coefficient is positive. Inside the resident rows the price does not vary, so the segment fit is refused. The positive number is the winter mix. It is not a demand curve that slopes up.
+
+### The same mix, with a known negative segment slope
+
+Each segment now has modest price noise that is independent of the demand shock, and both segments are generated with elasticity -0.8. The winter shift in visitor share remains. The aggregate price is still the round-weighted average.
+
+```{r mix-varied}
+varied <- simulate_elasticity_sample(
+  "segment_mix_price_variation",
+  elasticity = -0.8,
+  seed = 457
+)
+resident_fit <- estimate_price_elasticity(
+  varied[varied$segment == "resident", ],
+  rounds = "rounds",
+  price = "price",
+  controls = c("weekend", "visitor_index")
+)
+visitor_fit <- estimate_price_elasticity(
+  varied[varied$segment == "visitor", ],
+  rounds = "rounds",
+  price = "price",
+  controls = c("weekend", "visitor_index")
+)
+varied_daily <- aggregate_segment_rounds(varied)
+aggregate_fit <- estimate_price_elasticity(
+  varied_daily,
+  rounds = "rounds",
+  price = "price",
+  controls = "weekend"
+)
+rbind(
+  coef_row("resident rows", resident_fit),
+  coef_row("visitor rows", visitor_fit),
+  coef_row("aggregate average price", aggregate_fit)
+)
+```
+
+The segment fits stay near -0.8. The aggregate fit does not. A daily operating extract that contains only total rounds and an average price is the third row, not the first two. Putting that aggregate coefficient into `simulate_price_volume()` would treat a composition pattern as a volume response. The simulator does not take an elasticity object. The volume change remains an assumption the user types in.
+
+`visitor_index` is available here because the sample was simulated by segment. A file of daily totals does not reveal it. Adding it to the aggregate regression would use a column the operating extract does not have, and it would still be a statistical control rather than a proof of causation.
+
+## What this does not settle
+
+```{r limits}
+correct_fit$limitations
+```
+
+Rounds observed at a full tee sheet are below the rounds that would have been demanded. These fits do not correct for that censoring. One synthetic course, or two customer segments on that course, is not the 80-course panel in the working paper. A positive coefficient, including the positive signs the working paper reports for parts of its own sample, is not a recommendation to raise a Dobson Ranch price.

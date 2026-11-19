@@ -99,6 +99,14 @@ operating_calendar <- function(
 #' @return A tibble with one row per date, including `tee_times` and
 #'   `player_slots`.
 #' @export
+#' @examples
+#' course_capacity(
+#'   date = as.Date("2024-01-05"),
+#'   window_start = "07:00",
+#'   window_end = "15:00",
+#'   tee_interval_minutes = 12,
+#'   players_per_start = 4
+#' )
 course_capacity <- function(
     date,
     window_start,
@@ -162,6 +170,20 @@ course_capacity <- function(
 #' @return A tibble with one row per scheduled date, including
 #'   `tee_time_occupancy` and `slot_utilization`.
 #' @export
+#' @examples
+#' capacity <- course_capacity(
+#'   date = as.Date("2024-06-01"),
+#'   window_start = "07:00",
+#'   window_end = "07:40",
+#'   tee_interval_minutes = 10,
+#'   players_per_start = 4
+#' )
+#' bookings <- data.frame(
+#'   date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01")),
+#'   tee_time = c("07:00", "07:00", "07:10"),
+#'   players = c(4, 0, 1)
+#' )
+#' daily_utilization(bookings, capacity)
 daily_utilization <- function(bookings, capacity) {
   bookings <- .tee_sheet_bookings(bookings)
   capacity <- .capacity_schedule(capacity)

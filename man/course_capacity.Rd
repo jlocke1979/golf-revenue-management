@@ -38,3 +38,12 @@ Player slots are tee times multiplied by players per start. With blocked
 rounds of zero, that product is the schedule estimate used by
 \code{\link[=apply_operating_capacity]{apply_operating_capacity()}}.
 }
+\examples{
+course_capacity(
+  date = as.Date("2024-01-05"),
+  window_start = "07:00",
+  window_end = "15:00",
+  tee_interval_minutes = 12,
+  players_per_start = 4
+)
+}

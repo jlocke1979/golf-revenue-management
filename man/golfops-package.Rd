@@ -6,7 +6,7 @@
 \alias{golfops-package}
 \title{golfops: Golf Participation and Revenue Summaries}
 \description{
-Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.
+Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. A bundled NOAA weather extract supports retrospective playable-capacity scenarios. A log-log price function reports ordinary least-squares associations, not course-clustered standard errors, and the synthetic samples are not a Dobson posted-price elasticity. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.
 }
 \seealso{
 Useful links:

@@ -87,3 +87,5 @@ plot_revenue_by_golfers(sample, year = 2025)
 ```{r year-2026, fig.alt = "2026 daily revenue against golfers, seven panels, through the last day in the extract."}
 plot_revenue_by_golfers(sample, year = 2026)
 ```
+
+Which weekdays and months fill the daylight estimate, with October closures left out, is in Capacity and utilization.

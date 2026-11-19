@@ -1,6 +1,6 @@
 Package: golfops
 Title: Golf Participation and Revenue Summaries
-Version: 0.3.0
+Version: 0.4.0
 Authors@R:
     person("Justin", "Locke", , "justinrlocke@gmail.com",
            role = c("aut", "cre"))
@@ -9,8 +9,12 @@ Description: Summarizes municipal golf participation, daylight-estimated
     charts use one documented daily sample. Revenue ratios are historical
     relationships, and tournament results are break-even baselines.
     Forecasts of observed rounds are not latent demand and not price
-    elasticities. Labeled synthetic examples cover a tournament ticket
-    series and one municipal tee sheet.
+    elasticities. A bundled NOAA weather extract supports retrospective
+    playable-capacity scenarios. A log-log price function reports ordinary
+    least-squares associations, not course-clustered standard errors, and
+    the synthetic samples are not a Dobson posted-price elasticity.
+    Labeled synthetic examples cover a tournament ticket series and one
+    municipal tee sheet.
 License: MIT + file LICENSE
 URL: https://jlocke1979.github.io/golf-revenue-management,
     https://github.com/jlocke1979/golf-revenue-management,

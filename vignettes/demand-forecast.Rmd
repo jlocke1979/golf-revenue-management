@@ -22,7 +22,7 @@ library(golfops)
 
 ## Dobson Ranch
 
-The series is the same operating sample as the Dobson Ranch vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit because their status is unknown, not because the file confirms a closure. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.
+The series is the same operating sample as the Capacity and utilization vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit. October's are course closures. The extract does not label them, and this series does not mark them closed on its own. The weekday and month utilization table is in that vignette. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.
 
 ```{r dobson}
 demand <- dobson_rounds_demand()

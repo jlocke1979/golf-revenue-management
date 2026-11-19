@@ -33,3 +33,18 @@ zero use. A group on a date that is not in the schedule is an error.
 This is not the Dobson daylight comparison. That file has no tee time and
 no players per group. Daily rounds stay on \code{\link[=utilization_calendar]{utilization_calendar()}}.
 }
+\examples{
+capacity <- course_capacity(
+  date = as.Date("2024-06-01"),
+  window_start = "07:00",
+  window_end = "07:40",
+  tee_interval_minutes = 10,
+  players_per_start = 4
+)
+bookings <- data.frame(
+  date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01")),
+  tee_time = c("07:00", "07:00", "07:10"),
+  players = c(4, 0, 1)
+)
+daily_utilization(bookings, capacity)
+}

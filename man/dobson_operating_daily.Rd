@@ -22,8 +22,9 @@ Monthly totals are not included.
 }
 \details{
 Zero-round days remain in the sample. Their status is unknown unless an
-operating calendar says otherwise. Nothing in this function invents a
-closure, a tee sheet, or the missing December day.
+operating calendar says otherwise. October zero-round days are course
+closures; this function does not mark them closed. Nothing in this function
+invents a tee sheet or the missing December day.
 }
 \examples{
 sample <- dobson_operating_daily()
