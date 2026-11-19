@@ -53,5 +53,5 @@ forecast_dobson_rounds()
 #> - The forecasts predict the observed outcome. They do not estimate latent demand on sold-out or above-capacity days.
 #> - Predictions are not capped at capacity, and days above capacity are not revised upward.
 #> - The volume scenario, if used, is an assumption supplied by the user. It is not a price elasticity.
-#> - Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch those rows are zero-round days of unknown status, not confirmed closures. A prediction on one of those dates is expected play if the day had been open.
+#> - Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch the October rows are course closures. The extract does not label them closed. A prediction on one of those dates is expected play if the day had been open.
 ```

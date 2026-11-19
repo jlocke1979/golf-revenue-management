@@ -77,3 +77,6 @@ Cart’s share of dollars per golfer drops in 2025 and stays small in
 early 2026. Green fees remain the largest slice. Range’s share grows
 from 2022 through 2024 and then levels off. The 2026 shares describe
 January through April only.
+
+Which weekdays and months fill the daylight estimate, with October
+closures left out, is in Capacity and utilization.

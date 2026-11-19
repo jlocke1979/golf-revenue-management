@@ -45,3 +45,20 @@ A tibble with one row per date, including `tee_times` and
 Player slots are tee times multiplied by players per start. With blocked
 rounds of zero, that product is the schedule estimate used by
 [`apply_operating_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/apply_operating_capacity.md).
+
+## Examples
+
+``` r
+course_capacity(
+  date = as.Date("2024-01-05"),
+  window_start = "07:00",
+  window_end = "15:00",
+  tee_interval_minutes = 12,
+  players_per_start = 4
+)
+#> # A tibble: 1 × 7
+#>   date       window_start window_end tee_interval_minutes players_per_start
+#>   <date>     <chr>        <chr>                     <dbl>             <dbl>
+#> 1 2024-01-05 07:00        15:00                        12                 4
+#> # ℹ 2 more variables: tee_times <dbl>, player_slots <dbl>
+```

@@ -7,27 +7,30 @@ library(golfops)
 
 ## Dobson Ranch
 
-The series is the same operating sample as the Dobson Ranch vignette:
-daily rows from 2021-07-01, without the isolated 2004-12-10 row and
-without a second copy of 2022-04-24. Zero-round days stay out of the fit
-because their status is unknown, not because the file confirms a
-closure. The daylight estimate is stored as capacity and is not turned
-into unmet demand. Training is through 2024-12-31. The scored holdout is
-calendar 2025. Partial 2026 is excluded from the score.
+The series is the same operating sample as the Capacity and utilization
+vignette: daily rows from 2021-07-01, without the isolated 2004-12-10
+row and without a second copy of 2022-04-24. Zero-round days stay out of
+the fit. October’s are course closures. The extract does not label them,
+and this series does not mark them closed on its own. The weekday and
+month utilization table is in that vignette. The daylight estimate is
+stored as capacity and is not turned into unmet demand. Training is
+through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is
+excluded from the score.
 
 ``` r
 
 demand <- dobson_rounds_demand()
 attr(demand, "decisions")
-#> [1] "Operating charts and the Dobson forecast use daily rows from 2021-07-01 forward."                                                     
-#> [2] "Monthly totals stay in the prepared extract and are not mixed into this sample."                                                      
-#> [3] "The isolated 2004-12-10 row stays in the prepared extract and the audit. It is excluded from operating charts."                       
-#> [4] "2022-04-24 was duplicated with identical operating values. One copy is kept."                                                         
-#> [5] "2024-12-10 is absent. It is not imputed and it is not recorded as zero rounds."                                                       
-#> [6] "A day with zero played rounds has status zero_rounds_unknown. That is not a confirmed closure and it is not unused sellable capacity."
-#> [7] "rounds_possible remains the city's daylight estimate. It is not tee-sheet inventory."                                                 
-#> [8] "Zero-round days stay in the scored series and out of the fit. Leaving them out is not a finding that the course was closed."          
-#> [9] "Forecasts store the daylight estimate as capacity. They do not add latent demand on days at or above that estimate."
+#>  [1] "Operating charts and the Dobson forecast use daily rows from 2021-07-01 forward."                                                            
+#>  [2] "Monthly totals stay in the prepared extract and are not mixed into this sample."                                                             
+#>  [3] "The isolated 2004-12-10 row stays in the prepared extract and the audit. It is excluded from operating charts."                              
+#>  [4] "2022-04-24 was duplicated with identical operating values. One copy is kept."                                                                
+#>  [5] "2024-12-10 is absent. It is not imputed and it is not recorded as zero rounds."                                                              
+#>  [6] "A day with zero played rounds has status zero_rounds_unknown until an operating calendar says otherwise. It is not unused sellable capacity."
+#>  [7] "October zero-round days are course closures. This sample does not mark them closed. The capacity vignette supplies that calendar."           
+#>  [8] "rounds_possible remains the city's daylight estimate. It is not tee-sheet inventory."                                                        
+#>  [9] "October zero-round days are course closures and stay out of the fit. The extract does not label them closed."                                
+#> [10] "Forecasts store the daylight estimate as capacity. They do not add latent demand on days at or above that estimate."
 dobson <- forecast_dobson_rounds(demand)
 dobson$comparison
 #> # A tibble: 4 × 6
@@ -66,10 +69,10 @@ regression.](demand-forecast_files/figure-html/dobson-week-1.png)
 ``` r
 
 dobson$limits
-#> [1] "The forecasts predict the observed outcome. They do not estimate latent demand on sold-out or above-capacity days."                                                                                                                                                          
-#> [2] "Predictions are not capped at capacity, and days above capacity are not revised upward."                                                                                                                                                                                     
-#> [3] "The volume scenario, if used, is an assumption supplied by the user. It is not a price elasticity."                                                                                                                                                                          
-#> [4] "Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch those rows are zero-round days of unknown status, not confirmed closures. A prediction on one of those dates is expected play if the day had been open."
+#> [1] "The forecasts predict the observed outcome. They do not estimate latent demand on sold-out or above-capacity days."                                                                                                                                                              
+#> [2] "Predictions are not capped at capacity, and days above capacity are not revised upward."                                                                                                                                                                                         
+#> [3] "The volume scenario, if used, is an assumption supplied by the user. It is not a price elasticity."                                                                                                                                                                              
+#> [4] "Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch the October rows are course closures. The extract does not label them closed. A prediction on one of those dates is expected play if the day had been open."
 ```
 
 The same two fits can be read for a chosen week. March 3–9, 2025 is

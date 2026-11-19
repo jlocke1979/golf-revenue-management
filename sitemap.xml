@@ -10,8 +10,10 @@
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/articles/operational-opportunities.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/articles/revenue-and-golfers.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/authors.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/index.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/aggregate_segment_rounds.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/apply_operating_capacity.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/apply_volume_scenario.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/audit_golf_rounds.html</loc></url>
@@ -30,6 +32,7 @@
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/dobson_rounds_demand.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/dobson_rounds_example.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/estimate_observed_activity.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/estimate_price_elasticity.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/evaluate_forecast.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/forecast_demand_model.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/forecast_dobson_rounds.html</loc></url>
@@ -43,6 +46,7 @@
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/operating_calendar.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/peoria_rate_card.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/peoria_rate_fences.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/playable_capacity.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_carts.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_golfers.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_revenue.html</loc></url>
@@ -60,12 +64,14 @@
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/plot_utilization_heatmap.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/prepare_demand.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_rounds.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_weather.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_available_round.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_golfer.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/revenue_relationships.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/review_dobson_anomalies.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/sample_tee_sheet.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/seasonal_overlay_data.html</loc></url>
+<url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/simulate_elasticity_sample.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/simulate_price_volume.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/split_chronological.html</loc></url>
 <url><loc>https://jlocke1979.github.io/golf-revenue-management/reference/summarize_golf_rounds.html</loc></url>

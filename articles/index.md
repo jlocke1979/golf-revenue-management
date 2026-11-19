@@ -16,3 +16,5 @@
   fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):
 - [Revenue and
   golfers](https://jlocke1979.github.io/golf-revenue-management/articles/revenue-and-golfers.md):
+- [Weather, playable capacity, and price
+  elasticity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):

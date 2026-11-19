@@ -2,6 +2,8 @@
 
 ## All functions
 
+- [`aggregate_segment_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/aggregate_segment_rounds.md)
+  : Round-weighted daily price from segment rows
 - [`apply_operating_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/apply_operating_capacity.md)
   : Resolve capacity and operating status for prepared daily rows
 - [`apply_volume_scenario()`](https://jlocke1979.github.io/golf-revenue-management/reference/apply_volume_scenario.md)
@@ -38,6 +40,8 @@
   : Path to the bundled Dobson Ranch example extract
 - [`estimate_observed_activity()`](https://jlocke1979.github.io/golf-revenue-management/reference/estimate_observed_activity.md)
   : Estimate Dobson rounds and green-fee revenue for specific dates
+- [`estimate_price_elasticity()`](https://jlocke1979.github.io/golf-revenue-management/reference/estimate_price_elasticity.md)
+  : Estimate a log-log price association
 - [`evaluate_forecast()`](https://jlocke1979.github.io/golf-revenue-management/reference/evaluate_forecast.md)
   : Score forecasts against observed outcomes
 - [`forecast_demand_model()`](https://jlocke1979.github.io/golf-revenue-management/reference/forecast_demand_model.md)
@@ -60,6 +64,9 @@
   : Posted prices from the Peoria rate sheet
 - [`peoria_rate_fences()`](https://jlocke1979.github.io/golf-revenue-management/reference/peoria_rate_fences.md)
   : Rate fences on the Peoria posted card
+- [`playable_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/playable_capacity.md)
+  : Playable capacity from stated time, closures, or an optional weather
+  scenario
 - [`plot_annual_carts()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_carts.md)
   : Cart rentals by year
 - [`plot_annual_golfers()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_golfers.md)
@@ -94,6 +101,8 @@
   : Prepare a demand series for a shared forecast workflow
 - [`prepare_dobson_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_rounds.md)
   : Prepare the City of Mesa Dobson Ranch rounds export
+- [`prepare_dobson_weather()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_weather.md)
+  : Historical weather for the Dobson Ranch operating window
 - [`revenue_per_available_round()`](https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_available_round.md)
   : Revenue per available round by year
 - [`revenue_per_golfer()`](https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_golfer.md)
@@ -106,6 +115,8 @@
   : Synthetic municipal tee sheet
 - [`seasonal_overlay_data()`](https://jlocke1979.github.io/golf-revenue-management/reference/seasonal_overlay_data.md)
   : January–December values by year for the operating sample
+- [`simulate_elasticity_sample()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_elasticity_sample.md)
+  : Synthetic samples with a known price elasticity
 - [`simulate_price_volume()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_price_volume.md)
   : Apply a user-specified price and volume scenario
 - [`split_chronological()`](https://jlocke1979.github.io/golf-revenue-management/reference/split_chronological.md)

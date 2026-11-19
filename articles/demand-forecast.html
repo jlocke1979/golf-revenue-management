@@ -19,7 +19,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">golfops</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,7 @@
     <li><a class="dropdown-item" href="../articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
     <li><a class="dropdown-item" href="../articles/rate-fences.html">Rate fences</a></li>
     <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
   </ul>
 </li>
       </ul>
@@ -74,25 +75,28 @@
 <div class="section level2">
 <h2 id="dobson-ranch">Dobson Ranch<a class="anchor" aria-label="anchor" href="#dobson-ranch"></a>
 </h2>
-<p>The series is the same operating sample as the Dobson Ranch vignette:
-daily rows from 2021-07-01, without the isolated 2004-12-10 row and
-without a second copy of 2022-04-24. Zero-round days stay out of the fit
-because their status is unknown, not because the file confirms a
-closure. The daylight estimate is stored as capacity and is not turned
-into unmet demand. Training is through 2024-12-31. The scored holdout is
-calendar 2025. Partial 2026 is excluded from the score.</p>
+<p>The series is the same operating sample as the Capacity and
+utilization vignette: daily rows from 2021-07-01, without the isolated
+2004-12-10 row and without a second copy of 2022-04-24. Zero-round days
+stay out of the fit. October’s are course closures. The extract does not
+label them, and this series does not mark them closed on its own. The
+weekday and month utilization table is in that vignette. The daylight
+estimate is stored as capacity and is not turned into unmet demand.
+Training is through 2024-12-31. The scored holdout is calendar 2025.
+Partial 2026 is excluded from the score.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">demand</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dobson_rounds_demand.html">dobson_rounds_demand</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">demand</span>, <span class="st">"decisions"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Operating charts and the Dobson forecast use daily rows from 2021-07-01 forward."                                                     </span></span>
-<span><span class="co">#&gt; [2] "Monthly totals stay in the prepared extract and are not mixed into this sample."                                                      </span></span>
-<span><span class="co">#&gt; [3] "The isolated 2004-12-10 row stays in the prepared extract and the audit. It is excluded from operating charts."                       </span></span>
-<span><span class="co">#&gt; [4] "2022-04-24 was duplicated with identical operating values. One copy is kept."                                                         </span></span>
-<span><span class="co">#&gt; [5] "2024-12-10 is absent. It is not imputed and it is not recorded as zero rounds."                                                       </span></span>
-<span><span class="co">#&gt; [6] "A day with zero played rounds has status zero_rounds_unknown. That is not a confirmed closure and it is not unused sellable capacity."</span></span>
-<span><span class="co">#&gt; [7] "rounds_possible remains the city's daylight estimate. It is not tee-sheet inventory."                                                 </span></span>
-<span><span class="co">#&gt; [8] "Zero-round days stay in the scored series and out of the fit. Leaving them out is not a finding that the course was closed."          </span></span>
-<span><span class="co">#&gt; [9] "Forecasts store the daylight estimate as capacity. They do not add latent demand on days at or above that estimate."</span></span>
+<span><span class="co">#&gt;  [1] "Operating charts and the Dobson forecast use daily rows from 2021-07-01 forward."                                                            </span></span>
+<span><span class="co">#&gt;  [2] "Monthly totals stay in the prepared extract and are not mixed into this sample."                                                             </span></span>
+<span><span class="co">#&gt;  [3] "The isolated 2004-12-10 row stays in the prepared extract and the audit. It is excluded from operating charts."                              </span></span>
+<span><span class="co">#&gt;  [4] "2022-04-24 was duplicated with identical operating values. One copy is kept."                                                                </span></span>
+<span><span class="co">#&gt;  [5] "2024-12-10 is absent. It is not imputed and it is not recorded as zero rounds."                                                              </span></span>
+<span><span class="co">#&gt;  [6] "A day with zero played rounds has status zero_rounds_unknown until an operating calendar says otherwise. It is not unused sellable capacity."</span></span>
+<span><span class="co">#&gt;  [7] "October zero-round days are course closures. This sample does not mark them closed. The capacity vignette supplies that calendar."           </span></span>
+<span><span class="co">#&gt;  [8] "rounds_possible remains the city's daylight estimate. It is not tee-sheet inventory."                                                        </span></span>
+<span><span class="co">#&gt;  [9] "October zero-round days are course closures and stay out of the fit. The extract does not label them closed."                                </span></span>
+<span><span class="co">#&gt; [10] "Forecasts store the daylight estimate as capacity. They do not add latent demand on days at or above that estimate."</span></span>
 <span><span class="va">dobson</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forecast_dobson_rounds.html">forecast_dobson_rounds</a></span><span class="op">(</span><span class="va">demand</span><span class="op">)</span></span>
 <span><span class="va">dobson</span><span class="op">$</span><span class="va">comparison</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
@@ -115,10 +119,10 @@ description of observed play. It is not evidence for a price change.</p>
 <p><img src="demand-forecast_files/figure-html/dobson-week-1.png" class="r-plt" alt="Weekly sums of actual 2025 rounds against the seasonal baseline and the weekday-month regression." width="672"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dobson</span><span class="op">$</span><span class="va">limits</span></span>
-<span><span class="co">#&gt; [1] "The forecasts predict the observed outcome. They do not estimate latent demand on sold-out or above-capacity days."                                                                                                                                                          </span></span>
-<span><span class="co">#&gt; [2] "Predictions are not capped at capacity, and days above capacity are not revised upward."                                                                                                                                                                                     </span></span>
-<span><span class="co">#&gt; [3] "The volume scenario, if used, is an assumption supplied by the user. It is not a price elasticity."                                                                                                                                                                          </span></span>
-<span><span class="co">#&gt; [4] "Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch those rows are zero-round days of unknown status, not confirmed closures. A prediction on one of those dates is expected play if the day had been open."</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "The forecasts predict the observed outcome. They do not estimate latent demand on sold-out or above-capacity days."                                                                                                                                                              </span></span>
+<span><span class="co">#&gt; [2] "Predictions are not capped at capacity, and days above capacity are not revised upward."                                                                                                                                                                                         </span></span>
+<span><span class="co">#&gt; [3] "The volume scenario, if used, is an assumption supplied by the user. It is not a price elasticity."                                                                                                                                                                              </span></span>
+<span><span class="co">#&gt; [4] "Rows flagged for exclusion stay in the all-rows score and are omitted from the eligible-rows score. For Dobson Ranch the October rows are course closures. The extract does not label them closed. A prediction on one of those dates is expected play if the day had been open."</span></span></code></pre></div>
 <p>The same two fits can be read for a chosen week. March 3–9, 2025 is
 inside the holdout, so the horizon is the number of days after
 2024-12-31. The band is the 10th and 90th percentile of eligible 2025

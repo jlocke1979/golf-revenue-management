@@ -10,8 +10,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Golf Participation and Revenue Summaries">
-<meta name="description" content="Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.">
-<meta property="og:description" content="Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.">
+<meta name="description" content="Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. A bundled NOAA weather extract supports retrospective playable-capacity scenarios. A log-log price function reports ordinary least-squares associations, not course-clustered standard errors, and the synthetic samples are not a Dobson posted-price elasticity. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.">
+<meta property="og:description" content="Summarizes municipal golf participation, daylight-estimated utilization, and revenue for City of Mesa Dobson Ranch. Operating charts use one documented daily sample. Revenue ratios are historical relationships, and tournament results are break-even baselines. Forecasts of observed rounds are not latent demand and not price elasticities. A bundled NOAA weather extract supports retrospective playable-capacity scenarios. A log-log price function reports ordinary least-squares associations, not course-clustered standard errors, and the synthetic samples are not a Dobson posted-price elasticity. Labeled synthetic examples cover a tournament ticket series and one municipal tee sheet.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="index.html">golfops</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
     <li><a class="dropdown-item" href="articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
     <li><a class="dropdown-item" href="articles/rate-fences.html">Rate fences</a></li>
     <li><a class="dropdown-item" href="articles/revenue-and-golfers.html">Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
   </ul>
 </li>
       </ul>
@@ -57,9 +58,9 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="golf-tee-time-pricing-and-utilization">Golf tee time pricing and utilization<a class="anchor" aria-label="anchor" href="#golf-tee-time-pricing-and-utilization"></a>
+<div class="page-header"><h1 id="golf-participation-utilization-and-revenue">Golf participation, utilization, and revenue<a class="anchor" aria-label="anchor" href="#golf-participation-utilization-and-revenue"></a>
 </h1></div>
-<p><code>golfops</code> 0.3.0 summarizes unused capacity and revenue for Dobson Ranch from the City of Mesa daily operating extract. Operating charts share one daily sample. The package prepares the file, shows utilization of the daylight estimate, summarizes revenue relationships, runs pricing scenarios whose volume changes are typed in by the user, and compares a seasonal baseline with one interpretable forecast of observed daily rounds.</p>
+<p><code>golfops</code> 0.4.0 summarizes unused capacity and revenue for Dobson Ranch from the City of Mesa daily operating extract. It is for a golf course director, an owner or operator, or a revenue analyst counseling the course. A later check can use a tee sheet once start times and players per group are available. Operating charts share one daily sample. The package prepares the file, shows utilization of the daylight estimate, summarizes revenue relationships, runs pricing scenarios whose volume changes are typed in by the user, and compares a seasonal baseline with one interpretable forecast of observed daily rounds.</p>
 <p>The extract has no tee time, posted rate, or booking timestamp. Scenarios are accounting illustrations. They are not price elasticities and not recommended tee-time prices. Forecasts predict observed rounds. They do not estimate latent demand on days at or above the daylight capacity.</p>
 <div class="section level2">
 <h2 id="why-this-dataset">Why this dataset<a class="anchor" aria-label="anchor" href="#why-this-dataset"></a>
@@ -85,7 +86,7 @@
 <li>
 <code>Round Booking Rate</code> equals rounds played divided by <code>Rounds Possible</code>. The catalog defines <code>Rounds Possible</code> from daylight, not from the tee sheet. Utilization can exceed 1.</li>
 <li>Cart revenue is blank on early rows. Where it is blank and the other five categories are present, those five already equal total revenue. A blank is not a hidden cart amount, and it should not be read as a measured zero unless the source says zero.</li>
-<li>Zero-round days still show facility revenue and cluster in October. Per-played-round yield is undefined on those days. The file does not give the reason play stopped.</li>
+<li>Zero-round days still show facility revenue and cluster in October. Those October days are course closures. The extract does not label them closed. The capacity vignette marks them closed and leaves them out of the utilization ranking. Per-played-round yield is undefined on those days.</li>
 </ul>
 <p>2022, 2023, and 2025 are complete calendar years in the daily series. 2024 is missing one day. 2021 and 2026 are partial.</p>
 </div>
@@ -119,9 +120,9 @@
 <tr>
 <td><code>plot_tee_patterns()</code></td>
 <td>
-<code><a href="reference/plot_participation.html">plot_participation()</a></code>, <code><a href="reference/plot_revenue.html">plot_revenue()</a></code>, <code><a href="reference/plot_seasonal_overlay.html">plot_seasonal_overlay()</a></code>, <code><a href="reference/plot_utilization_heatmap.html">plot_utilization_heatmap()</a></code>
+<code><a href="reference/plot_participation.html">plot_participation()</a></code>, <code><a href="reference/plot_daylight_share.html">plot_daylight_share()</a></code>, <code><a href="reference/plot_revenue.html">plot_revenue()</a></code>, <code><a href="reference/plot_seasonal_overlay.html">plot_seasonal_overlay()</a></code>, <code><a href="reference/plot_utilization_heatmap.html">plot_utilization_heatmap()</a></code>
 </td>
-<td>Delivered for weekday, week, month-of-year, and a daily utilization calendar. Not a tee-time heatmap</td>
+<td>Delivered for weekday, week, month-of-year, and a daily utilization calendar. The daylight-share charts are box plots of each open day. Time of day is an empty panel until tee times exist. Not a tee-time heatmap</td>
 </tr>
 <tr>
 <td><code>simulate_pricing()</code></td>
@@ -150,7 +151,7 @@
 <div class="section level2">
 <h2 id="worked-example">Worked example<a class="anchor" aria-label="anchor" href="#worked-example"></a>
 </h2>
-<p>The vignette <code>dobson-ranch</code> loads the bundled extract, prints the audit, and then uses the shared daily sample for seasonal overlays, a utilization heatmap, revenue ratios, the 2025 scenarios, and an illustrative tournament baseline. One scenario raises realized green-fee yield 10 percent and lowers rounds 5 percent. That 5 percent is an assumption, not a result.</p>
+<p>The vignette <code>dobson-ranch</code> loads the bundled extract and uses the shared daily sample for the capacity charts and the weekday, month, and season utilization tables. October closures are left out of those tables. The same sample is used for seasonal overlays, a utilization heatmap, revenue ratios, the 2025 scenarios, and an illustrative tournament baseline. One scenario raises realized green-fee yield 10 percent and lowers rounds 5 percent. That 5 percent is an assumption, not a result.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jlocke1979.github.io/golf-revenue-management">golfops</a></span><span class="op">)</span></span>
 <span><span class="va">rounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prepare_dobson_rounds.html">prepare_dobson_rounds</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -158,12 +159,36 @@
 <span></span>
 <span><span class="va">daily</span> <span class="op">&lt;-</span> <span class="va">rounds</span><span class="op">[</span><span class="va">rounds</span><span class="op">$</span><span class="va">grain</span> <span class="op">==</span> <span class="st">"day"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="reference/summarize_golf_rounds.html">summarize_golf_rounds</a></span><span class="op">(</span><span class="va">daily</span>, by <span class="op">=</span> <span class="st">"weekday"</span>, duplicates <span class="op">=</span> <span class="st">"drop_extra"</span><span class="op">)</span></span></code></pre></div>
-<p>From this project directory, with the package dependencies installed. RStudio supplies pandoc for the vignette. In a plain terminal, set <code>RSTUDIO_PANDOC</code> to the directory that contains RStudio’s pandoc before building vignettes.</p>
+<p>A tee sheet is a separate check. <code><a href="reference/course_capacity.html">course_capacity()</a></code> counts starts in a window the caller supplies. There is no default interval. <code><a href="reference/daily_utilization.html">daily_utilization()</a></code> compares groups on that sheet with those starts. The bundled <code>sample_tee_sheet</code> is synthetic. Dobson Ranch has no tee time, so the capacity vignette does not use these two functions for the daylight ranking.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">capacity</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/course_capacity.html">course_capacity</a></span><span class="op">(</span></span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-06-01"</span><span class="op">)</span>,</span>
+<span>  window_start <span class="op">=</span> <span class="st">"07:00"</span>,</span>
+<span>  window_end <span class="op">=</span> <span class="st">"07:40"</span>,</span>
+<span>  tee_interval_minutes <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  players_per_start <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">bookings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2024-06-01"</span>, <span class="st">"2024-06-01"</span>, <span class="st">"2024-06-01"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  tee_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"07:00"</span>, <span class="st">"07:00"</span>, <span class="st">"07:10"</span><span class="op">)</span>,</span>
+<span>  players <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/daily_utilization.html">daily_utilization</a></span><span class="op">(</span><span class="va">bookings</span>, <span class="va">capacity</span><span class="op">)</span></span></code></pre></div>
+<p>From this project directory, with the package dependencies installed. RStudio supplies pandoc for the vignette. In a plain terminal, set <code>RSTUDIO_PANDOC</code> to the directory that contains RStudio’s pandoc before building vignettes.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"dobson-ranch"</span>, package <span class="op">=</span> <span class="st">"golfops"</span><span class="op">)</span></span></code></pre></div>
 <p>The raw export lives in <code>sources/</code> and is read-only. The package reads <code>inst/extdata/dobson_ranch_golf_rounds.csv</code>, a byte copy of that CSV.</p>
+</div>
+<div class="section level2">
+<h2 id="weather-and-a-synthetic-price-association">Weather and a synthetic price association<a class="anchor" aria-label="anchor" href="#weather-and-a-synthetic-price-association"></a>
+</h2>
+<p><code><a href="reference/prepare_dobson_weather.html">prepare_dobson_weather()</a></code> reads a NOAA GHCND extract retrieved on 2026-11-19. Temperature and wind are Phoenix Sky Harbor, 13.91 km from the course centroid. Precipitation is the Mesa 4.3 SW gauge, 0.81 km away, with Sky Harbor precipitation kept in a separate column. The vignette reads the bundled file. It does not download weather.</p>
+<p><code><a href="reference/playable_capacity.html">playable_capacity()</a></code> keeps the supplied theoretical capacity. A confirmed closure, a stated unavailable fraction, or stated unavailable hours can reduce it. Hours are proportional to daylight hours and are not inferred from a daily weather total. A precipitation or wind threshold is a separate scenario and is labeled as an assumption. High temperature does not reduce capacity.</p>
+<p><code><a href="reference/estimate_price_elasticity.html">estimate_price_elasticity()</a></code> fits log rounds on log price. The standard errors are ordinary least squares from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>. They are not the course-clustered standard errors in Enz and Canina (2016). <code><a href="reference/simulate_elasticity_sample.html">simulate_elasticity_sample()</a></code> builds four synthetic samples, including two customer-mix cases. <code><a href="reference/simulate_price_volume.html">simulate_price_volume()</a></code> is unchanged and still applies a volume change supplied by the user. The forecast formula is unchanged and still refuses observed weather when the role is a forecast.</p>
+<p>Dobson Ranch still has no posted price. The elasticity vignette does not regress rounds on realized green-fee yield.</p>
+<p>Enz, Cathy A., and Linda Canina. 2016. “Competitive Pricing in the Golf Industry.” Cornell University, School of Hotel Administration. <a href="https://hdl.handle.net/1813/72428" class="external-link uri">https://hdl.handle.net/1813/72428</a>. Journal version: <em>Journal of Revenue and Pricing Management</em> 16 (2): 139–153. <a href="https://doi.org/10.1057/s41272-016-0075-8" class="external-link uri">https://doi.org/10.1057/s41272-016-0075-8</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="outside-this-version">Outside this version<a class="anchor" aria-label="anchor" href="#outside-this-version"></a>

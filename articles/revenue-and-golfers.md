@@ -117,4 +117,6 @@ concessionaire. The daily open-data file is the source for these
 categories.
 
 How those daily amounts move with the number of golfers is in
-Correlations and relationships.
+Correlations and relationships. Which weekdays and months fill the
+daylight estimate, with October closures left out, is in Capacity and
+utilization.

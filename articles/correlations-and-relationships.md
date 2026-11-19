@@ -106,3 +106,6 @@ plot_revenue_by_golfers(sample, year = 2026)
 ![2026 daily revenue against golfers, seven panels, through the last day
 in the
 extract.](correlations-and-relationships_files/figure-html/year-2026-1.png)
+
+Which weekdays and months fill the daylight estimate, with October
+closures left out, is in Capacity and utilization.

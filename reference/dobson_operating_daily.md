@@ -29,8 +29,9 @@ A `golfops_rounds` table with capacity columns from
 ## Details
 
 Zero-round days remain in the sample. Their status is unknown unless an
-operating calendar says otherwise. Nothing in this function invents a
-closure, a tee sheet, or the missing December day.
+operating calendar says otherwise. October zero-round days are course
+closures; this function does not mark them closed. Nothing in this
+function invents a tee sheet or the missing December day.
 
 ## Examples
 

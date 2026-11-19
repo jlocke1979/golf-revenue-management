@@ -2,7 +2,9 @@
 
 This chapter collects the operating questions raised by the earlier
 pages. Each action below is a hypothesis to investigate. The chapter has
-no forecast, no price elasticity, and no revenue estimate.
+no forecast, no price elasticity, and no revenue estimate. The weather
+and elasticity vignette is a separate synthetic exercise. It does not
+change the figures in this chapter.
 
 Utilization is golfers divided by the city’s daylight estimate. The city
 sets that estimate from sunrise to sunset. Golfers per day is the count

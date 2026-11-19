@@ -42,3 +42,26 @@ error.
 This is not the Dobson daylight comparison. That file has no tee time
 and no players per group. Daily rounds stay on
 [`utilization_calendar()`](https://jlocke1979.github.io/golf-revenue-management/reference/utilization_calendar.md).
+
+## Examples
+
+``` r
+capacity <- course_capacity(
+  date = as.Date("2024-06-01"),
+  window_start = "07:00",
+  window_end = "07:40",
+  tee_interval_minutes = 10,
+  players_per_start = 4
+)
+bookings <- data.frame(
+  date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01")),
+  tee_time = c("07:00", "07:00", "07:10"),
+  players = c(4, 0, 1)
+)
+daily_utilization(bookings, capacity)
+#> # A tibble: 1 × 7
+#>   date       tee_times player_slots occupied_tee_times players
+#>   <date>         <dbl>        <dbl>              <dbl>   <dbl>
+#> 1 2024-06-01         4           16                  2       5
+#> # ℹ 2 more variables: tee_time_occupancy <dbl>, slot_utilization <dbl>
+```

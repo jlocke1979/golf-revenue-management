@@ -2,10 +2,10 @@
 
 Uses
 [`dobson_operating_daily()`](https://jlocke1979.github.io/golf-revenue-management/reference/dobson_operating_daily.md).
-Zero-round days stay in the series and out of the fit because their
-status is unknown, not because the extract confirms a closure.
-`capacity` is the city's daylight estimate. Days above that estimate
-remain observed play.
+Zero-round days stay in the series and out of the fit. October's are
+course closures. The extract does not label them closed. `capacity` is
+the city's daylight estimate. Days above that estimate remain observed
+play.
 
 ## Usage
 

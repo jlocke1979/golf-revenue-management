@@ -1,12 +1,14 @@
-# Golf tee time pricing and utilization
+# Golf participation, utilization, and revenue
 
-`golfops` 0.3.0 summarizes unused capacity and revenue for Dobson Ranch
-from the City of Mesa daily operating extract. Operating charts share
-one daily sample. The package prepares the file, shows utilization of
-the daylight estimate, summarizes revenue relationships, runs pricing
-scenarios whose volume changes are typed in by the user, and compares a
-seasonal baseline with one interpretable forecast of observed daily
-rounds.
+`golfops` 0.4.0 summarizes unused capacity and revenue for Dobson Ranch
+from the City of Mesa daily operating extract. It is for a golf course
+director, an owner or operator, or a revenue analyst counseling the
+course. A later check can use a tee sheet once start times and players
+per group are available. Operating charts share one daily sample. The
+package prepares the file, shows utilization of the daylight estimate,
+summarizes revenue relationships, runs pricing scenarios whose volume
+changes are typed in by the user, and compares a seasonal baseline with
+one interpretable forecast of observed daily rounds.
 
 The extract has no tee time, posted rate, or booking timestamp.
 Scenarios are accounting illustrations. They are not price elasticities
@@ -63,8 +65,10 @@ analysis:
   blank is not a hidden cart amount, and it should not be read as a
   measured zero unless the source says zero.
 - Zero-round days still show facility revenue and cluster in October.
-  Per-played-round yield is undefined on those days. The file does not
-  give the reason play stopped.
+  Those October days are course closures. The extract does not label
+  them closed. The capacity vignette marks them closed and leaves them
+  out of the utilization ranking. Per-played-round yield is undefined on
+  those days.
 
 2022, 2023, and 2025 are complete calendar years in the daily series.
 2024 is missing one day. 2021 and 2026 are partial.
@@ -75,7 +79,7 @@ analysis:
 |----|----|----|
 | `prepare_golf_data()` | [`prepare_dobson_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_rounds.md) | Delivered for the Mesa CSV |
 | `summarize_utilization()` | [`summarize_golf_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/summarize_golf_rounds.md), [`plot_utilization_heatmap()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_utilization_heatmap.md) | Delivered at day, week, weekday, month, season, and year. Capacity is labeled as the daylight estimate unless an operating calendar supplies a better basis |
-| `plot_tee_patterns()` | [`plot_participation()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_participation.md), [`plot_revenue()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_revenue.md), [`plot_seasonal_overlay()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_seasonal_overlay.md), [`plot_utilization_heatmap()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_utilization_heatmap.md) | Delivered for weekday, week, month-of-year, and a daily utilization calendar. Not a tee-time heatmap |
+| `plot_tee_patterns()` | [`plot_participation()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_participation.md), [`plot_daylight_share()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_daylight_share.md), [`plot_revenue()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_revenue.md), [`plot_seasonal_overlay()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_seasonal_overlay.md), [`plot_utilization_heatmap()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_utilization_heatmap.md) | Delivered for weekday, week, month-of-year, and a daily utilization calendar. The daylight-share charts are box plots of each open day. Time of day is an empty panel until tee times exist. Not a tee-time heatmap |
 | `simulate_pricing()` | [`simulate_price_volume()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_price_volume.md) | Delivered with user-supplied demand assumptions |
 | `compare_course_rates()`, `compare_pass_value()` |  | Not in this version. No rate card or pass file is in the extract |
 | `estimate_event_tradeoff()` | [`tournament_breakeven()`](https://jlocke1979.github.io/golf-revenue-management/reference/tournament_breakeven.md) | A full-day or user-supplied partial-day baseline. Contribution is omitted until costs and margins are supplied. Not an estimated tradeoff and not a quote |
@@ -119,12 +123,14 @@ returned object.
 
 ## Worked example
 
-The vignette `dobson-ranch` loads the bundled extract, prints the audit,
-and then uses the shared daily sample for seasonal overlays, a
-utilization heatmap, revenue ratios, the 2025 scenarios, and an
-illustrative tournament baseline. One scenario raises realized green-fee
-yield 10 percent and lowers rounds 5 percent. That 5 percent is an
-assumption, not a result.
+The vignette `dobson-ranch` loads the bundled extract and uses the
+shared daily sample for the capacity charts and the weekday, month, and
+season utilization tables. October closures are left out of those
+tables. The same sample is used for seasonal overlays, a utilization
+heatmap, revenue ratios, the 2025 scenarios, and an illustrative
+tournament baseline. One scenario raises realized green-fee yield 10
+percent and lowers rounds 5 percent. That 5 percent is an assumption,
+not a result.
 
 ``` r
 
@@ -134,6 +140,33 @@ audit_golf_rounds(rounds)
 
 daily <- rounds[rounds$grain == "day", ]
 summarize_golf_rounds(daily, by = "weekday", duplicates = "drop_extra")
+```
+
+A tee sheet is a separate check.
+[`course_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/course_capacity.md)
+counts starts in a window the caller supplies. There is no default
+interval.
+[`daily_utilization()`](https://jlocke1979.github.io/golf-revenue-management/reference/daily_utilization.md)
+compares groups on that sheet with those starts. The bundled
+`sample_tee_sheet` is synthetic. Dobson Ranch has no tee time, so the
+capacity vignette does not use these two functions for the daylight
+ranking.
+
+``` r
+
+capacity <- course_capacity(
+  date = as.Date("2024-06-01"),
+  window_start = "07:00",
+  window_end = "07:40",
+  tee_interval_minutes = 10,
+  players_per_start = 4
+)
+bookings <- data.frame(
+  date = as.Date(c("2024-06-01", "2024-06-01", "2024-06-01")),
+  tee_time = c("07:00", "07:00", "07:10"),
+  players = c(4, 0, 1)
+)
+daily_utilization(bookings, capacity)
 ```
 
 From this project directory, with the package dependencies installed.
@@ -151,6 +184,43 @@ vignette("dobson-ranch", package = "golfops")
 The raw export lives in `sources/` and is read-only. The package reads
 `inst/extdata/dobson_ranch_golf_rounds.csv`, a byte copy of that CSV.
 
+## Weather and a synthetic price association
+
+[`prepare_dobson_weather()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_weather.md)
+reads a NOAA GHCND extract retrieved on 2026-11-19. Temperature and wind
+are Phoenix Sky Harbor, 13.91 km from the course centroid. Precipitation
+is the Mesa 4.3 SW gauge, 0.81 km away, with Sky Harbor precipitation
+kept in a separate column. The vignette reads the bundled file. It does
+not download weather.
+
+[`playable_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/playable_capacity.md)
+keeps the supplied theoretical capacity. A confirmed closure, a stated
+unavailable fraction, or stated unavailable hours can reduce it. Hours
+are proportional to daylight hours and are not inferred from a daily
+weather total. A precipitation or wind threshold is a separate scenario
+and is labeled as an assumption. High temperature does not reduce
+capacity.
+
+[`estimate_price_elasticity()`](https://jlocke1979.github.io/golf-revenue-management/reference/estimate_price_elasticity.md)
+fits log rounds on log price. The standard errors are ordinary least
+squares from [`lm()`](https://rdrr.io/r/stats/lm.html). They are not the
+course-clustered standard errors in Enz and Canina (2016).
+[`simulate_elasticity_sample()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_elasticity_sample.md)
+builds four synthetic samples, including two customer-mix cases.
+[`simulate_price_volume()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_price_volume.md)
+is unchanged and still applies a volume change supplied by the user. The
+forecast formula is unchanged and still refuses observed weather when
+the role is a forecast.
+
+Dobson Ranch still has no posted price. The elasticity vignette does not
+regress rounds on realized green-fee yield.
+
+Enz, Cathy A., and Linda Canina. 2016. “Competitive Pricing in the Golf
+Industry.” Cornell University, School of Hotel Administration.
+<https://hdl.handle.net/1813/72428>. Journal version: *Journal of
+Revenue and Pricing Management* 16 (2): 139–153.
+<https://doi.org/10.1057/s41272-016-0075-8>.
+
 ## Outside this version
 
 Country-club equity, cart GPS, and a live scoring app are outside this
@@ -164,6 +234,8 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
 
 ## All functions
 
+- [`aggregate_segment_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/aggregate_segment_rounds.md)
+  : Round-weighted daily price from segment rows
 - [`apply_operating_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/apply_operating_capacity.md)
   : Resolve capacity and operating status for prepared daily rows
 - [`apply_volume_scenario()`](https://jlocke1979.github.io/golf-revenue-management/reference/apply_volume_scenario.md)
@@ -200,6 +272,8 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
   : Path to the bundled Dobson Ranch example extract
 - [`estimate_observed_activity()`](https://jlocke1979.github.io/golf-revenue-management/reference/estimate_observed_activity.md)
   : Estimate Dobson rounds and green-fee revenue for specific dates
+- [`estimate_price_elasticity()`](https://jlocke1979.github.io/golf-revenue-management/reference/estimate_price_elasticity.md)
+  : Estimate a log-log price association
 - [`evaluate_forecast()`](https://jlocke1979.github.io/golf-revenue-management/reference/evaluate_forecast.md)
   : Score forecasts against observed outcomes
 - [`forecast_demand_model()`](https://jlocke1979.github.io/golf-revenue-management/reference/forecast_demand_model.md)
@@ -222,6 +296,9 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
   : Posted prices from the Peoria rate sheet
 - [`peoria_rate_fences()`](https://jlocke1979.github.io/golf-revenue-management/reference/peoria_rate_fences.md)
   : Rate fences on the Peoria posted card
+- [`playable_capacity()`](https://jlocke1979.github.io/golf-revenue-management/reference/playable_capacity.md)
+  : Playable capacity from stated time, closures, or an optional weather
+  scenario
 - [`plot_annual_carts()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_carts.md)
   : Cart rentals by year
 - [`plot_annual_golfers()`](https://jlocke1979.github.io/golf-revenue-management/reference/plot_annual_golfers.md)
@@ -256,6 +333,8 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
   : Prepare a demand series for a shared forecast workflow
 - [`prepare_dobson_rounds()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_rounds.md)
   : Prepare the City of Mesa Dobson Ranch rounds export
+- [`prepare_dobson_weather()`](https://jlocke1979.github.io/golf-revenue-management/reference/prepare_dobson_weather.md)
+  : Historical weather for the Dobson Ranch operating window
 - [`revenue_per_available_round()`](https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_available_round.md)
   : Revenue per available round by year
 - [`revenue_per_golfer()`](https://jlocke1979.github.io/golf-revenue-management/reference/revenue_per_golfer.md)
@@ -268,6 +347,8 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
   : Synthetic municipal tee sheet
 - [`seasonal_overlay_data()`](https://jlocke1979.github.io/golf-revenue-management/reference/seasonal_overlay_data.md)
   : January–December values by year for the operating sample
+- [`simulate_elasticity_sample()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_elasticity_sample.md)
+  : Synthetic samples with a known price elasticity
 - [`simulate_price_volume()`](https://jlocke1979.github.io/golf-revenue-management/reference/simulate_price_volume.md)
   : Apply a user-specified price and volume scenario
 - [`split_chronological()`](https://jlocke1979.github.io/golf-revenue-management/reference/split_chronological.md)
@@ -299,3 +380,5 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
   fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):
 - [Revenue and
   golfers](https://jlocke1979.github.io/golf-revenue-management/articles/revenue-and-golfers.md):
+- [Weather, playable capacity, and price
+  elasticity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):
