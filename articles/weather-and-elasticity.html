@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Weather, playable capacity, and price elasticity • golfops</title>
+<title>7. Weather and playable capacity • golfops</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Weather, playable capacity, and price elasticity">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="7. Weather and playable capacity">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,16 +30,16 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">Correlations and relationships</a></li>
-    <li><a class="dropdown-item" href="../articles/demand-forecast.html">Forecasting observed demand</a></li>
-    <li><a class="dropdown-item" href="../articles/dobson-ranch.html">Capacity and utilization</a></li>
-    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">Dollars per golfer</a></li>
-    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
-    <li><a class="dropdown-item" href="../articles/rate-fences.html">Rate fences</a></li>
-    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">Revenue and golfers</a></li>
-    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/dobson-ranch.html">1. Capacity and utilization</a></li>
+    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">2. Heatmap: Month and Days</a></li>
+    <li><a class="dropdown-item" href="../articles/demand-forecast.html">3. Forecasting observed demand</a></li>
+    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">4. Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">5. Yield per round</a></li>
+    <li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">6. Correlation: Daily Rounds Played vs Daily Revenues</a></li>
+    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">7. Weather and playable capacity</a></li>
+    <li><a class="dropdown-item" href="../articles/rate-fences.html">8. Rate fences</a></li>
   </ul>
 </li>
       </ul>
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Weather, playable capacity, and price elasticity</h1>
+      <h1>7. Weather and playable capacity</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/jlocke1979/golf-revenue-management/blob/main/vignettes/weather-and-elasticity.Rmd" class="external-link"><code>vignettes/weather-and-elasticity.Rmd</code></a></small>
@@ -73,10 +73,11 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jlocke1979.github.io/golf-revenue-management">golfops</a></span><span class="op">)</span></span></code></pre></div>
 <p>The capacity vignette compares Dobson Ranch rounds with the city’s
-daylight estimate. This page leaves that estimate in place. It joins
-historical weather to the same days, shows what may reduce playable
-capacity, and then uses synthetic rows to show what a log-log price
-coefficient does and does not identify.</p>
+daylight estimate. This page leaves that estimate in place and joins
+historical weather to the same days. The weather charts are associations
+in the observed file. A later section uses synthetic rows to show what a
+log-log price coefficient does and does not identify. Those rows are not
+Dobson Ranch.</p>
 <p><code><a href="../reference/simulate_price_volume.html">simulate_price_volume()</a></code> still applies a volume change
 typed in by the user. The forecast still predicts observed rounds from
 weekday and month. Neither function is a price elasticity.</p>
@@ -136,22 +137,170 @@ precipitation is missing on 139 of 1,765 days, and the gap is wider in
 2026. Monsoon rain is convective, so the airport total can disagree with
 the course on a single day.</p>
 <p>Hot days show up in the rounds, not in the capacity denominator. The
-daylight estimate is not reduced because the maximum was high.</p>
+daylight estimate is not reduced because the maximum was high. The file
+has average wind speed and no wind gust. It has no snowfall column.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">daily</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dobson_operating_daily.html">dobson_operating_daily</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">played</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span></span>
-<span>  <span class="va">daily</span><span class="op">[</span><span class="va">daily</span><span class="op">$</span><span class="va">rounds_played</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"rounds_played"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>  <span class="va">weather</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"temp_avg_c"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  <span class="va">daily</span><span class="op">[</span><span class="va">daily</span><span class="op">$</span><span class="va">rounds_played</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"date"</span>, <span class="st">"rounds_played"</span>, <span class="st">"month"</span>, <span class="st">"weekday"</span>, <span class="st">"calendar_year"</span></span>
+<span>  <span class="op">)</span><span class="op">]</span>,</span>
+<span>  <span class="va">weather</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"date"</span>, <span class="st">"temp_avg_c"</span>, <span class="st">"temp_max_c"</span>, <span class="st">"precip_mm"</span>, <span class="st">"precip_trace"</span>,</span>
+<span>    <span class="st">"precip_missing"</span>, <span class="st">"wind_speed_ms"</span>, <span class="st">"wind_missing"</span></span>
+<span>  <span class="op">)</span><span class="op">]</span>,</span>
 <span>  by <span class="op">=</span> <span class="st">"date"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">played</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">temp_avg_c</span>, <span class="va">rounds_played</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">played</span><span class="op">$</span><span class="va">weekend</span> <span class="op">&lt;-</span> <span class="va">played</span><span class="op">$</span><span class="va">weekday</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Saturday"</span>, <span class="st">"Sunday"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">played</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">temp_avg_c</span>, <span class="va">rounds_played</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="st">"#3d5c4a"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="st">"Average of daily minimum and maximum temperature (C)"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Rounds played"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Days with at least one round. High temperature is left on the demand side. It does not reduce playable capacity."</span></span>
+<span>    caption <span class="op">=</span> <span class="st">"Days with at least one round. The cloud is nearly flat. High temperature does not reduce playable capacity."</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="weather-and-elasticity_files/figure-html/heat-1.png" class="r-plt" alt="Played rounds against the average of the daily minimum and maximum temperature." width="672"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">temp_cor</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">played</span><span class="op">$</span><span class="va">temp_avg_c</span>, <span class="va">played</span><span class="op">$</span><span class="va">rounds_played</span><span class="op">)</span></span>
+<span><span class="va">temp_fit</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>  <span class="va">rounds_played</span> <span class="op">~</span> <span class="va">temp_avg_c</span> <span class="op">+</span> <span class="va">month</span> <span class="op">+</span> <span class="va">weekend</span> <span class="op">+</span> <span class="va">calendar_year</span>,</span>
+<span>  <span class="va">played</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">played</span><span class="op">$</span><span class="va">temp_sq</span> <span class="op">&lt;-</span> <span class="va">played</span><span class="op">$</span><span class="va">temp_avg_c</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="va">temp_curve</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>  <span class="va">rounds_played</span> <span class="op">~</span> <span class="va">temp_avg_c</span> <span class="op">+</span> <span class="va">temp_sq</span> <span class="op">+</span> <span class="va">month</span> <span class="op">+</span> <span class="va">weekend</span> <span class="op">+</span> <span class="va">calendar_year</span>,</span>
+<span>  <span class="va">played</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">played</span><span class="op">$</span><span class="va">hot</span> <span class="op">&lt;-</span> <span class="va">played</span><span class="op">$</span><span class="va">temp_max_c</span> <span class="op">&gt;=</span> <span class="fl">40</span></span>
+<span><span class="va">hot_fit</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>  <span class="va">rounds_played</span> <span class="op">~</span> <span class="va">hot</span> <span class="op">+</span> <span class="va">month</span> <span class="op">+</span> <span class="va">weekend</span> <span class="op">+</span> <span class="va">calendar_year</span>,</span>
+<span>  <span class="va">played</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">temp_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  contrast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Raw correlation, average temperature and rounds"</span>,</span>
+<span>    <span class="st">"Rounds per degree C, after month, weekend, and a linear year"</span>,</span>
+<span>    <span class="st">"Days with a maximum of 40 C or more, same controls"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="va">temp_cor</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">temp_fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"temp_avg_c"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">hot_fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"hotTRUE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  std_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="cn">NA_real_</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">temp_fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"temp_avg_c"</span>, <span class="st">"Std. Error"</span><span class="op">]</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">hot_fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"hotTRUE"</span>, <span class="st">"Std. Error"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">played</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">played</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">played</span><span class="op">$</span><span class="va">hot</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">temp_rows</span></span>
+<span><span class="co">#&gt;                                                       contrast    estimate</span></span>
+<span><span class="co">#&gt; 1              Raw correlation, average temperature and rounds   0.0603154</span></span>
+<span><span class="co">#&gt; 2 Rounds per degree C, after month, weekend, and a linear year   0.3939335</span></span>
+<span><span class="co">#&gt; 3           Days with a maximum of 40 C or more, same controls -14.3765945</span></span>
+<span><span class="co">#&gt;   std_error    n</span></span>
+<span><span class="co">#&gt; 1        NA 1708</span></span>
+<span><span class="co">#&gt; 2 0.3477413 1708</span></span>
+<span><span class="co">#&gt; 3 4.1096905  438</span></span></code></pre></div>
+<p>The raw correlation is about 0.06. A straight line, after month,
+weekend, and a linear year, is about 0.4 rounds per degree. Adding a
+squared term raises the fit’s R-squared from 0.265 to 0.290. Days whose
+maximum reaches 40 C are common in this file, 438 played days, and those
+days have about 14 fewer rounds after the same calendar controls. That
+is an association. The daily average does not say whether the heat fell
+during playing hours, and it is not a change in Rounds Possible.</p>
+</div>
+<div class="section level2">
+<h2 id="rainfall-and-rounds">Rainfall and rounds<a class="anchor" aria-label="anchor" href="#rainfall-and-rounds"></a>
+</h2>
+<p>Local precipitation is missing on 137 of the 1,708 played days,
+including much of 2026. Traces are stored as zero and counted on their
+own. A multiday accumulation is not assigned to one date. The bars use
+the days the local gauge reported.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rain</span> <span class="op">&lt;-</span> <span class="va">played</span><span class="op">[</span><span class="op">!</span><span class="va">played</span><span class="op">$</span><span class="va">precip_missing</span>, <span class="op">]</span></span>
+<span><span class="va">rain</span><span class="op">$</span><span class="va">category</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span></span>
+<span>  <span class="va">rain</span><span class="op">$</span><span class="va">precip_trace</span>, <span class="st">"Trace"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">rain</span><span class="op">$</span><span class="va">precip_mm</span> <span class="op">==</span> <span class="fl">0</span>, <span class="st">"None"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">rain</span><span class="op">$</span><span class="va">precip_mm</span> <span class="op">&lt;</span> <span class="fl">1</span>, <span class="st">"Under 1 mm"</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">rain</span><span class="op">$</span><span class="va">precip_mm</span> <span class="op">&lt;</span> <span class="fl">5</span>, <span class="st">"1 to under 5 mm"</span>, <span class="st">"5 mm or more"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rain</span><span class="op">$</span><span class="va">category</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>  <span class="va">rain</span><span class="op">$</span><span class="va">category</span>,</span>
+<span>  levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"None"</span>, <span class="st">"Trace"</span>, <span class="st">"Under 1 mm"</span>, <span class="st">"1 to under 5 mm"</span>, <span class="st">"5 mm or more"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rain_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">rain</span>, <span class="va">rain</span><span class="op">$</span><span class="va">category</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">block</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    category <span class="op">=</span> <span class="va">block</span><span class="op">$</span><span class="va">category</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>    n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">block</span><span class="op">)</span>,</span>
+<span>    mean_rounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">block</span><span class="op">$</span><span class="va">rounds_played</span><span class="op">)</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rain_summary</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"n = "</span>, <span class="va">rain_summary</span><span class="op">$</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rain_summary</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">category</span>, <span class="va">mean_rounds</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#3d5c4a"</span>, width <span class="op">=</span> <span class="fl">0.72</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">label</span><span class="op">)</span>,</span>
+<span>    vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.4</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">3.2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Local precipitation"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Mean rounds played"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Played days with a local observation. A daily total is not rain during the tee sheet. Means are not adjusted for season or weekday."</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    plot.background <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"white"</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>    plot.caption <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span>, colour <span class="op">=</span> <span class="st">"grey30"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="weather-and-elasticity_files/figure-html/rain-1.png" class="r-plt" alt="Mean rounds on played days by local precipitation category, with the number of days on each bar." width="691.2"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rain</span><span class="op">$</span><span class="va">wet</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="va">rain</span><span class="op">$</span><span class="va">precip_trace</span> <span class="op">&amp;</span> <span class="va">rain</span><span class="op">$</span><span class="va">precip_mm</span> <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span><span class="va">rain</span><span class="op">$</span><span class="va">heavy</span> <span class="op">&lt;-</span> <span class="va">rain</span><span class="op">$</span><span class="va">precip_mm</span> <span class="op">&gt;=</span> <span class="fl">5</span></span>
+<span><span class="va">wet_fit</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>  <span class="va">rounds_played</span> <span class="op">~</span> <span class="va">wet</span> <span class="op">+</span> <span class="va">month</span> <span class="op">+</span> <span class="va">weekend</span> <span class="op">+</span> <span class="va">calendar_year</span>,</span>
+<span>  <span class="va">rain</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">heavy_fit</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span></span>
+<span>  <span class="va">rounds_played</span> <span class="op">~</span> <span class="va">heavy</span> <span class="op">+</span> <span class="va">month</span> <span class="op">+</span> <span class="va">weekend</span> <span class="op">+</span> <span class="va">calendar_year</span>,</span>
+<span>  <span class="va">rain</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rain_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  contrast <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Wet day, more than a trace"</span>,</span>
+<span>    <span class="st">"5 mm or more"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  rounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">wet_fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"wetTRUE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">heavy_fit</span><span class="op">)</span><span class="op">[[</span><span class="st">"heavyTRUE"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  std_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">wet_fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"wetTRUE"</span>, <span class="st">"Std. Error"</span><span class="op">]</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">heavy_fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"heavyTRUE"</span>, <span class="st">"Std. Error"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  n_days <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">rain</span><span class="op">$</span><span class="va">wet</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">rain</span><span class="op">$</span><span class="va">heavy</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  n_compared <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rain</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rain</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">rain_rows</span></span>
+<span><span class="co">#&gt;                     contrast    rounds std_error n_days n_compared</span></span>
+<span><span class="co">#&gt; 1 Wet day, more than a trace -21.59905  4.111951    149       1571</span></span>
+<span><span class="co">#&gt; 2               5 mm or more -36.16768  6.778599     50       1571</span></span></code></pre></div>
+<p>The raw bars are not the whole comparison. After month, weekend, and
+a linear year, a wet day is associated with about -22 rounds and a day
+of 5 mm or more with about -36. The heavier bin has 50 played days. Both
+figures are associations. A storm overnight and a storm at noon are the
+same daily total in this file.</p>
+<p>Average wind, in meters per second, has the same kind of association
+and a weaker chart. After month, weekend, and a linear year, the
+coefficient is about -5.0 rounds per meter per second, on 1,706 played
+days. Only 15 of those days reach 6 m/s. Gusts are not in the extract,
+so this page does not add a wind chart.</p>
 </div>
 <div class="section level2">
 <h2 id="playable-capacity">Playable capacity<a class="anchor" aria-label="anchor" href="#playable-capacity"></a>
@@ -160,7 +309,7 @@ daylight estimate is not reduced because the maximum was high.</p>
 city’s daylight estimate. A stated loss of hours reduces it in
 proportion to daylight hours. Those hours are a statement in the table.
 A daily rain total does not produce them.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-07-01"</span><span class="op">)</span>,</span>
 <span>  rounds_possible <span class="op">=</span> <span class="fl">240</span>,</span>
@@ -186,24 +335,35 @@ A daily rain total does not produce them.</p>
 <span><span class="co">#&gt; <span style="color: #949494;">#   restriction_source &lt;chr&gt;, weather_assumption_met &lt;lgl&gt;</span></span></span></code></pre></div>
 <p>Three hours out of fourteen removes 3/14 of the 240-round estimate.
 That proportion is the assumption. It is not a tee sheet.</p>
-<p>October zero-round stretches are the closures already used in the
-capacity vignette. The city file does not label them. The calendar below
-is the same caller-supplied label. Weather does not invent it.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">october</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/operating_calendar.html">operating_calendar</a></span><span class="op">(</span></span>
-<span>  date <span class="op">=</span> <span class="va">daily</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">daily</span><span class="op">$</span><span class="va">flag_zero_rounds</span> <span class="op">&amp;</span> <span class="va">daily</span><span class="op">$</span><span class="va">month</span> <span class="op">==</span> <span class="st">"October"</span><span class="op">]</span>,</span>
-<span>  status <span class="op">=</span> <span class="st">"closed"</span></span>
+<p>A caller can mark a day closed. That label sets playable capacity to
+zero and records <code>observed_closure</code>. The label is the
+caller’s statement. The Dobson extract does not provide one. Earlier
+drafts of this vignette passed the October zero-round dates in as that
+statement. This page no longer does. Those dates stay zero-round days of
+unknown status, and this example uses the one-day table above rather
+than the Dobson history.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">marked</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/playable_capacity.html">playable_capacity</a></span><span class="op">(</span></span>
+<span>  <span class="va">stated</span>,</span>
+<span>  calendar <span class="op">=</span> <span class="fu"><a href="../reference/operating_calendar.html">operating_calendar</a></span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-07-01"</span><span class="op">)</span>, status <span class="op">=</span> <span class="st">"closed"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">closed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/playable_capacity.html">playable_capacity</a></span><span class="op">(</span><span class="va">daily</span>, calendar <span class="op">=</span> <span class="va">october</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">closed</span><span class="op">$</span><span class="va">restriction_source</span><span class="op">)</span></span>
+<span><span class="va">marked</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"playable_capacity"</span>, <span class="st">"restriction_source"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Playable capacity</span></span>
+<span><span class="co">#&gt; - theoretical_capacity is the capacity column passed into this function. course_capacity() and rounds_possible are not modified.</span></span>
+<span><span class="co">#&gt; - High temperature does not reduce playable capacity. Temperature can be compared with rounds when the question is demand.</span></span>
+<span><span class="co">#&gt; - Unavailable hours reduce theoretical capacity in proportion to daylight hours. The hours are a statement in the table. They are not calculated from precipitation, wind, or temperature.</span></span>
+<span><span class="co">#&gt; - A stated fraction is applied as given. It is not inferred from a daily weather total.</span></span>
+<span><span class="co">#&gt; - A calendar status of closed sets playable capacity to zero. That label is the caller's observed closure.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;             none observed_closure </span></span>
-<span><span class="co">#&gt;             1709               55</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 3</span></span></span>
+<span><span class="co">#&gt;   date       playable_capacity restriction_source</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-07-01                 0 observed_closure</span></span></code></pre></div>
 <p>A precipitation threshold is a different call and a different claim.
 At 10 mm or more, the day is treated as fully unavailable. Lost hours
 stay missing. The label is <code>weather_assumption</code>, not
 <code>observed_closure</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rainy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/playable_capacity.html">playable_capacity</a></span><span class="op">(</span><span class="va">daily</span>, weather <span class="op">=</span> <span class="va">weather</span>, precip_unplayable_mm <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">rainy</span><span class="op">$</span><span class="va">restriction_source</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -214,8 +374,17 @@ are not filled with the airport total unless the caller names
 <code>precip_mm_airport</code>. High temperature is not a threshold.</p>
 </div>
 <div class="section level2">
-<h2 id="a-log-log-coefficient-is-an-association">A log-log coefficient is an association<a class="anchor" aria-label="anchor" href="#a-log-log-coefficient-is-an-association"></a>
+<h2 id="synthetic-price-elasticity">Synthetic price elasticity<a class="anchor" aria-label="anchor" href="#synthetic-price-elasticity"></a>
 </h2>
+<p>The weather sections above use the Dobson operating days and the
+bundled GHCND extract. Everything from here through the end of the page
+is generated. The samples are not Dobson Ranch, not the weather file,
+and not a posted Dobson rate. A coefficient in this section is a check
+of the estimator against a known equation. It is not an estimate for the
+course.</p>
+<div class="section level3">
+<h3 id="a-log-log-coefficient-is-an-association">A log-log coefficient is an association<a class="anchor" aria-label="anchor" href="#a-log-log-coefficient-is-an-association"></a>
+</h3>
 <p>Enz and Canina (2016) regress log rounds on log average daily price,
 course characteristics, minimum temperature, precipitation, location
 indicators, and a year fixed effect. Their standard errors are clustered
@@ -232,7 +401,7 @@ removes.</p>
 <p>Dobson realized green-fee yield is an average of revenue received. It
 is not a posted price, and it mixes whoever played that day. This
 vignette does not regress Dobson rounds on that yield.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coef_row</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">label</span>, <span class="va">fit</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>    fit <span class="op">=</span> <span class="va">label</span>,</span>
@@ -245,13 +414,14 @@ vignette does not regress Dobson rounds on that yield.</p>
 <span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="the-equation-that-generated-the-rows">The equation that generated the rows<a class="anchor" aria-label="anchor" href="#the-equation-that-generated-the-rows"></a>
 </h3>
 <p>Price in this sample is independent of the demand shock. The
 structural elasticity is -0.8. Weekend, temperature, and precipitation
 enter the rounds equation and the fitted equation.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_elasticity_sample.html">simulate_elasticity_sample</a></span><span class="op">(</span></span>
 <span>  <span class="st">"correct_specification"</span>,</span>
 <span>  n_days <span class="op">=</span> <span class="fl">400</span>,</span>
@@ -284,7 +454,7 @@ Dobson Ranch.</p>
 more play. Weekend and temperature are part of that expectation, and so
 is a shock that is not returned as a column. The structural elasticity
 is still -0.8.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">endogenous</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_elasticity_sample.html">simulate_elasticity_sample</a></span><span class="op">(</span><span class="st">"endogenous_price"</span>, elasticity <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>, seed <span class="op">=</span> <span class="fl">457</span><span class="op">)</span></span>
 <span><span class="va">naive</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_price_elasticity.html">estimate_price_elasticity</a></span><span class="op">(</span><span class="va">endogenous</span>, <span class="st">"rounds"</span>, <span class="st">"price"</span><span class="op">)</span></span>
 <span><span class="va">controlled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_price_elasticity.html">estimate_price_elasticity</a></span><span class="op">(</span></span>
@@ -316,7 +486,7 @@ elasticity, and they do not justify a price change.</p>
 not depend on a price term. Visitors are a larger share of play in
 winter, so the round-weighted average price and the total rounds can
 rise together.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">constant_mix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_elasticity_sample.html">simulate_elasticity_sample</a></span><span class="op">(</span><span class="st">"segment_mix"</span>, seed <span class="op">=</span> <span class="fl">457</span><span class="op">)</span></span>
 <span><span class="va">constant_daily</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_segment_rounds.html">aggregate_segment_rounds</a></span><span class="op">(</span><span class="va">constant_mix</span><span class="op">)</span></span>
 <span><span class="va">mix_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_price_elasticity.html">estimate_price_elasticity</a></span><span class="op">(</span></span>
@@ -351,7 +521,7 @@ is the winter mix. It is not a demand curve that slopes up.</p>
 demand shock, and both segments are generated with elasticity -0.8. The
 winter shift in visitor share remains. The aggregate price is still the
 round-weighted average.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">varied</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_elasticity_sample.html">simulate_elasticity_sample</a></span><span class="op">(</span></span>
 <span>  <span class="st">"segment_mix_price_variation"</span>,</span>
 <span>  elasticity <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>,</span>
@@ -405,7 +575,7 @@ proof of causation.</p>
 <div class="section level2">
 <h2 id="what-this-does-not-settle">What this does not settle<a class="anchor" aria-label="anchor" href="#what-this-does-not-settle"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">correct_fit</span><span class="op">$</span><span class="va">limitations</span></span>
 <span><span class="co">#&gt; [1] "This is a methodological analogue of Enz and Canina (2016), working paper page 8. It does not re-estimate their published coefficients. Their transaction data are not public."                                                                     </span></span>
 <span><span class="co">#&gt; [2] "The published equation uses log rounds, log average daily price, course characteristics, minimum temperature in degrees Fahrenheit, precipitation in inches, location indicators, and a year fixed effect."                                         </span></span>

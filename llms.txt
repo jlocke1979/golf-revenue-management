@@ -65,10 +65,11 @@ analysis:
   blank is not a hidden cart amount, and it should not be read as a
   measured zero unless the source says zero.
 - Zero-round days still show facility revenue and cluster in October.
-  Those October days are course closures. The extract does not label
-  them closed. The capacity vignette marks them closed and leaves them
-  out of the utilization ranking. Per-played-round yield is undefined on
-  those days.
+  The extract does not say the course was closed. The capacity charts
+  draw those days as zero rounds with unknown status and leave every
+  zero-round day out of the utilization rates. Per-played-round yield is
+  undefined on those days. Removing the earlier closure label does not
+  change those rates or `rounds_possible`.
 
 2022, 2023, and 2025 are complete calendar years in the daily series.
 2024 is missing one day. 2021 and 2026 are partial.
@@ -125,12 +126,13 @@ returned object.
 
 The vignette `dobson-ranch` loads the bundled extract and uses the
 shared daily sample for the capacity charts and the weekday, month, and
-season utilization tables. October closures are left out of those
-tables. The same sample is used for seasonal overlays, a utilization
-heatmap, revenue ratios, the 2025 scenarios, and an illustrative
-tournament baseline. One scenario raises realized green-fee yield 10
-percent and lowers rounds 5 percent. That 5 percent is an assumption,
-not a result.
+season utilization tables. Days with no recorded play are left out of
+those tables. The October zero-round stretches are part of that omission
+and are not marked as confirmed closures. The same sample is used for
+seasonal overlays, a utilization heatmap, revenue ratios, the 2025
+scenarios, and an illustrative tournament baseline. One scenario raises
+realized green-fee yield 10 percent and lowers rounds 5 percent. That 5
+percent is an assumption, not a result.
 
 ``` r
 
@@ -212,8 +214,11 @@ is unchanged and still applies a volume change supplied by the user. The
 forecast formula is unchanged and still refuses observed weather when
 the role is a forecast.
 
-Dobson Ranch still has no posted price. The elasticity vignette does not
-regress rounds on realized green-fee yield.
+The operating extract has no posted price and no rate code. The
+rate-fences vignette summarizes a Dobson Ranch guide dated September 16,
+2026. That guide is later than the extract and is not an input to the
+yield, forecast, or elasticity calculations. The elasticity vignette
+does not regress rounds on realized green-fee yield.
 
 Enz, Cathy A., and Linda Canina. 2016. “Competitive Pricing in the Golf
 Industry.” Cornell University, School of Hotel Administration.
@@ -364,21 +369,24 @@ City of Mesa. “Dobson Ranch Golf Rounds.” Mesa Open Data, dataset
 
 # Articles
 
-### All vignettes
+### Vignettes
 
-- [Correlations and
-  relationships](https://jlocke1979.github.io/golf-revenue-management/articles/correlations-and-relationships.md):
-- [Forecasting observed
-  demand](https://jlocke1979.github.io/golf-revenue-management/articles/demand-forecast.md):
-- [Capacity and
+Dobson Ranch operating analysis, in the order the figures depend on one
+another.
+
+- [1. Capacity and
   utilization](https://jlocke1979.github.io/golf-revenue-management/articles/dobson-ranch.md):
-- [Dollars per
-  golfer](https://jlocke1979.github.io/golf-revenue-management/articles/dollars-per-golfer.md):
-- [Operational Opportunities and Next
-  Steps](https://jlocke1979.github.io/golf-revenue-management/articles/operational-opportunities.md):
-- [Rate
-  fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):
-- [Revenue and
+- [2. Heatmap: Month and
+  Days](https://jlocke1979.github.io/golf-revenue-management/articles/operational-opportunities.md):
+- [3. Forecasting observed
+  demand](https://jlocke1979.github.io/golf-revenue-management/articles/demand-forecast.md):
+- [4. Revenue and
   golfers](https://jlocke1979.github.io/golf-revenue-management/articles/revenue-and-golfers.md):
-- [Weather, playable capacity, and price
-  elasticity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):
+- [5. Yield per
+  round](https://jlocke1979.github.io/golf-revenue-management/articles/dollars-per-golfer.md):
+- [6. Correlation: Daily Rounds Played vs Daily
+  Revenues](https://jlocke1979.github.io/golf-revenue-management/articles/correlations-and-relationships.md):
+- [7. Weather and playable
+  capacity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):
+- [8. Rate
+  fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):

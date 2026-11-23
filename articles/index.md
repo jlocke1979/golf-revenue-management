@@ -1,20 +1,23 @@
 # Articles
 
-### All vignettes
+### Vignettes
 
-- [Correlations and
-  relationships](https://jlocke1979.github.io/golf-revenue-management/articles/correlations-and-relationships.md):
-- [Forecasting observed
-  demand](https://jlocke1979.github.io/golf-revenue-management/articles/demand-forecast.md):
-- [Capacity and
+Dobson Ranch operating analysis, in the order the figures depend on one
+another.
+
+- [1. Capacity and
   utilization](https://jlocke1979.github.io/golf-revenue-management/articles/dobson-ranch.md):
-- [Dollars per
-  golfer](https://jlocke1979.github.io/golf-revenue-management/articles/dollars-per-golfer.md):
-- [Operational Opportunities and Next
-  Steps](https://jlocke1979.github.io/golf-revenue-management/articles/operational-opportunities.md):
-- [Rate
-  fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):
-- [Revenue and
+- [2. Heatmap: Month and
+  Days](https://jlocke1979.github.io/golf-revenue-management/articles/operational-opportunities.md):
+- [3. Forecasting observed
+  demand](https://jlocke1979.github.io/golf-revenue-management/articles/demand-forecast.md):
+- [4. Revenue and
   golfers](https://jlocke1979.github.io/golf-revenue-management/articles/revenue-and-golfers.md):
-- [Weather, playable capacity, and price
-  elasticity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):
+- [5. Yield per
+  round](https://jlocke1979.github.io/golf-revenue-management/articles/dollars-per-golfer.md):
+- [6. Correlation: Daily Rounds Played vs Daily
+  Revenues](https://jlocke1979.github.io/golf-revenue-management/articles/correlations-and-relationships.md):
+- [7. Weather and playable
+  capacity](https://jlocke1979.github.io/golf-revenue-management/articles/weather-and-elasticity.md):
+- [8. Rate
+  fences](https://jlocke1979.github.io/golf-revenue-management/articles/rate-fences.md):

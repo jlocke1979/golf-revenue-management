@@ -9,7 +9,7 @@ are drawn off that scale. A cross marks a day above 120 percent.
 ## Usage
 
 ``` r
-plot_utilization_heatmap(data, calendar = NULL)
+plot_utilization_heatmap(data, calendar = NULL, layout = c("month", "weekday"))
 ```
 
 ## Arguments
@@ -23,6 +23,11 @@ plot_utilization_heatmap(data, calendar = NULL)
 
   Optional
   [`operating_calendar()`](https://jlocke1979.github.io/golf-revenue-management/reference/operating_calendar.md).
+
+- layout:
+
+  `month` puts the day of the month on the horizontal axis. `weekday`
+  uses a Monday-through-Sunday calendar, one week per row.
 
 ## Value
 

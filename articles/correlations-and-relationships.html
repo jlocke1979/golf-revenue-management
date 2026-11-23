@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Correlations and relationships • golfops</title>
+<title>6. Correlation: Daily Rounds Played vs Daily Revenues • golfops</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Correlations and relationships">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="6. Correlation: Daily Rounds Played vs Daily Revenues">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,16 +30,16 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">Correlations and relationships</a></li>
-    <li><a class="dropdown-item" href="../articles/demand-forecast.html">Forecasting observed demand</a></li>
-    <li><a class="dropdown-item" href="../articles/dobson-ranch.html">Capacity and utilization</a></li>
-    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">Dollars per golfer</a></li>
-    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
-    <li><a class="dropdown-item" href="../articles/rate-fences.html">Rate fences</a></li>
-    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">Revenue and golfers</a></li>
-    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/dobson-ranch.html">1. Capacity and utilization</a></li>
+    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">2. Heatmap: Month and Days</a></li>
+    <li><a class="dropdown-item" href="../articles/demand-forecast.html">3. Forecasting observed demand</a></li>
+    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">4. Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">5. Yield per round</a></li>
+    <li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">6. Correlation: Daily Rounds Played vs Daily Revenues</a></li>
+    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">7. Weather and playable capacity</a></li>
+    <li><a class="dropdown-item" href="../articles/rate-fences.html">8. Rate fences</a></li>
   </ul>
 </li>
       </ul>
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Correlations and relationships</h1>
+      <h1>6. Correlation: Daily Rounds Played vs Daily Revenues</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/jlocke1979/golf-revenue-management/blob/main/vignettes/correlations-and-relationships.Rmd" class="external-link"><code>vignettes/correlations-and-relationships.Rmd</code></a></small>
@@ -217,8 +217,8 @@ color, the same colors as the annual revenue bars. 2021 starts on July
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_revenue_by_golfers.html">plot_revenue_by_golfers</a></span><span class="op">(</span><span class="va">sample</span>, year <span class="op">=</span> <span class="fl">2026</span><span class="op">)</span></span></code></pre></div>
 <p><img src="correlations-and-relationships_files/figure-html/year-2026-1.png" class="r-plt" alt="2026 daily revenue against golfers, seven panels, through the last day in the extract." width="864"></p>
-<p>Which weekdays and months fill the daylight estimate, with October
-closures left out, is in Capacity and utilization.</p>
+<p>Which weekdays and months fill the daylight estimate, on days with
+play, is in Capacity and utilization.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

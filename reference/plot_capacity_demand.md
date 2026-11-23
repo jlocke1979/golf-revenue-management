@@ -1,12 +1,13 @@
 # Capacity, demand, and utilization for each year
 
-One row per year and three columns. `unit = "golfers"` counts people. In
-the Dobson extract a round is one golfer, and capacity is the city's
-daylight estimate of golfers. `unit = "slots"` counts tee times. Slot
-capacity is that golfer estimate divided by `players_per_slot`. Slot
-demand is the fewest slots that could hold the golfers, rounding up. A
-group of 1, 2, or 3 golfers still uses a slot, and this file does not
-record group size, so slots actually used are not shown.
+One row per year. The default draws three columns. `unit = "golfers"`
+counts people. In the Dobson extract a round is one golfer, and capacity
+is the city's daylight estimate of golfers. `unit = "slots"` counts tee
+times. Slot capacity is that golfer estimate divided by
+`players_per_slot`. Slot demand is the fewest slots that could hold the
+golfers, rounding up. A group of 1, 2, or 3 golfers still uses a slot,
+and this file does not record group size, so slots actually used are not
+shown. `panels` chooses which columns to print.
 
 ## Usage
 
@@ -15,7 +16,8 @@ plot_capacity_demand(
   data,
   calendar = NULL,
   unit = c("golfers", "slots"),
-  players_per_slot = 4
+  players_per_slot = 4,
+  panels = c("capacity", "utilization", "heatmap")
 )
 ```
 
@@ -39,6 +41,11 @@ plot_capacity_demand(
 
   Golfers a full slot can hold. Used only for `slots`. This is not a
   group size from the extract.
+
+- panels:
+
+  Columns to print: `capacity`, `utilization`, and `heatmap`. The object
+  still carries every column.
 
 ## Value
 

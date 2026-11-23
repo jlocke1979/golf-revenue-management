@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Rate fences • golfops</title>
+<title>8. Rate fences • golfops</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Rate fences">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="8. Rate fences">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,16 +30,16 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">Correlations and relationships</a></li>
-    <li><a class="dropdown-item" href="../articles/demand-forecast.html">Forecasting observed demand</a></li>
-    <li><a class="dropdown-item" href="../articles/dobson-ranch.html">Capacity and utilization</a></li>
-    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">Dollars per golfer</a></li>
-    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
-    <li><a class="dropdown-item" href="../articles/rate-fences.html">Rate fences</a></li>
-    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">Revenue and golfers</a></li>
-    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/dobson-ranch.html">1. Capacity and utilization</a></li>
+    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">2. Heatmap: Month and Days</a></li>
+    <li><a class="dropdown-item" href="../articles/demand-forecast.html">3. Forecasting observed demand</a></li>
+    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">4. Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">5. Yield per round</a></li>
+    <li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">6. Correlation: Daily Rounds Played vs Daily Revenues</a></li>
+    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">7. Weather and playable capacity</a></li>
+    <li><a class="dropdown-item" href="../articles/rate-fences.html">8. Rate fences</a></li>
   </ul>
 </li>
       </ul>
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Rate fences</h1>
+      <h1>8. Rate fences</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/jlocke1979/golf-revenue-management/blob/main/vignettes/rate-fences.Rmd" class="external-link"><code>vignettes/rate-fences.Rmd</code></a></small>
@@ -72,542 +72,205 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jlocke1979.github.io/golf-revenue-management">golfops</a></span><span class="op">)</span></span>
-<span><span class="va">fences</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/peoria_rate_fences.html">peoria_rate_fences</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/peoria_rate_card.html">peoria_rate_card</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">products</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">card</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"facility"</span>, <span class="st">"product"</span>, <span class="st">"holes"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">lookup</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">segment</span>, <span class="va">day</span>, <span class="va">daypart</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">rows</span> <span class="op">&lt;-</span> <span class="va">card</span><span class="op">[</span><span class="va">card</span><span class="op">$</span><span class="va">segment</span> <span class="op">==</span> <span class="va">segment</span> <span class="op">&amp;</span> <span class="va">card</span><span class="op">$</span><span class="va">day</span> <span class="op">==</span> <span class="va">day</span> <span class="op">&amp;</span> <span class="va">card</span><span class="op">$</span><span class="va">daypart</span> <span class="op">==</span> <span class="va">daypart</span>, <span class="op">]</span></span>
-<span>  <span class="va">key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">products</span><span class="op">$</span><span class="va">facility</span>, <span class="va">products</span><span class="op">$</span><span class="va">product</span><span class="op">)</span></span>
-<span>  <span class="va">rows</span><span class="op">$</span><span class="va">price</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">key</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">rows</span><span class="op">$</span><span class="va">facility</span>, <span class="va">rows</span><span class="op">$</span><span class="va">product</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">open</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dobson_operating_daily.html">dobson_operating_daily</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">open</span> <span class="op">&lt;-</span> <span class="va">open</span><span class="op">[</span><span class="va">open</span><span class="op">$</span><span class="va">rounds_played</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
+<span><span class="va">weekday</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_golf_rounds.html">summarize_golf_rounds</a></span><span class="op">(</span><span class="va">open</span>, by <span class="op">=</span> <span class="st">"weekday"</span>, duplicates <span class="op">=</span> <span class="st">"drop_extra"</span><span class="op">)</span></span>
+<span><span class="va">yield_of</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">day</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">weekday</span><span class="op">$</span><span class="va">green_fee_per_played_round</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">weekday</span><span class="op">$</span><span class="va">period</span><span class="op">)</span> <span class="op">==</span> <span class="va">day</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">show_prices</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">frame</span>, <span class="va">price_cols</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">col</span> <span class="kw">in</span> <span class="va">price_cols</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">frame</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">frame</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="st">"N/A"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.2f"</span>, <span class="va">frame</span><span class="op">[[</span><span class="va">col</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="va">frame</span></span>
+<span><span class="va">dollars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"f"</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">money</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="st">"—"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="va">x</span>, format <span class="op">=</span> <span class="st">"f"</span>, digits <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">one_price</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">facility</span>, <span class="va">product</span>, <span class="va">segment</span>, <span class="va">day</span>, <span class="va">daypart</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">hit</span> <span class="op">&lt;-</span> <span class="va">card</span><span class="op">$</span><span class="va">price</span><span class="op">[</span></span>
+<span>    <span class="va">card</span><span class="op">$</span><span class="va">facility</span> <span class="op">==</span> <span class="va">facility</span> <span class="op">&amp;</span></span>
+<span>      <span class="va">card</span><span class="op">$</span><span class="va">product</span> <span class="op">==</span> <span class="va">product</span> <span class="op">&amp;</span></span>
+<span>      <span class="va">card</span><span class="op">$</span><span class="va">segment</span> <span class="op">==</span> <span class="va">segment</span> <span class="op">&amp;</span></span>
+<span>      <span class="va">card</span><span class="op">$</span><span class="va">day</span> <span class="op">==</span> <span class="va">day</span> <span class="op">&amp;</span></span>
+<span>      <span class="va">card</span><span class="op">$</span><span class="va">daypart</span> <span class="op">==</span> <span class="va">daypart</span></span>
+<span>  <span class="op">]</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">hit</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="cn">NA_real_</span> <span class="kw">else</span> <span class="va">hit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>These are the posted prices on the Peoria weekday and weekend sheet,
-version 2. Ten products are on the sheet. Kellogg, Madison, and Newman
-each post an 18-hole course, a front nine, and a back nine. Kellogg also
-posts Executive, a nine-hole course. The course key on the sheet spells
-Newman as Neuman. The tables below use Newman.</p>
-<p>A blank cell is a fence the sheet leaves empty. The sheet has no
-count of rounds, so it has no revenue. Quantity from the earlier
-fictional card is gone.</p>
-<div class="section level2">
-<h2 id="segments">Segments<a class="anchor" aria-label="anchor" href="#segments"></a>
-</h2>
-<table style="width:100%;" class="table">
-<caption>Fences on the Peoria sheet. Twilight is a daypart on the adult
-green fee. Blank means every cell in that column is empty.</caption>
-<colgroup>
-<col width="9%">
-<col width="17%">
-<col width="67%">
-<col width="5%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Segment</th>
-<th align="left">What is priced</th>
-<th align="left">Rule</th>
-<th align="left">On the sheet</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Adult</td>
-<td align="left">Green fee for one round</td>
-<td align="left">Weekday and weekend each have an adult green fee on
-every product.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="even">
-<td align="left">Adult twilight</td>
-<td align="left">Green fee for one round</td>
-<td align="left">Posted on Kellogg Executive, Kellogg Back 9, and
-Madison Back 9, for weekday and weekend. The other products leave the
-cell blank.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="odd">
-<td align="left">Senior</td>
-<td align="left">Green fee for one round</td>
-<td align="left">Weekday and weekend each have a senior green fee on
-every product.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="even">
-<td align="left">Junior</td>
-<td align="left">Green fee for one round</td>
-<td align="left">Posted on Kellogg Executive and on each 18-hole course.
-The weekday fee and the weekend fee are the same. Front 9 and Back 9
-leave the cell blank.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="odd">
-<td align="left">Junior twilight</td>
-<td align="left">Green fee for one round</td>
-<td align="left">The sheet has the column. Every cell is blank.</td>
-<td align="left">Blank</td>
-</tr>
-<tr class="even">
-<td align="left">Military</td>
-<td align="left">Green fee for one round</td>
-<td align="left">The sheet has a weekday column and a weekend column.
-Every cell is blank.</td>
-<td align="left">Blank</td>
-</tr>
-<tr class="odd">
-<td align="left">Adult with cart</td>
-<td align="left">Green fee and cart for one adult round</td>
-<td align="left">A posted adult price that includes a cart. On a weekday
-it equals that product’s adult green fee plus its cart fee. On a weekend
-it is its own posted price.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="even">
-<td align="left">Holiday 18 with cart</td>
-<td align="left">Green fee and cart for one 18-hole round</td>
-<td align="left">The column header names a Saturday and Sunday holiday
-rate for 18 holes with a cart, from May 11 through September 29. Every
-cell is blank.</td>
-<td align="left">Blank</td>
-</tr>
-<tr class="odd">
-<td align="left">Cart</td>
-<td align="left">Cart for one round</td>
-<td align="left">Eighteen-hole courses are $17. Nine-hole products are
-$12. The sheet does not split the cart fee by weekday or weekend.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="even">
-<td align="left">Pull cart</td>
-<td align="left">Pull cart for one round</td>
-<td align="left">Five dollars on every product.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="odd">
-<td align="left">Club per club</td>
-<td align="left">One club</td>
-<td align="left">One dollar per club on every product.</td>
-<td align="left">Posted</td>
-</tr>
-<tr class="even">
-<td align="left">Club rental</td>
-<td align="left">Club rental</td>
-<td align="left">Kellogg 18 and Newman 18 are $20. Every other product,
-including Madison 18, is $10.</td>
-<td align="left">Posted</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level2">
-<h2 id="weekday">Weekday<a class="anchor" aria-label="anchor" href="#weekday"></a>
-</h2>
-<p>Adult, senior, and junior are walking green fees. Twilight is the
-adult twilight green fee. Adult with cart is the posted price for an
-adult round that includes a cart. On a weekday that price equals the
-adult green fee plus the cart fee, on every product.</p>
-<table style="width:100%;" class="table">
-<caption>Weekday posted prices, in dollars. N/A is an empty cell on the
-sheet.</caption>
-<colgroup>
-<col width="12%">
-<col width="16%">
-<col width="8%">
-<col width="8%">
-<col width="12%">
-<col width="9%">
-<col width="9%">
-<col width="22%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Facility</th>
-<th align="left">Product</th>
-<th align="right">Holes</th>
-<th align="left">Adult</th>
-<th align="left">Twilight</th>
-<th align="left">Senior</th>
-<th align="left">Junior</th>
-<th align="left">Adult with cart</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Kellogg</td>
-<td align="left">Executive 9</td>
-<td align="right">9</td>
-<td align="left">24.00</td>
-<td align="left">30.00</td>
-<td align="left">22.00</td>
-<td align="left">10.00</td>
-<td align="left">36.00</td>
-</tr>
-<tr class="even">
-<td align="left">Kellogg</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">42.00</td>
-<td align="left">N/A</td>
-<td align="left">36.00</td>
-<td align="left">15.00</td>
-<td align="left">59.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Kellogg</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">30.00</td>
-<td align="left">N/A</td>
-<td align="left">28.00</td>
-<td align="left">N/A</td>
-<td align="left">42.00</td>
-</tr>
-<tr class="even">
-<td align="left">Kellogg</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">30.00</td>
-<td align="left">20.00</td>
-<td align="left">28.00</td>
-<td align="left">N/A</td>
-<td align="left">42.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Madison</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">24.00</td>
-<td align="left">15.00</td>
-<td align="left">43.00</td>
-</tr>
-<tr class="even">
-<td align="left">Madison</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">32.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Madison</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">20.00</td>
-<td align="left">27.00</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">32.00</td>
-</tr>
-<tr class="even">
-<td align="left">Newman</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">35.00</td>
-<td align="left">N/A</td>
-<td align="left">32.00</td>
-<td align="left">15.00</td>
-<td align="left">52.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Newman</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">27.00</td>
-<td align="left">N/A</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">39.00</td>
-</tr>
-<tr class="even">
-<td align="left">Newman</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">27.00</td>
-<td align="left">N/A</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">39.00</td>
-</tr>
-</tbody>
-</table>
-<p>Twilight is posted on Kellogg Executive, Kellogg Back 9, and Madison
-Back 9. On Kellogg Executive the twilight green fee is $30.00 and the
-day rate is $24.00. On Madison Back 9 the twilight green fee is $27.00
-and the day rate is $20.00. On Kellogg Back 9 twilight is $20.00 and the
-day rate is $30.00.</p>
-</div>
-<div class="section level2">
-<h2 id="weekend">Weekend<a class="anchor" aria-label="anchor" href="#weekend"></a>
-</h2>
-<p>The walking green fees match the weekday green fees on this sheet.
-The adult-with-cart column does not. It is a separate posted price.</p>
-<table style="width:100%;" class="table">
-<caption>Weekend posted prices, in dollars. N/A is an empty cell on the
-sheet.</caption>
-<colgroup>
-<col width="12%">
-<col width="16%">
-<col width="8%">
-<col width="8%">
-<col width="12%">
-<col width="9%">
-<col width="9%">
-<col width="22%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Facility</th>
-<th align="left">Product</th>
-<th align="right">Holes</th>
-<th align="left">Adult</th>
-<th align="left">Twilight</th>
-<th align="left">Senior</th>
-<th align="left">Junior</th>
-<th align="left">Adult with cart</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Kellogg</td>
-<td align="left">Executive 9</td>
-<td align="right">9</td>
-<td align="left">24.00</td>
-<td align="left">30.00</td>
-<td align="left">22.00</td>
-<td align="left">10.00</td>
-<td align="left">48.00</td>
-</tr>
-<tr class="even">
-<td align="left">Kellogg</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">42.00</td>
-<td align="left">N/A</td>
-<td align="left">36.00</td>
-<td align="left">15.00</td>
-<td align="left">76.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Kellogg</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">30.00</td>
-<td align="left">N/A</td>
-<td align="left">28.00</td>
-<td align="left">N/A</td>
-<td align="left">54.00</td>
-</tr>
-<tr class="even">
-<td align="left">Kellogg</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">30.00</td>
-<td align="left">20.00</td>
-<td align="left">28.00</td>
-<td align="left">N/A</td>
-<td align="left">54.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Madison</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">24.00</td>
-<td align="left">15.00</td>
-<td align="left">60.00</td>
-</tr>
-<tr class="even">
-<td align="left">Madison</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">44.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Madison</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">20.00</td>
-<td align="left">27.00</td>
-<td align="left">20.00</td>
-<td align="left">N/A</td>
-<td align="left">44.00</td>
-</tr>
-<tr class="even">
-<td align="left">Newman</td>
-<td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">35.00</td>
-<td align="left">N/A</td>
-<td align="left">32.00</td>
-<td align="left">15.00</td>
-<td align="left">68.00</td>
-</tr>
-<tr class="odd">
-<td align="left">Newman</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">27.00</td>
-<td align="left">N/A</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">51.00</td>
-</tr>
-<tr class="even">
-<td align="left">Newman</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">27.00</td>
-<td align="left">N/A</td>
-<td align="left">26.00</td>
-<td align="left">N/A</td>
-<td align="left">51.00</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level2">
-<h2 id="carts-and-clubs">Carts and clubs<a class="anchor" aria-label="anchor" href="#carts-and-clubs"></a>
-</h2>
-<p>The cart fee follows the number of holes: $17.00 on an 18-hole course
-and $12.00 on a nine-hole product. The pull cart is $5.00 and a single
-club is $1.00, on every product. The club-rental fee is $20.00 at
-Kellogg 18 and Newman 18, and $10.00 on the other products, including
-Madison 18.</p>
+<p>Dobson Ranch published a pricing guide on September 16, 2026, <a href="https://www.dobsonranchgolfclub.com/blog/dobson-ranch-green-fees-explained-mesa-az-2026-guide" class="external-link">Dobson
+Ranch Green Fees Explained</a>. It is a course editorial page. It points
+to the City of Mesa fee schedule and to the live checkout at
+<code>dobson-ranch.book.teeitup.golf</code>. The operating extract ends
+April 30, 2026, so these dollars are later than the rounds in the
+file.</p>
+<p>The guide’s adult 18-hole range is $17 to $150, and it says most tee
+times fall between $39 and $69. Season and time of day are the rows it
+actually prices. Day of week is named as a driver, with no weekday
+column. The guide calls the schedule dynamic and also says demand moves
+the quote. It does not publish the rule that separates those two.</p>
 <table class="table">
-<caption>Cart and club fees, in dollars. The sheet does not split these
-by weekday or weekend.</caption>
+<caption>Dobson Ranch Golf Club, September 16, 2026. Planning examples
+and published ranges. The per-round card discount is not on the
+page.</caption>
+<thead><tr class="header">
+<th align="left">Item</th>
+<th align="left">What the guide prints</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Snowbird morning, Nov–Apr</td>
+<td align="left">Adult example $69, range up to $150</td>
+</tr>
+<tr class="even">
+<td align="left">Summer or shoulder mid-day</td>
+<td align="left">Adult example $39, range down to $17</td>
+</tr>
+<tr class="odd">
+<td align="left">Twilight, about 2 PM</td>
+<td align="left">Adult $11–$100, any season</td>
+</tr>
+<tr class="even">
+<td align="left">Sunset</td>
+<td align="left">Adult $9–$39, any season</td>
+</tr>
+<tr class="odd">
+<td align="left">Junior, 18 holes</td>
+<td align="left">$12–$60</td>
+</tr>
+<tr class="even">
+<td align="left">Ranch Card</td>
+<td align="left">$109 for 2026, $99 for 2027</td>
+</tr>
+<tr class="odd">
+<td align="left">Smash Pass</td>
+<td align="left">$24.99 a month, includes the Ranch Card</td>
+</tr>
+</tbody>
+</table>
+<p>The green fee is course access. Cart, clubs, and range balls are
+separate, and the cart fee is not itemized. Senior, resident, and
+military rates are not on the page. On played days in the extract,
+Friday’s collected green fee is $40.69 a round and Sunday’s is $31.72.
+<a href="dollars-per-golfer.html">Yield per round</a> is that receipt.
+The extract has no rate code.</p>
+<div class="section level2">
+<h2 id="peoria">Peoria<a class="anchor" aria-label="anchor" href="#peoria"></a>
+</h2>
+<p><code><a href="../reference/peoria_rate_card.html">peoria_rate_card()</a></code> is a transcription of a sheet labeled
+“Peoria weekday and weekend prices, version 2.” The original file is not
+in the package. These are not Dobson Ranch or City of Mesa rates. The
+sheet key spells Newman as Neuman.</p>
+<p>Walking fees are the same on weekdays and weekends. The weekend
+difference is the adult price that includes a cart. Front nine and back
+nine carry the same walking and cart-included fees, so each course is
+one nine-hole row. Twilight is the exception: it is posted on Kellogg
+Executive, Kellogg Back 9, and Madison Back 9 only.</p>
+<table class="table">
+<caption>Peoria walking fees, in dollars. Adult, senior, and junior are
+the same on weekdays and weekends. Nine-hole rows use the front nine,
+which matches the back nine except for twilight.</caption>
 <colgroup>
+<col width="9%">
 <col width="13%">
-<col width="17%">
+<col width="6%">
 <col width="8%">
 <col width="8%">
-<col width="14%">
 <col width="20%">
-<col width="17%">
+<col width="20%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Facility</th>
+<th align="left">Course</th>
 <th align="left">Product</th>
-<th align="right">Holes</th>
-<th align="left">Cart</th>
-<th align="left">Pull cart</th>
-<th align="left">Club per club</th>
-<th align="left">Club rental</th>
+<th align="left">Adult</th>
+<th align="left">Senior</th>
+<th align="left">Junior</th>
+<th align="left">Weekday with cart</th>
+<th align="left">Weekend with cart</th>
+<th align="left">Twilight</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">Kellogg</td>
 <td align="left">Executive 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
+<td align="left">$24</td>
+<td align="left">$22</td>
+<td align="left">$10</td>
+<td align="left">$36</td>
+<td align="left">$48</td>
+<td align="left">$30</td>
 </tr>
 <tr class="even">
 <td align="left">Kellogg</td>
 <td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">17.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">20.00</td>
+<td align="left">$42</td>
+<td align="left">$36</td>
+<td align="left">$15</td>
+<td align="left">$59</td>
+<td align="left">$76</td>
+<td align="left">—</td>
 </tr>
 <tr class="odd">
 <td align="left">Kellogg</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
+<td align="left">9 holes</td>
+<td align="left">$30</td>
+<td align="left">$28</td>
+<td align="left">—</td>
+<td align="left">$42</td>
+<td align="left">$54</td>
+<td align="left">Back 9 $20</td>
 </tr>
 <tr class="even">
-<td align="left">Kellogg</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
-</tr>
-<tr class="odd">
 <td align="left">Madison</td>
 <td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">17.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
-</tr>
-<tr class="even">
-<td align="left">Madison</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
+<td align="left">$26</td>
+<td align="left">$24</td>
+<td align="left">$15</td>
+<td align="left">$43</td>
+<td align="left">$60</td>
+<td align="left">—</td>
 </tr>
 <tr class="odd">
 <td align="left">Madison</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
+<td align="left">9 holes</td>
+<td align="left">$20</td>
+<td align="left">$20</td>
+<td align="left">—</td>
+<td align="left">$32</td>
+<td align="left">$44</td>
+<td align="left">Back 9 $27</td>
 </tr>
 <tr class="even">
 <td align="left">Newman</td>
 <td align="left">18 holes</td>
-<td align="right">18</td>
-<td align="left">17.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">20.00</td>
+<td align="left">$35</td>
+<td align="left">$32</td>
+<td align="left">$15</td>
+<td align="left">$52</td>
+<td align="left">$68</td>
+<td align="left">—</td>
 </tr>
 <tr class="odd">
 <td align="left">Newman</td>
-<td align="left">Front 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
-</tr>
-<tr class="even">
-<td align="left">Newman</td>
-<td align="left">Back 9</td>
-<td align="right">9</td>
-<td align="left">12.00</td>
-<td align="left">5.00</td>
-<td align="left">1.00</td>
-<td align="left">10.00</td>
+<td align="left">9 holes</td>
+<td align="left">$27</td>
+<td align="left">$26</td>
+<td align="left">—</td>
+<td align="left">$39</td>
+<td align="left">$51</td>
+<td align="left">—</td>
 </tr>
 </tbody>
 </table>
-<p>The card has 114 posted prices. Junior twilight, military, and the
-holiday 18-hole rate with a cart are columns on the sheet with no prices
-in them. The holiday header names May 11 through September 29.</p>
-<p>A played round can still add fences. An adult weekday round with a
-cart is already one posted price. A senior round with a cart is the
-senior green fee plus the cart fee, and that sum is not its own row. The
-mix of rounds across these fences needs a season of rounds labeled with
-the product, the day, and the daypart. This sheet does not have that
-season.</p>
+<p>A cart is $17 on 18 holes and $12 on nine holes. A pull cart is $5,
+and one club is $1. Club rental is $20 at Kellogg 18 and Newman 18, and
+$10 on the other products. On a weekday, adult-with-cart equals the
+walking fee plus the cart. On Kellogg Executive and Madison Back 9,
+twilight is above the daytime walking fee. On Kellogg Back 9 it is $20,
+below the $30 daytime fee. Junior twilight, military, and the holiday
+18-hole rate with a cart are empty columns. The holiday header is May 11
+through September 29.</p>
+<p>The extract has no quoted price, so this page does not estimate how
+rounds respond to a rate. The synthetic section in <a href="weather-and-elasticity.html">Weather and playable capacity</a>
+checks a known equation. It does not use this guide.</p>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+  </main>
 </div>
 
 

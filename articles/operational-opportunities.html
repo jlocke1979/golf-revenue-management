@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Operational Opportunities and Next Steps • golfops</title>
+<title>2. Heatmap: Month and Days • golfops</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Operational Opportunities and Next Steps">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="2. Heatmap: Month and Days">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -30,16 +30,16 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">Correlations and relationships</a></li>
-    <li><a class="dropdown-item" href="../articles/demand-forecast.html">Forecasting observed demand</a></li>
-    <li><a class="dropdown-item" href="../articles/dobson-ranch.html">Capacity and utilization</a></li>
-    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">Dollars per golfer</a></li>
-    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">Operational Opportunities and Next Steps</a></li>
-    <li><a class="dropdown-item" href="../articles/rate-fences.html">Rate fences</a></li>
-    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">Revenue and golfers</a></li>
-    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">Weather, playable capacity, and price elasticity</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/dobson-ranch.html">1. Capacity and utilization</a></li>
+    <li><a class="dropdown-item" href="../articles/operational-opportunities.html">2. Heatmap: Month and Days</a></li>
+    <li><a class="dropdown-item" href="../articles/demand-forecast.html">3. Forecasting observed demand</a></li>
+    <li><a class="dropdown-item" href="../articles/revenue-and-golfers.html">4. Revenue and golfers</a></li>
+    <li><a class="dropdown-item" href="../articles/dollars-per-golfer.html">5. Yield per round</a></li>
+    <li><a class="dropdown-item" href="../articles/correlations-and-relationships.html">6. Correlation: Daily Rounds Played vs Daily Revenues</a></li>
+    <li><a class="dropdown-item" href="../articles/weather-and-elasticity.html">7. Weather and playable capacity</a></li>
+    <li><a class="dropdown-item" href="../articles/rate-fences.html">8. Rate fences</a></li>
   </ul>
 </li>
       </ul>
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Operational Opportunities and Next Steps</h1>
+      <h1>2. Heatmap: Month and Days</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/jlocke1979/golf-revenue-management/blob/main/vignettes/operational-opportunities.Rmd" class="external-link"><code>vignettes/operational-opportunities.Rmd</code></a></small>
@@ -70,11 +70,11 @@
 
     
     
-<p>This chapter collects the operating questions raised by the earlier
-pages. Each action below is a hypothesis to investigate. The chapter has
-no forecast, no price elasticity, and no revenue estimate. The weather
-and elasticity vignette is a separate synthetic exercise. It does not
-change the figures in this chapter.</p>
+<p>This chapter compares season and weekday on the open days, then
+records two receipt changes. It recommends no rate. It has no forecast,
+no price elasticity, and no revenue estimate. The weather vignette joins
+historical weather to these days. Its elasticity section is a separate
+synthetic exercise and leaves these figures unchanged.</p>
 <p>Utilization is golfers divided by the city’s daylight estimate. The
 city sets that estimate from sunrise to sunset. Golfers per day is the
 count of people who played. A day above one hundred percent ran past the
@@ -83,269 +83,53 @@ has daily counts.</p>
 <p>The rates use the 1,708 days with at least one golfer, from
 2021-07-01 through 2026-04-30. A period rate is the sum of golfers
 divided by the sum of the daylight estimates, the same ratio as the
-capacity tables. October closures are omitted with every other day that
-has no play.</p>
+capacity tables. Days with no recorded play are omitted. The October
+zero-round stretches are in that omission. The city file does not say
+the course was closed.</p>
 <div class="section level2">
-<h2 id="where-the-open-days-sit">Where the open days sit<a class="anchor" aria-label="anchor" href="#where-the-open-days-sit"></a>
-</h2>
-<table class="table">
-<caption>Open days only. Utilization is the sum of golfers divided by
-the sum of daylight estimates. The last column is the reason the row is
-shown.</caption>
-<colgroup>
-<col width="9%">
-<col width="9%">
-<col width="14%">
-<col width="19%">
-<col width="21%">
-<col width="26%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Period</th>
-<th align="right">Open days</th>
-<th align="right">Golfers per day</th>
-<th align="right">Daylight utilization</th>
-<th align="right">Days above the estimate</th>
-<th align="left">Why this row</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">July</td>
-<td align="right">155</td>
-<td align="right">252</td>
-<td align="right">64%</td>
-<td align="right">1</td>
-<td align="left">Lowest daylight share</td>
-</tr>
-<tr class="even">
-<td align="left">June</td>
-<td align="right">120</td>
-<td align="right">275</td>
-<td align="right">68%</td>
-<td align="right">1</td>
-<td align="left">Low daylight share</td>
-</tr>
-<tr class="odd">
-<td align="left">August</td>
-<td align="right">155</td>
-<td align="right">255</td>
-<td align="right">68%</td>
-<td align="right">0</td>
-<td align="left">Low daylight share</td>
-</tr>
-<tr class="even">
-<td align="left">Wednesday</td>
-<td align="right">242</td>
-<td align="right">249</td>
-<td align="right">74%</td>
-<td align="right">10</td>
-<td align="left">Lowest weekday</td>
-</tr>
-<tr class="odd">
-<td align="left">Tuesday</td>
-<td align="right">241</td>
-<td align="right">251</td>
-<td align="right">75%</td>
-<td align="right">13</td>
-<td align="left">Next weekday</td>
-</tr>
-<tr class="even">
-<td align="left">Sunday</td>
-<td align="right">247</td>
-<td align="right">281</td>
-<td align="right">84%</td>
-<td align="right">18</td>
-<td align="left">Highest weekday</td>
-</tr>
-<tr class="odd">
-<td align="left">April</td>
-<td align="right">150</td>
-<td align="right">314</td>
-<td align="right">86%</td>
-<td align="right">8</td>
-<td align="left">Most golfers per open day</td>
-</tr>
-<tr class="even">
-<td align="left">February</td>
-<td align="right">141</td>
-<td align="right">272</td>
-<td align="right">90%</td>
-<td align="right">28</td>
-<td align="left">Most days above the estimate</td>
-</tr>
-<tr class="odd">
-<td align="left">March</td>
-<td align="right">155</td>
-<td align="right">303</td>
-<td align="right">91%</td>
-<td align="right">20</td>
-<td align="left">Highest daylight share</td>
-</tr>
-</tbody>
-</table>
-<p>June through August are the low share of the daylight estimate. June
-still has 275 golfers per open day, against 231 in December. May is 76%
-and 296 golfers. September is 72% and 248 golfers. Those two months sit
-between the summer group and October through April.</p>
-<p>Wednesday and Tuesday are the lower weekdays. Sunday is the highest.
-The gap from Wednesday to Sunday is 10 percentage points. The gap from
-July to March is 27 percentage points. April has the most golfers per
-open day. February and March have the highest share, and the most days
-above the estimate.</p>
-</div>
-<div class="section level2">
-<h2 id="month-and-weekday-together">Month and weekday together<a class="anchor" aria-label="anchor" href="#month-and-weekday-together"></a>
+<h2 id="heatmap-month-and-days">Heatmap: Month and Days<a class="anchor" aria-label="anchor" href="#heatmap-month-and-days"></a>
 </h2>
 <p><img src="operational-opportunities_files/figure-html/utilization-heatmap-1.png" class="r-plt" alt="Heatmap of daylight utilization for each month and weekday. Color steps by five percentage points. Summer weekdays are lighter. February and March are darker on most weekdays." width="691.2"></p>
-<p>Each color step is five percentage points of the printed share.
-August, the highest of the low months, is 68.4%. September, the next
-month, is 72.4%. May is 76.1%. November, the start of the October
-through April group, is 83.6%. Summer weekends sit above the summer
-weekdays. February Wednesday is 78%. March Wednesday is 88%.</p>
+<p>Each cell is one month and one weekday. The number in the cell is the
+utilization percentage, and each color step is five percentage points.
+June through August are the light band. February and March are the dark
+band. August, the highest of the light months, is 68.4%. September is
+72.4%. May is 76.1%. November is 83.6%. Within a month, the weekend is
+usually darker than Tuesday and Wednesday. July is 64% and March is 91%.
+Wednesday is 74% and Sunday is 84%.</p>
 </div>
 <div class="section level2">
-<h2 id="opportunities-to-investigate">Opportunities to investigate<a class="anchor" aria-label="anchor" href="#opportunities-to-investigate"></a>
+<h2 id="utilization-by-day">Utilization by day<a class="anchor" aria-label="anchor" href="#utilization-by-day"></a>
 </h2>
-<p>Each block is a hypothesis to investigate.</p>
-<div class="opportunity">
-<h3>
-Summer daylight share
-</h3>
-<p>
-<strong>Evidence. </strong>July is 64% of the daylight estimate (252
-golfers per open day). June is 68% (275). August is 68% (255). December
-is 85% (231 golfers).
-</p>
-<p>
-<strong>Hypothesis. </strong>Summer fills a smaller share of a longer
-daylight estimate. Headcount on those open days stays near the winter
-months.
-</p>
-<p>
-<strong>Potential investigation. </strong>Look at summer afternoons, and
-at the mix of 9-hole and 18-hole play, before treating the whole day as
-unused.
-</p>
-<p>
-<strong>Additional data needed. </strong>Tee times, hole counts, and
-prices paid by time of day.
-</p>
+<p><img src="operational-opportunities_files/figure-html/utilization-by-day-1.png" class="r-plt" alt="Six yearly calendars of daily utilization percentage, stacked in one column. Columns run Monday through Sunday. 2021 starts in July and 2026 ends in April. Green is below the median played day and purple is above it." width="710.4"></p>
+<p>Each panel is one year, with Monday through Sunday across the
+columns. This is the daily calendar that sat in the right-hand column of
+the capacity figure. Green is below the median played day, purple is
+above it, and red is above 100 percent. A zero-round day of unknown
+status is off that scale.</p>
 </div>
-<div class="opportunity">
-<h3>
-February, March, and April
-</h3>
-<p>
-<strong>Evidence. </strong>February is 90%, with 28 of 141 open days
-above the estimate. March is 91%, with 20 of 155. April has 314 golfers
-per open day, the most, at 86%. Realized green fees are about $46 to $48
-per golfer in February and March, and about $16 to $19 in June through
-August. Daily green fees correlate with golfers at 0.30 in 2024 and 0.20
-in 2025.
-</p>
-<p>
-<strong>Hypothesis. </strong>The winter receipt per golfer is already
-higher. This file cannot show whether a higher posted rate would hold
-the headcount.
-</p>
-<p>
-<strong>Potential investigation. </strong>Compare the rate card with the
-rate codes used in February, March, and April before any peak-rate test.
-</p>
-<p>
-<strong>Additional data needed. </strong>Prices paid, rate code, 9-hole
-and 18-hole mix, and any count of golfers who could not get a time.
-</p>
-</div>
-<div class="opportunity">
-<h3>
-Tuesday and Wednesday
-</h3>
-<p>
-<strong>Evidence. </strong>Wednesday is 74% and Tuesday is 75%, against
-Sunday at 84%. That weekday gap is 10 percentage points. July to March
-is 27 percentage points. February Wednesday is 78%, and March Wednesday
-is 88%.
-</p>
-<p>
-<strong>Hypothesis. </strong>The soft weekday is concentrated in summer.
-One Tuesday rate would also cover months that are already in the high
-band.
-</p>
-<p>
-<strong>Potential investigation. </strong>Review Tuesday and Wednesday
-one month at a time before writing a standing weekday rate.
-</p>
-<p>
-<strong>Additional data needed. </strong>Tee times by hour, booking lead
-time, and the customer segment on those days.
-</p>
-</div>
-<div class="opportunity">
-<h3>
-Cart receipts in 2025
-</h3>
-<p>
-<strong>Evidence. </strong>In 2022, 2023, and 2024 the receipt per
-recorded cart is $16.00. Carts per golfer run from 0.78 to 0.80, and
-cart dollars per golfer run from $12.50 to $12.77. In 2025 those figures
-are $10.57, 0.42, and $4.41. The city catalog says the cart count is
-derived from cart revenue. From January through April 2026, cart dollars
-per golfer are $4.09. Total dollars per golfer move from $99.41 in 2024
-to $101.99 in 2025.
-</p>
-<p>
-<strong>Hypothesis. </strong>The cart product, the cart price, or the
-derivation of the cart count changed in 2025. Cart revenue correlates
-with golfers at 0.79 to 0.83 in 2022 through 2024, and at 0.40 in 2025.
-</p>
-<p>
-<strong>Potential investigation. </strong>Reconcile 2025 cart tenders
-and the derivation rule before treating the drop as lower demand for
-carts.
-</p>
-<p>
-<strong>Additional data needed. </strong>The posted cart price, whether
-the cart is included in the green fee, and a cart count taken
-independently of revenue.
-</p>
-</div>
-<div class="opportunity">
-<h3>
-Range receipts
-</h3>
-<p>
-<strong>Evidence. </strong>Range dollars per golfer are $11.63 in 2022
-and $27.13 in 2025. The correlation with daily golfers is 0.20 in 2022
-and 0.09 in 2025.
-</p>
-<p>
-<strong>Hypothesis. </strong>Range receipts rose while moving less
-closely with the golfer count. Someone who only used the range is not in
-that count.
-</p>
-<p>
-<strong>Potential investigation. </strong>Ask what changed in the range
-price, the range volume, or who can buy range balls.
-</p>
-<p>
-<strong>Additional data needed. </strong>Range transactions separated
-from rounds.
-</p>
-</div>
-<div class="closing">
-<h2>
-What Additional Data Would Unlock
+<div class="section level2">
+<h2 id="what-the-comparison-shows">What the comparison shows<a class="anchor" aria-label="anchor" href="#what-the-comparison-shows"></a>
 </h2>
-<p>
-Reservation-level tee times would place open summer daylight. Booking
-lead times would show if February and March fill early. Prices paid,
-with the rate code, would separate winter and summer green fees.
-Cancellations, customer segments (resident, junior, 9-hole, and
-18-hole), and weather would cover a full sheet, who plays, and how much
-of the gap follows the heat.
-</p>
-</div>
+<p>Summer’s lower percentage is a longer daylight estimate. June has 275
+golfers per open day, against 272 in February. July has 252 and August
+has 255. Those months sit above December (231) and January (239), and
+below March (303) and April (314). The extract has daily counts, so that
+lower percentage is the longer daylight estimate.</p>
+<p>Realized green-fee yield is green-fee revenue divided by played
+rounds. February and March are about $46 to $48 per golfer. June through
+August are about $16 to $19. The extract has no posted rate and no rate
+code in this comparison, so the gap stays a receipt per played
+round.</p>
+<p>In 2022, 2023, and 2024 the receipt per recorded cart is $16.00.
+Carts per golfer run from 0.78 to 0.80. In 2025 the receipt is $10.57
+and carts per golfer are 0.42. Total dollars per golfer move from $99.41
+to $101.99. The city catalog derives the cart count from cart revenue,
+so the 2025 cart series follows that derivation. From January through
+April 2026, cart dollars per golfer are $4.09.</p>
+<p>Range dollars per golfer are $11.63 in 2022 and $27.13 in 2025. The
+correlation with daily golfers is 0.20 and 0.09. Both correlations are
+weak. The rise in dollars per golfer stands as a receipt change.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

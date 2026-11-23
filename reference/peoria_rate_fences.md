@@ -1,9 +1,7 @@
 # Rate fences on the Peoria posted card
 
-Each row is one column on the Peoria weekday and weekend price sheet,
-version 2. A fence is one posted price for one kind of round. Blank
-columns stay in this list because the sheet has the column and leaves
-every cell empty.
+The sheet is transcribed in this function. The original file is not
+bundled. These prices are not Dobson Ranch or City of Mesa rates.
 
 ## Usage
 
@@ -15,6 +13,13 @@ peoria_rate_fences()
 
 A data frame of fence names, what is priced, and the rule. `posted` is
 FALSE when every cell in that column is empty.
+
+## Details
+
+Each row is one column on the Peoria weekday and weekend price sheet,
+version 2. A fence is one posted price for one kind of round. Blank
+columns stay in this list because the sheet has the column and leaves
+every cell empty.
 
 ## Examples
 
