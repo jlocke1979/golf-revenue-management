@@ -1,8 +1,8 @@
 ---
-title: "Rate fences"
+title: "8. Rate fences"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Rate fences}
+  %\VignetteIndexEntry{8. Rate fences}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,116 +12,149 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.width = 8,
-  fig.height = 5.5
+  fig.height = 5.8
 )
 ```
 
 ```{r setup}
 library(golfops)
-fences <- peoria_rate_fences()
 card <- peoria_rate_card()
-products <- unique(card[, c("facility", "product", "holes")])
-
-lookup <- function(segment, day, daypart) {
-  rows <- card[card$segment == segment & card$day == day & card$daypart == daypart, ]
-  key <- paste(products$facility, products$product)
-  rows$price[match(key, paste(rows$facility, rows$product))]
+open <- dobson_operating_daily()
+open <- open[open$rounds_played > 0, ]
+weekday <- summarize_golf_rounds(open, by = "weekday", duplicates = "drop_extra")
+yield_of <- function(day) {
+  weekday$green_fee_per_played_round[as.character(weekday$period) == day]
 }
+dollars <- function(x) paste0("$", formatC(x, format = "f", digits = 2))
+money <- function(x) {
+  ifelse(is.na(x), "—", paste0("$", formatC(x, format = "f", digits = 0)))
+}
+one_price <- function(facility, product, segment, day, daypart) {
+  hit <- card$price[
+    card$facility == facility &
+      card$product == product &
+      card$segment == segment &
+      card$day == day &
+      card$daypart == daypart
+  ]
+  if (length(hit) == 0) NA_real_ else hit[[1]]
+}
+```
 
-show_prices <- function(frame, price_cols) {
-  for (col in price_cols) {
-    frame[[col]] <- ifelse(is.na(frame[[col]]), "N/A", sprintf("%.2f", frame[[col]]))
+Dobson Ranch published a pricing guide on September 16, 2026, [Dobson Ranch Green Fees Explained](https://www.dobsonranchgolfclub.com/blog/dobson-ranch-green-fees-explained-mesa-az-2026-guide). It is a course editorial page. It points to the City of Mesa fee schedule and to the live checkout at `dobson-ranch.book.teeitup.golf`. The operating extract ends April 30, 2026, so these dollars are later than the rounds in the file.
+
+The guide's adult 18-hole range is $17 to $150, and it says most tee times fall between $39 and $69. Season and time of day are the rows it actually prices. Day of week is named as a driver, with no weekday column. The guide calls the schedule dynamic and also says demand moves the quote. It does not publish the rule that separates those two.
+
+```{r dobson-guide, echo = FALSE, results = "asis"}
+guide <- data.frame(
+  Item = c(
+    "Snowbird morning, Nov–Apr",
+    "Summer or shoulder mid-day",
+    "Twilight, about 2 PM",
+    "Sunset",
+    "Junior, 18 holes",
+    "Ranch Card",
+    "Smash Pass"
+  ),
+  `What the guide prints` = c(
+    "Adult example $69, range up to $150",
+    "Adult example $39, range down to $17",
+    "Adult $11–$100, any season",
+    "Adult $9–$39, any season",
+    "$12–$60",
+    "$109 for 2026, $99 for 2027",
+    "$24.99 a month, includes the Ranch Card"
+  ),
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+knitr::kable(
+  guide,
+  caption = "Dobson Ranch Golf Club, September 16, 2026. Planning examples and published ranges. The per-round card discount is not on the page."
+)
+```
+
+The green fee is course access. Cart, clubs, and range balls are separate, and the cart fee is not itemized. Senior, resident, and military rates are not on the page. On played days in the extract, Friday's collected green fee is `r dollars(yield_of("Friday"))` a round and Sunday's is `r dollars(yield_of("Sunday"))`. [Yield per round](dollars-per-golfer.html) is that receipt. The extract has no rate code.
+
+## Peoria
+
+`peoria_rate_card()` is a transcription of a sheet labeled "Peoria weekday and weekend prices, version 2." The original file is not in the package. These are not Dobson Ranch or City of Mesa rates. The sheet key spells Newman as Neuman.
+
+Walking fees are the same on weekdays and weekends. The weekend difference is the adult price that includes a cart. Front nine and back nine carry the same walking and cart-included fees, so each course is one nine-hole row. Twilight is the exception: it is posted on Kellogg Executive, Kellogg Back 9, and Madison Back 9 only.
+
+```{r peoria, echo = FALSE, results = "asis"}
+same_walking <- function(facility) {
+  fields <- list(
+    c("Adult", "Weekday", "Day"),
+    c("Adult", "Weekend", "Day"),
+    c("Senior", "Weekday", "Day"),
+    c("Senior", "Weekend", "Day"),
+    c("Junior", "Weekday", "Day"),
+    c("Junior", "Weekend", "Day"),
+    c("Adult with cart", "Weekday", "Day"),
+    c("Adult with cart", "Weekend", "Day")
+  )
+  for (field in fields) {
+    front <- one_price(facility, "Front 9", field[[1]], field[[2]], field[[3]])
+    back <- one_price(facility, "Back 9", field[[1]], field[[2]], field[[3]])
+    if (!identical(front, back)) {
+      stop(facility, " front and back nines differ on ", field[[1]], ".", call. = FALSE)
+    }
   }
-  frame
 }
-```
+for (facility in c("Kellogg", "Madison", "Newman")) same_walking(facility)
 
-These are the posted prices on the Peoria weekday and weekend sheet, version 2. Ten products are on the sheet. Kellogg, Madison, and Newman each post an 18-hole course, a front nine, and a back nine. Kellogg also posts Executive, a nine-hole course. The course key on the sheet spells Newman as Neuman. The tables below use Newman.
-
-A blank cell is a fence the sheet leaves empty. The sheet has no count of rounds, so it has no revenue. Quantity from the earlier fictional card is gone.
-
-## Segments
-
-```{r fences, echo = FALSE, results = "asis"}
-shown_fences <- fences
-shown_fences$posted <- ifelse(shown_fences$posted, "Posted", "Blank")
-knitr::kable(
-  shown_fences,
-  col.names = c("Segment", "What is priced", "Rule", "On the sheet"),
-  caption = "Fences on the Peoria sheet. Twilight is a daypart on the adult green fee. Blank means every cell in that column is empty."
+twilight_label <- function(facility, product) {
+  day <- one_price(facility, product, "Adult", "Weekday", "Twilight")
+  weekend <- one_price(facility, product, "Adult", "Weekend", "Twilight")
+  if (!identical(day, weekend)) {
+    stop(facility, " ", product, " twilight differs by day.", call. = FALSE)
+  }
+  if (is.na(day)) "—" else money(day)
+}
+nine_twilight <- function(facility) {
+  front <- twilight_label(facility, "Front 9")
+  back <- twilight_label(facility, "Back 9")
+  if (front == "—" && back == "—") {
+    "—"
+  } else if (front == "—" ) {
+    paste("Back 9", back)
+  } else if (back == "—" || front == back) {
+    front
+  } else {
+    paste("Front", front, "/ Back", back)
+  }
+}
+row_of <- function(facility, product, label, twilight) {
+  data.frame(
+    Course = facility,
+    Product = label,
+    Adult = money(one_price(facility, product, "Adult", "Weekday", "Day")),
+    Senior = money(one_price(facility, product, "Senior", "Weekday", "Day")),
+    Junior = money(one_price(facility, product, "Junior", "Weekday", "Day")),
+    `Weekday with cart` = money(one_price(facility, product, "Adult with cart", "Weekday", "Day")),
+    `Weekend with cart` = money(one_price(facility, product, "Adult with cart", "Weekend", "Day")),
+    Twilight = twilight,
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+}
+peoria <- rbind(
+  row_of("Kellogg", "Executive 9", "Executive 9", twilight_label("Kellogg", "Executive 9")),
+  row_of("Kellogg", "18 holes", "18 holes", twilight_label("Kellogg", "18 holes")),
+  row_of("Kellogg", "Front 9", "9 holes", nine_twilight("Kellogg")),
+  row_of("Madison", "18 holes", "18 holes", twilight_label("Madison", "18 holes")),
+  row_of("Madison", "Front 9", "9 holes", nine_twilight("Madison")),
+  row_of("Newman", "18 holes", "18 holes", twilight_label("Newman", "18 holes")),
+  row_of("Newman", "Front 9", "9 holes", nine_twilight("Newman"))
 )
-```
-
-## Weekday
-
-Adult, senior, and junior are walking green fees. Twilight is the adult twilight green fee. Adult with cart is the posted price for an adult round that includes a cart. On a weekday that price equals the adult green fee plus the cart fee, on every product.
-
-```{r weekday, echo = FALSE, results = "asis"}
-weekday <- data.frame(
-  Facility = products$facility,
-  Product = products$product,
-  Holes = products$holes,
-  Adult = lookup("Adult", "Weekday", "Day"),
-  Twilight = lookup("Adult", "Weekday", "Twilight"),
-  Senior = lookup("Senior", "Weekday", "Day"),
-  Junior = lookup("Junior", "Weekday", "Day"),
-  `Adult with cart` = lookup("Adult with cart", "Weekday", "Day"),
-  check.names = FALSE
-)
 knitr::kable(
-  show_prices(weekday, c("Adult", "Twilight", "Senior", "Junior", "Adult with cart")),
+  peoria,
   row.names = FALSE,
-  caption = "Weekday posted prices, in dollars. N/A is an empty cell on the sheet."
+  caption = "Peoria walking fees, in dollars. Adult, senior, and junior are the same on weekdays and weekends. Nine-hole rows use the front nine, which matches the back nine except for twilight."
 )
 ```
 
-Twilight is posted on Kellogg Executive, Kellogg Back 9, and Madison Back 9. On Kellogg Executive the twilight green fee is $30.00 and the day rate is $24.00. On Madison Back 9 the twilight green fee is $27.00 and the day rate is $20.00. On Kellogg Back 9 twilight is $20.00 and the day rate is $30.00.
+A cart is $17 on 18 holes and $12 on nine holes. A pull cart is $5, and one club is $1. Club rental is $20 at Kellogg 18 and Newman 18, and $10 on the other products. On a weekday, adult-with-cart equals the walking fee plus the cart. On Kellogg Executive and Madison Back 9, twilight is above the daytime walking fee. On Kellogg Back 9 it is $20, below the $30 daytime fee. Junior twilight, military, and the holiday 18-hole rate with a cart are empty columns. The holiday header is May 11 through September 29.
 
-## Weekend
-
-The walking green fees match the weekday green fees on this sheet. The adult-with-cart column does not. It is a separate posted price.
-
-```{r weekend, echo = FALSE, results = "asis"}
-weekend <- data.frame(
-  Facility = products$facility,
-  Product = products$product,
-  Holes = products$holes,
-  Adult = lookup("Adult", "Weekend", "Day"),
-  Twilight = lookup("Adult", "Weekend", "Twilight"),
-  Senior = lookup("Senior", "Weekend", "Day"),
-  Junior = lookup("Junior", "Weekend", "Day"),
-  `Adult with cart` = lookup("Adult with cart", "Weekend", "Day"),
-  check.names = FALSE
-)
-knitr::kable(
-  show_prices(weekend, c("Adult", "Twilight", "Senior", "Junior", "Adult with cart")),
-  row.names = FALSE,
-  caption = "Weekend posted prices, in dollars. N/A is an empty cell on the sheet."
-)
-```
-
-## Carts and clubs
-
-The cart fee follows the number of holes: $17.00 on an 18-hole course and $12.00 on a nine-hole product. The pull cart is $5.00 and a single club is $1.00, on every product. The club-rental fee is $20.00 at Kellogg 18 and Newman 18, and $10.00 on the other products, including Madison 18.
-
-```{r extras, echo = FALSE, results = "asis"}
-extras <- data.frame(
-  Facility = products$facility,
-  Product = products$product,
-  Holes = products$holes,
-  Cart = lookup("Cart", "Any", "Any"),
-  `Pull cart` = lookup("Pull cart", "Any", "Any"),
-  `Club per club` = lookup("Club per club", "Any", "Any"),
-  `Club rental` = lookup("Club rental", "Any", "Any"),
-  check.names = FALSE
-)
-knitr::kable(
-  show_prices(extras, c("Cart", "Pull cart", "Club per club", "Club rental")),
-  row.names = FALSE,
-  caption = "Cart and club fees, in dollars. The sheet does not split these by weekday or weekend."
-)
-```
-
-The card has `r nrow(card)` posted prices. Junior twilight, military, and the holiday 18-hole rate with a cart are columns on the sheet with no prices in them. The holiday header names May 11 through September 29.
-
-A played round can still add fences. An adult weekday round with a cart is already one posted price. A senior round with a cart is the senior green fee plus the cart fee, and that sum is not its own row. The mix of rounds across these fences needs a season of rounds labeled with the product, the day, and the daypart. This sheet does not have that season.
+The extract has no quoted price, so this page does not estimate how rounds respond to a rate. The synthetic section in [Weather and playable capacity](weather-and-elasticity.html) checks a known equation. It does not use this guide.

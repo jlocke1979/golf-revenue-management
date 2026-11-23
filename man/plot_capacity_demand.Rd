@@ -8,7 +8,8 @@ plot_capacity_demand(
   data,
   calendar = NULL,
   unit = c("golfers", "slots"),
-  players_per_slot = 4
+  players_per_slot = 4,
+  panels = c("capacity", "utilization", "heatmap")
 )
 }
 \arguments{
@@ -20,18 +21,22 @@ plot_capacity_demand(
 
 \item{players_per_slot}{Golfers a full slot can hold. Used only for
 \code{slots}. This is not a group size from the extract.}
+
+\item{panels}{Columns to print: \code{capacity}, \code{utilization}, and
+\code{heatmap}. The object still carries every column.}
 }
 \value{
 A \code{golfops_capacity_demand_plot}. Printing it draws one row per year.
 }
 \description{
-One row per year and three columns. \code{unit = "golfers"} counts people. In
-the Dobson extract a round is one golfer, and capacity is the city's
-daylight estimate of golfers. \code{unit = "slots"} counts tee times. Slot
-capacity is that golfer estimate divided by \code{players_per_slot}. Slot demand
-is the fewest slots that could hold the golfers, rounding up. A group of
-1, 2, or 3 golfers still uses a slot, and this file does not record group
-size, so slots actually used are not shown.
+One row per year. The default draws three columns. \code{unit = "golfers"}
+counts people. In the Dobson extract a round is one golfer, and capacity
+is the city's daylight estimate of golfers. \code{unit = "slots"} counts tee
+times. Slot capacity is that golfer estimate divided by
+\code{players_per_slot}. Slot demand is the fewest slots that could hold the
+golfers, rounding up. A group of 1, 2, or 3 golfers still uses a slot, and
+this file does not record group size, so slots actually used are not
+shown. \code{panels} chooses which columns to print.
 }
 \details{
 The left column is capacity and demand, in ColorBrewer Dark2 gray and

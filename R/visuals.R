@@ -253,13 +253,14 @@ plot_calendar_day <- function(
 
 #' Capacity, demand, and utilization for each year
 #'
-#' One row per year and three columns. `unit = "golfers"` counts people. In
-#' the Dobson extract a round is one golfer, and capacity is the city's
-#' daylight estimate of golfers. `unit = "slots"` counts tee times. Slot
-#' capacity is that golfer estimate divided by `players_per_slot`. Slot demand
-#' is the fewest slots that could hold the golfers, rounding up. A group of
-#' 1, 2, or 3 golfers still uses a slot, and this file does not record group
-#' size, so slots actually used are not shown.
+#' One row per year. The default draws three columns. `unit = "golfers"`
+#' counts people. In the Dobson extract a round is one golfer, and capacity
+#' is the city's daylight estimate of golfers. `unit = "slots"` counts tee
+#' times. Slot capacity is that golfer estimate divided by
+#' `players_per_slot`. Slot demand is the fewest slots that could hold the
+#' golfers, rounding up. A group of 1, 2, or 3 golfers still uses a slot, and
+#' this file does not record group size, so slots actually used are not
+#' shown. `panels` chooses which columns to print.
 #'
 #' The left column is capacity and demand, in ColorBrewer Dark2 gray and
 #' green, on a January–December axis and a shared scale. The middle column is
@@ -277,14 +278,18 @@ plot_calendar_day <- function(
 #' @param unit `golfers` or `slots`.
 #' @param players_per_slot Golfers a full slot can hold. Used only for
 #'   `slots`. This is not a group size from the extract.
+#' @param panels Columns to print: `capacity`, `utilization`, and `heatmap`.
+#'   The object still carries every column.
 #' @return A `golfops_capacity_demand_plot`. Printing it draws one row per year.
 #' @export
 plot_capacity_demand <- function(
     data,
     calendar = NULL,
     unit = c("golfers", "slots"),
-    players_per_slot = 4) {
+    players_per_slot = 4,
+    panels = c("capacity", "utilization", "heatmap")) {
   unit <- match.arg(unit)
+  panels <- match.arg(panels, several.ok = TRUE)
   if (!is.numeric(players_per_slot) || length(players_per_slot) != 1 ||
       is.na(players_per_slot) || players_per_slot < 2) {
     abort(
@@ -339,6 +344,7 @@ plot_capacity_demand <- function(
       median_utilization = stats::median(on_scale, na.rm = TRUE),
       unit = unit,
       headers = headers,
+      panels = panels,
       scale_max = rounds_max,
       players_per_slot = players_per_slot
     ),
@@ -348,22 +354,38 @@ plot_capacity_demand <- function(
 
 #' @export
 print.golfops_capacity_demand_plot <- function(x, ...) {
+  panel_names <- x$panels
+  if (is.null(panel_names)) {
+    panel_names <- c("capacity", "utilization", "heatmap")
+  }
   n <- length(x$years)
+  show_legend <- "heatmap" %in% panel_names
+  heights <- if (show_legend) {
+    c(0.28, rep(1, n), 0.85)
+  } else {
+    c(0.28, rep(1, n))
+  }
   grid::grid.newpage()
   grid::pushViewport(grid::viewport(
     layout = grid::grid.layout(
-      nrow = n + 2,
-      ncol = 3,
-      heights = grid::unit(c(0.28, rep(1, n), 0.85), "null")
+      nrow = length(heights),
+      ncol = length(panel_names),
+      heights = grid::unit(heights, "null")
     )
   ))
-  headers <- x$headers
+  header_index <- c(capacity = 1L, utilization = 2L, heatmap = 3L)
+  headers <- x$headers[header_index[panel_names]]
   for (col in seq_along(headers)) {
     grid::pushViewport(grid::viewport(layout.pos.row = 1, layout.pos.col = col))
     grid::grid.text(headers[col], gp = grid::gpar(fontsize = 11, fontface = "bold"))
     grid::upViewport()
   }
-  panels <- list(x$capacity, x$utilization, x$heatmap)
+  panel_sets <- list(
+    capacity = x$capacity,
+    utilization = x$utilization,
+    heatmap = x$heatmap
+  )
+  panels <- panel_sets[panel_names]
   for (i in seq_len(n)) {
     for (col in seq_along(panels)) {
       print(
@@ -373,9 +395,14 @@ print.golfops_capacity_demand_plot <- function(x, ...) {
       )
     }
   }
-  grid::pushViewport(grid::viewport(layout.pos.row = n + 2, layout.pos.col = 1:3))
-  grid::grid.draw(x$legend)
-  grid::upViewport()
+  if (show_legend) {
+    grid::pushViewport(grid::viewport(
+      layout.pos.row = n + 2,
+      layout.pos.col = seq_along(panel_names)
+    ))
+    grid::grid.draw(x$legend)
+    grid::upViewport()
+  }
   invisible(x)
 }
 
@@ -668,9 +695,15 @@ print.golfops_capacity_demand_plot <- function(x, ...) {
 #'
 #' @param data Daily rows from [dobson_operating_daily()].
 #' @param calendar Optional [operating_calendar()].
+#' @param layout `month` puts the day of the month on the horizontal axis.
+#'   `weekday` uses a Monday-through-Sunday calendar, one week per row.
 #' @return A ggplot object.
 #' @export
-plot_utilization_heatmap <- function(data, calendar = NULL) {
+plot_utilization_heatmap <- function(
+    data,
+    calendar = NULL,
+    layout = c("month", "weekday")) {
+  layout <- match.arg(layout)
   cal <- utilization_calendar(data, calendar)
   span_start <- min(cal$date)
   span_end <- max(cal$date)
@@ -678,6 +711,13 @@ plot_utilization_heatmap <- function(data, calendar = NULL) {
   cal$year_label <- vapply(cal$calendar_year, function(year) {
     .operating_year_label(year, span_start, span_end, missing)
   }, character(1))
+  if (layout == "weekday") {
+    cal <- .calendar_week_coords(cal)
+    cal$year_title <- factor(
+      cal$calendar_year,
+      levels = sort(unique(cal$calendar_year))
+    )
+  }
   on_scale <- cal[cal$on_utilization_scale & !is.na(cal$scale_utilization), , drop = FALSE]
   on_scale$fill_utilization <- pmin(on_scale$scale_utilization, 1.2)
   fill_scale <- .utilization_fill_scale(on_scale$scale_utilization)
@@ -705,7 +745,12 @@ plot_utilization_heatmap <- function(data, calendar = NULL) {
     )
   )
   above <- on_scale[on_scale$scale_utilization > 1.2, , drop = FALSE]
-  ggplot2::ggplot(cal, ggplot2::aes(x = .data$day, y = .data$month)) +
+  axes <- if (layout == "weekday") {
+    ggplot2::aes(x = .data$cal_x, y = .data$cal_y)
+  } else {
+    ggplot2::aes(x = .data$day, y = .data$month)
+  }
+  ggplot2::ggplot(cal, axes) +
     ggplot2::geom_tile(
       data = on_scale,
       ggplot2::aes(fill = .data$fill_utilization),
@@ -766,15 +811,65 @@ plot_utilization_heatmap <- function(data, calendar = NULL) {
         nrow = 2
       )
     ) +
-    ggplot2::scale_x_continuous(breaks = c(1, 8, 15, 22, 29)) +
-    ggplot2::facet_wrap(~year_label, ncol = 2) +
+    (if (layout == "weekday") {
+      month_marks <- cal[as.integer(format(cal$date, "%d")) == 1, , drop = FALSE]
+      month_marks$month_label <- substr(
+        month_names()[as.integer(format(month_marks$date, "%m"))],
+        1,
+        3
+      )
+      year_heads <- stats::aggregate(cal_y ~ year_title, data = cal, FUN = min)
+      year_heads$panel_title <- as.character(year_heads$year_title)
+      list(
+        ggplot2::geom_text(
+          data = year_heads,
+          ggplot2::aes(x = 4, y = .data$cal_y - 1.35, label = .data$panel_title),
+          inherit.aes = FALSE,
+          size = 15 * 25.4 / 72,
+          color = "grey10",
+          fontface = "bold"
+        ),
+        ggplot2::geom_text(
+          data = month_marks,
+          ggplot2::aes(x = 0.35, y = .data$cal_y, label = .data$month_label),
+          inherit.aes = FALSE,
+          hjust = 1,
+          size = 2.4,
+          color = "grey20"
+        ),
+        ggplot2::scale_x_continuous(
+          breaks = 1:7,
+          labels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+          expand = c(0, 0)
+        ),
+        ggplot2::scale_y_reverse(expand = ggplot2::expansion(add = c(2.4, 0.6))),
+        ggplot2::coord_cartesian(xlim = c(0.15, 7.55), clip = "off"),
+        ggplot2::facet_grid(
+          ggplot2::vars(year_title),
+          scales = "free_y",
+          space = "free_y",
+          axes = "all",
+          axis.labels = "all_x"
+        )
+      )
+    } else {
+      list(
+        ggplot2::scale_x_continuous(breaks = c(1, 8, 15, 22, 29)),
+        ggplot2::facet_wrap(~year_label, ncol = 2)
+      )
+    }) +
     ggplot2::labs(
       title = "Daily utilization of published capacity",
-      x = "Day of month",
+      x = if (layout == "weekday") NULL else "Day of month",
       y = NULL,
       caption = sprintf(
-        "Green is below the median played day and purple is above it. The light color is that median, %s. Red is above 100 percent. Crosses are days above 120 percent. Black is a missing date, and medium-dark gray is a zero-round day whose status is unknown. Blank areas are months outside the sample, not zeros. With no operating calendar, capacity is the city's daylight estimate.",
-        label_percent(accuracy = 1)(median_util)
+        "Green is below the median played day and purple is above it. The light color is that median, %s. Red is above 100 percent. Crosses are days above 120 percent. Black is a missing date, and medium-dark gray is a zero-round day whose status is unknown. %s With no operating calendar, capacity is the city's daylight estimate.",
+        label_percent(accuracy = 1)(median_util),
+        if (layout == "weekday") {
+          "Each year shows the months present in the extract."
+        } else {
+          "Blank areas are months outside the sample, not zeros."
+        }
       )
     ) +
     ggplot2::theme_minimal() +
@@ -784,8 +879,33 @@ plot_utilization_heatmap <- function(data, calendar = NULL) {
       legend.text = ggplot2::element_text(size = 8),
       panel.grid = ggplot2::element_blank(),
       plot.caption = ggplot2::element_text(size = 8, color = "grey30", hjust = 0),
-      plot.margin = ggplot2::margin(6, 6, 14, 6)
+      plot.margin = ggplot2::margin(6, 6, 14, if (layout == "weekday") 30 else 6),
+      axis.text.y = if (layout == "weekday") {
+        ggplot2::element_blank()
+      } else {
+        ggplot2::element_text()
+      },
+      strip.text = if (layout == "weekday") {
+        ggplot2::element_blank()
+      } else {
+        ggplot2::element_text()
+      },
+      strip.background = if (layout == "weekday") {
+        ggplot2::element_blank()
+      } else {
+        NULL
+      }
     )
+}
+
+.calendar_week_coords <- function(cal) {
+  wday <- as.integer(format(cal$date, "%u"))
+  cal$cal_x <- wday
+  jan1 <- as.Date(sprintf("%04d-01-01", cal$calendar_year))
+  jan1_monday <- jan1 - (as.integer(format(jan1, "%u")) - 1L)
+  week_start <- cal$date - (wday - 1L)
+  cal$cal_y <- as.integer(week_start - jan1_monday) / 7
+  cal
 }
 
 .utilization_fill_scale <- function(utilization, barwidth = grid::unit(11, "cm")) {

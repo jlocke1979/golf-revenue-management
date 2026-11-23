@@ -1,9 +1,9 @@
 #' Dobson Ranch daily rounds as a demand series
 #'
 #' Uses [dobson_operating_daily()]. Zero-round days stay in the series and out
-#' of the fit. October's are course closures. The extract does not label them
-#' closed. `capacity` is the city's daylight estimate. Days above that
-#' estimate remain observed play.
+#' of the fit. The extract does not label them closed, and this series does
+#' not mark them closed. `capacity` is the city's daylight estimate. Days above
+#' that estimate remain observed play.
 #'
 #' @param rounds Optional result of [prepare_dobson_rounds()]. The bundled
 #'   extract is read when this is omitted.
@@ -13,7 +13,7 @@ dobson_rounds_demand <- function(rounds = NULL) {
   daily <- dobson_operating_daily(rounds)
   decisions <- c(
     attr(daily, "decisions"),
-    "October zero-round days are course closures and stay out of the fit. The extract does not label them closed.",
+    "Zero-round days stay out of the fit. The extract does not label them closed, and this series does not mark them closed.",
     "Forecasts store the daylight estimate as capacity. They do not add latent demand on days at or above that estimate."
   )
   prepare_demand(

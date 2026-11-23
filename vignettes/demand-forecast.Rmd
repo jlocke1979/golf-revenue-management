@@ -1,8 +1,8 @@
 ---
-title: "Forecasting observed demand"
+title: "3. Forecasting observed demand"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Forecasting observed demand}
+  %\VignetteIndexEntry{3. Forecasting observed demand}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,7 +22,7 @@ library(golfops)
 
 ## Dobson Ranch
 
-The series is the same operating sample as the Capacity and utilization vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit. October's are course closures. The extract does not label them, and this series does not mark them closed on its own. The weekday and month utilization table is in that vignette. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.
+The series is the same operating sample as the Capacity and utilization vignette: daily rows from 2021-07-01, without the isolated 2004-12-10 row and without a second copy of 2022-04-24. Zero-round days stay out of the fit because the scored question is play on days with recorded rounds. The city file does not say the course was closed, and this series does not mark those days closed. A fitted value on one of those dates is the calendar's usual count. It is not evidence that the course was open, and it is not evidence that the course was closed. The weekday and month utilization table is in that vignette. The daylight estimate is stored as capacity and is not turned into unmet demand. Training is through 2024-12-31. The scored holdout is calendar 2025. Partial 2026 is excluded from the score.
 
 ```{r dobson}
 demand <- dobson_rounds_demand()
@@ -31,7 +31,7 @@ dobson <- forecast_dobson_rounds(demand)
 dobson$comparison
 ```
 
-Read `rows_eligible_for_fit` when the question is open-day play. Read `all_rows` when closure days remain in the score. The baseline is the training mean for that weekday and month. The demand model is observed rounds on weekday and month. A lower error is a better description of observed play. It is not evidence for a price change.
+Read `rows_eligible_for_fit` when the question is days with recorded play. Read `all_rows` when the zero-round days remain in the score. The baseline is the training mean for that weekday and month. The demand model is observed rounds on weekday and month. A lower error is a better description of observed play. It is not evidence for a price change.
 
 ```{r dobson-plot, fig.alt = "Actual 2025 Dobson Ranch rounds against a seasonal baseline and a weekday-month regression."}
 plot_forecast(dobson)
@@ -57,15 +57,3 @@ week$estimates[
 ```
 
 The participation spike on 2025-04-28 and the month-end range-revenue extremes are reviewed in the Dobson Ranch vignette. They are not given an event explanation here.
-
-## A hypothetical tournament
-
-The Cedar Municipal Classic is invented. Its ticket counts are not PGA sales and not Mesa revenue. The same split, baseline, score, and volume scenario are used. The demand model is fit separately, on weekday and days remaining until the event.
-
-```{r tickets}
-tickets <- forecast_tournament_tickets()
-tickets$comparison
-apply_volume_scenario(tickets$predictions$demand_model, volume_change = -0.05)
-```
-
-The ticket scores show that the workflow transfers. They do not describe a real tournament.

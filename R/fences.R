@@ -1,5 +1,8 @@
 #' Rate fences on the Peoria posted card
 #'
+#' The sheet is transcribed in this function. The original file is not
+#' bundled. These prices are not Dobson Ranch or City of Mesa rates.
+#'
 #' Each row is one column on the Peoria weekday and weekend price sheet,
 #' version 2. A fence is one posted price for one kind of round. Blank
 #' columns stay in this list because the sheet has the column and leaves
@@ -63,7 +66,9 @@ peoria_rate_fences <- function() {
 
 #' Posted prices from the Peoria rate sheet
 #'
-#' Ten products from the Peoria weekday and weekend price sheet, version 2:
+#' Ten products from the Peoria weekday and weekend price sheet, version 2.
+#' The sheet is transcribed here. The original file is not bundled, and these
+#' prices are not Dobson Ranch or City of Mesa rates.
 #' Kellogg, Madison, and Newman, each with an 18-hole course and a front nine
 #' and a back nine, plus Kellogg Executive. The sheet key for Newman is
 #' spelled Neuman. Dollars are the posted cells. Empty cells are omitted.

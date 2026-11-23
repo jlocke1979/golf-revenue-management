@@ -11,6 +11,10 @@ A data frame of fence names, what is priced, and the rule.
 \code{posted} is FALSE when every cell in that column is empty.
 }
 \description{
+The sheet is transcribed in this function. The original file is not
+bundled. These prices are not Dobson Ranch or City of Mesa rates.
+}
+\details{
 Each row is one column on the Peoria weekday and weekend price sheet,
 version 2. A fence is one posted price for one kind of round. Blank
 columns stay in this list because the sheet has the column and leaves

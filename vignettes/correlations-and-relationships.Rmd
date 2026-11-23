@@ -1,8 +1,8 @@
 ---
-title: "Correlations and relationships"
+title: "6. Correlation: Daily Rounds Played vs Daily Revenues"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Correlations and relationships}
+  %\VignetteIndexEntry{6. Correlation: Daily Rounds Played vs Daily Revenues}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -88,4 +88,4 @@ plot_revenue_by_golfers(sample, year = 2025)
 plot_revenue_by_golfers(sample, year = 2026)
 ```
 
-Which weekdays and months fill the daylight estimate, with October closures left out, is in Capacity and utilization.
+Which weekdays and months fill the daylight estimate, on days with play, is in Capacity and utilization.

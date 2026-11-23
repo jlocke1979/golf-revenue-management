@@ -1,8 +1,8 @@
 ---
-title: "Weather, playable capacity, and price elasticity"
+title: "7. Weather and playable capacity"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Weather, playable capacity, and price elasticity}
+  %\VignetteIndexEntry{7. Weather and playable capacity}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(golfops)
 ```
 
-The capacity vignette compares Dobson Ranch rounds with the city's daylight estimate. This page leaves that estimate in place. It joins historical weather to the same days, shows what may reduce playable capacity, and then uses synthetic rows to show what a log-log price coefficient does and does not identify.
+The capacity vignette compares Dobson Ranch rounds with the city's daylight estimate. This page leaves that estimate in place and joins historical weather to the same days. The weather charts are associations in the observed file. A later section uses synthetic rows to show what a log-log price coefficient does and does not identify. Those rows are not Dobson Ranch.
 
 `simulate_price_volume()` still applies a volume change typed in by the user. The forecast still predicts observed rounds from weekday and month. Neither function is a price elasticity.
 
@@ -40,23 +40,151 @@ attr(weather, "decisions")
 
 `temp_avg_c` is the average of the daily minimum and maximum. GHCND did not publish an average temperature for Sky Harbor on these dates. Units are degrees Celsius, millimeters, and meters per second. A non-blank quality flag withdraws the value. A trace is stored as zero. A multiday accumulation is not assigned to one date. Local precipitation is missing on 139 of 1,765 days, and the gap is wider in 2026. Monsoon rain is convective, so the airport total can disagree with the course on a single day.
 
-Hot days show up in the rounds, not in the capacity denominator. The daylight estimate is not reduced because the maximum was high.
+Hot days show up in the rounds, not in the capacity denominator. The daylight estimate is not reduced because the maximum was high. The file has average wind speed and no wind gust. It has no snowfall column.
 
-```{r heat, fig.alt = "Played rounds against the average of the daily minimum and maximum temperature."}
+```{r played-weather}
 daily <- dobson_operating_daily()
 played <- merge(
-  daily[daily$rounds_played > 0, c("date", "rounds_played")],
-  weather[, c("date", "temp_avg_c")],
+  daily[daily$rounds_played > 0, c(
+    "date", "rounds_played", "month", "weekday", "calendar_year"
+  )],
+  weather[, c(
+    "date", "temp_avg_c", "temp_max_c", "precip_mm", "precip_trace",
+    "precip_missing", "wind_speed_ms", "wind_missing"
+  )],
   by = "date"
 )
+played$weekend <- played$weekday %in% c("Saturday", "Sunday")
+```
+
+```{r heat, fig.alt = "Played rounds against the average of the daily minimum and maximum temperature."}
 ggplot2::ggplot(played, ggplot2::aes(temp_avg_c, rounds_played)) +
   ggplot2::geom_point(alpha = 0.25, color = "#3d5c4a") +
   ggplot2::labs(
     x = "Average of daily minimum and maximum temperature (C)",
     y = "Rounds played",
-    caption = "Days with at least one round. High temperature is left on the demand side. It does not reduce playable capacity."
+    caption = "Days with at least one round. The cloud is nearly flat. High temperature does not reduce playable capacity."
   )
 ```
+
+```{r heat-association}
+temp_cor <- stats::cor(played$temp_avg_c, played$rounds_played)
+temp_fit <- stats::lm(
+  rounds_played ~ temp_avg_c + month + weekend + calendar_year,
+  played
+)
+played$temp_sq <- played$temp_avg_c^2
+temp_curve <- stats::lm(
+  rounds_played ~ temp_avg_c + temp_sq + month + weekend + calendar_year,
+  played
+)
+played$hot <- played$temp_max_c >= 40
+hot_fit <- stats::lm(
+  rounds_played ~ hot + month + weekend + calendar_year,
+  played
+)
+temp_rows <- data.frame(
+  contrast = c(
+    "Raw correlation, average temperature and rounds",
+    "Rounds per degree C, after month, weekend, and a linear year",
+    "Days with a maximum of 40 C or more, same controls"
+  ),
+  estimate = c(
+    temp_cor,
+    unname(stats::coef(temp_fit)[["temp_avg_c"]]),
+    unname(stats::coef(hot_fit)[["hotTRUE"]])
+  ),
+  std_error = c(
+    NA_real_,
+    summary(temp_fit)$coefficients["temp_avg_c", "Std. Error"],
+    summary(hot_fit)$coefficients["hotTRUE", "Std. Error"]
+  ),
+  n = c(nrow(played), nrow(played), sum(played$hot)),
+  stringsAsFactors = FALSE
+)
+temp_rows
+```
+
+The raw correlation is about `r formatC(temp_cor, format = "f", digits = 2)`. A straight line, after month, weekend, and a linear year, is about `r formatC(unname(stats::coef(temp_fit)[["temp_avg_c"]]), format = "f", digits = 1)` rounds per degree. Adding a squared term raises the fit's R-squared from `r formatC(summary(temp_fit)$r.squared, format = "f", digits = 3)` to `r formatC(summary(temp_curve)$r.squared, format = "f", digits = 3)`. Days whose maximum reaches 40 C are common in this file, `r format(sum(played$hot), big.mark = ",")` played days, and those days have about `r formatC(abs(unname(stats::coef(hot_fit)[["hotTRUE"]])), format = "f", digits = 0)` fewer rounds after the same calendar controls. That is an association. The daily average does not say whether the heat fell during playing hours, and it is not a change in Rounds Possible.
+
+## Rainfall and rounds
+
+Local precipitation is missing on `r sum(played$precip_missing)` of the `r format(nrow(played), big.mark = ",")` played days, including much of 2026. Traces are stored as zero and counted on their own. A multiday accumulation is not assigned to one date. The bars use the days the local gauge reported.
+
+```{r rain, fig.width = 7.2, fig.height = 4.4, fig.alt = "Mean rounds on played days by local precipitation category, with the number of days on each bar."}
+rain <- played[!played$precip_missing, ]
+rain$category <- ifelse(
+  rain$precip_trace, "Trace",
+  ifelse(rain$precip_mm == 0, "None",
+    ifelse(rain$precip_mm < 1, "Under 1 mm",
+      ifelse(rain$precip_mm < 5, "1 to under 5 mm", "5 mm or more")))
+)
+rain$category <- factor(
+  rain$category,
+  levels = c("None", "Trace", "Under 1 mm", "1 to under 5 mm", "5 mm or more")
+)
+rain_summary <- do.call(rbind, lapply(split(rain, rain$category), function(block) {
+  data.frame(
+    category = block$category[1],
+    n = nrow(block),
+    mean_rounds = mean(block$rounds_played),
+    stringsAsFactors = FALSE
+  )
+}))
+rain_summary$label <- paste0("n = ", rain_summary$n)
+ggplot2::ggplot(rain_summary, ggplot2::aes(category, mean_rounds)) +
+  ggplot2::geom_col(fill = "#3d5c4a", width = 0.72) +
+  ggplot2::geom_text(
+    ggplot2::aes(label = label),
+    vjust = -0.4,
+    size = 3.2
+  ) +
+  ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.12))) +
+  ggplot2::labs(
+    x = "Local precipitation",
+    y = "Mean rounds played",
+    caption = "Played days with a local observation. A daily total is not rain during the tee sheet. Means are not adjusted for season or weekday."
+  ) +
+  ggplot2::theme(
+    plot.background = ggplot2::element_rect(fill = "white", colour = NA),
+    plot.caption = ggplot2::element_text(size = 8, colour = "grey30")
+  )
+```
+
+```{r rain-association}
+rain$wet <- !rain$precip_trace & rain$precip_mm > 0
+rain$heavy <- rain$precip_mm >= 5
+wet_fit <- stats::lm(
+  rounds_played ~ wet + month + weekend + calendar_year,
+  rain
+)
+heavy_fit <- stats::lm(
+  rounds_played ~ heavy + month + weekend + calendar_year,
+  rain
+)
+rain_rows <- data.frame(
+  contrast = c(
+    "Wet day, more than a trace",
+    "5 mm or more"
+  ),
+  rounds = c(
+    unname(stats::coef(wet_fit)[["wetTRUE"]]),
+    unname(stats::coef(heavy_fit)[["heavyTRUE"]])
+  ),
+  std_error = c(
+    summary(wet_fit)$coefficients["wetTRUE", "Std. Error"],
+    summary(heavy_fit)$coefficients["heavyTRUE", "Std. Error"]
+  ),
+  n_days = c(sum(rain$wet), sum(rain$heavy)),
+  n_compared = c(nrow(rain), nrow(rain)),
+  stringsAsFactors = FALSE
+)
+rain_rows
+```
+
+The raw bars are not the whole comparison. After month, weekend, and a linear year, a wet day is associated with about `r formatC(unname(stats::coef(wet_fit)[["wetTRUE"]]), format = "f", digits = 0)` rounds and a day of 5 mm or more with about `r formatC(unname(stats::coef(heavy_fit)[["heavyTRUE"]]), format = "f", digits = 0)`. The heavier bin has `r sum(rain$heavy)` played days. Both figures are associations. A storm overnight and a storm at noon are the same daily total in this file.
+
+Average wind, in meters per second, has the same kind of association and a weaker chart. After month, weekend, and a linear year, the coefficient is about `r formatC(unname(stats::coef(stats::lm(rounds_played ~ wind_speed_ms + month + weekend + calendar_year, played[!played$wind_missing, ]))[["wind_speed_ms"]]), format = "f", digits = 1)` rounds per meter per second, on `r format(sum(!played$wind_missing), big.mark = ",")` played days. Only `r sum(played$wind_speed_ms >= 6, na.rm = TRUE)` of those days reach 6 m/s. Gusts are not in the extract, so this page does not add a wind chart.
 
 ## Playable capacity
 
@@ -78,15 +206,14 @@ playable_capacity(
 
 Three hours out of fourteen removes 3/14 of the 240-round estimate. That proportion is the assumption. It is not a tee sheet.
 
-October zero-round stretches are the closures already used in the capacity vignette. The city file does not label them. The calendar below is the same caller-supplied label. Weather does not invent it.
+A caller can mark a day closed. That label sets playable capacity to zero and records `observed_closure`. The label is the caller's statement. The Dobson extract does not provide one. Earlier drafts of this vignette passed the October zero-round dates in as that statement. This page no longer does. Those dates stay zero-round days of unknown status, and this example uses the one-day table above rather than the Dobson history.
 
-```{r closures}
-october <- operating_calendar(
-  date = daily$date[daily$flag_zero_rounds & daily$month == "October"],
-  status = "closed"
+```{r stated-closure}
+marked <- playable_capacity(
+  stated,
+  calendar = operating_calendar(date = as.Date("2024-07-01"), status = "closed")
 )
-closed <- playable_capacity(daily, calendar = october)
-table(closed$restriction_source)
+marked[, c("date", "playable_capacity", "restriction_source")]
 ```
 
 A precipitation threshold is a different call and a different claim. At 10 mm or more, the day is treated as fully unavailable. Lost hours stay missing. The label is `weather_assumption`, not `observed_closure`.
@@ -98,7 +225,11 @@ table(rainy$restriction_source)
 
 Days the local gauge missed stay missing under that scenario. They are not filled with the airport total unless the caller names `precip_mm_airport`. High temperature is not a threshold.
 
-## A log-log coefficient is an association
+## Synthetic price elasticity
+
+The weather sections above use the Dobson operating days and the bundled GHCND extract. Everything from here through the end of the page is generated. The samples are not Dobson Ranch, not the weather file, and not a posted Dobson rate. A coefficient in this section is a check of the estimator against a known equation. It is not an estimate for the course.
+
+### A log-log coefficient is an association
 
 Enz and Canina (2016) regress log rounds on log average daily price, course characteristics, minimum temperature, precipitation, location indicators, and a year fixed effect. Their standard errors are clustered by course. The equation is on page 8 of the Cornell working paper, https://hdl.handle.net/1813/72428. The transaction file is not public. The fits below are synthetic samples with a known data-generating process. They do not re-estimate the published coefficients.
 

@@ -26,7 +26,7 @@ The 2026-04-30 API total is \$55,134.93. The CSV total is \$55,135. Component su
 - The city's `Revenue/Round` equals total revenue divided by rounds played. It is blank when rounds are zero. It is facility revenue per played round, not a green fee.
 - `Round Booking Rate` equals rounds played divided by `Rounds Possible`. The catalog defines `Rounds Possible` from daylight, not from the tee sheet. Utilization can exceed 1.
 - Cart revenue is blank on early rows. Where it is blank and the other five categories are present, those five already equal total revenue. A blank is not a hidden cart amount, and it should not be read as a measured zero unless the source says zero.
-- Zero-round days still show facility revenue and cluster in October. Those October days are course closures. The extract does not label them closed. The capacity vignette marks them closed and leaves them out of the utilization ranking. Per-played-round yield is undefined on those days.
+- Zero-round days still show facility revenue and cluster in October. The extract does not say the course was closed. The capacity charts draw those days as zero rounds with unknown status and leave every zero-round day out of the utilization rates. Per-played-round yield is undefined on those days. Removing the earlier closure label does not change those rates or `rounds_possible`.
 
 2022, 2023, and 2025 are complete calendar years in the daily series. 2024 is missing one day. 2021 and 2026 are partial.
 
@@ -51,7 +51,7 @@ Period yields are ratios of sums. They are not averages of daily yields. `simula
 
 ## Worked example
 
-The vignette `dobson-ranch` loads the bundled extract and uses the shared daily sample for the capacity charts and the weekday, month, and season utilization tables. October closures are left out of those tables. The same sample is used for seasonal overlays, a utilization heatmap, revenue ratios, the 2025 scenarios, and an illustrative tournament baseline. One scenario raises realized green-fee yield 10 percent and lowers rounds 5 percent. That 5 percent is an assumption, not a result.
+The vignette `dobson-ranch` loads the bundled extract and uses the shared daily sample for the capacity charts and the weekday, month, and season utilization tables. Days with no recorded play are left out of those tables. The October zero-round stretches are part of that omission and are not marked as confirmed closures. The same sample is used for seasonal overlays, a utilization heatmap, revenue ratios, the 2025 scenarios, and an illustrative tournament baseline. One scenario raises realized green-fee yield 10 percent and lowers rounds 5 percent. That 5 percent is an assumption, not a result.
 
 ```r
 library(golfops)
@@ -98,7 +98,7 @@ The raw export lives in `sources/` and is read-only. The package reads `inst/ext
 
 `estimate_price_elasticity()` fits log rounds on log price. The standard errors are ordinary least squares from `lm()`. They are not the course-clustered standard errors in Enz and Canina (2016). `simulate_elasticity_sample()` builds four synthetic samples, including two customer-mix cases. `simulate_price_volume()` is unchanged and still applies a volume change supplied by the user. The forecast formula is unchanged and still refuses observed weather when the role is a forecast.
 
-Dobson Ranch still has no posted price. The elasticity vignette does not regress rounds on realized green-fee yield.
+The operating extract has no posted price and no rate code. The rate-fences vignette summarizes a Dobson Ranch guide dated September 16, 2026. That guide is later than the extract and is not an input to the yield, forecast, or elasticity calculations. The elasticity vignette does not regress rounds on realized green-fee yield.
 
 Enz, Cathy A., and Linda Canina. 2016. "Competitive Pricing in the Golf Industry." Cornell University, School of Hotel Administration. https://hdl.handle.net/1813/72428. Journal version: *Journal of Revenue and Pricing Management* 16 (2): 139–153. https://doi.org/10.1057/s41272-016-0075-8.
 

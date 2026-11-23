@@ -2,3 +2,38 @@ url: https://jlocke1979.github.io/golf-revenue-management
 
 template:
   bootstrap: 5
+
+articles:
+- title: Vignettes
+  desc: Dobson Ranch operating analysis, in the order the figures depend on one another.
+  contents:
+  - dobson-ranch
+  - operational-opportunities
+  - demand-forecast
+  - revenue-and-golfers
+  - dollars-per-golfer
+  - correlations-and-relationships
+  - weather-and-elasticity
+  - rate-fences
+
+navbar:
+  components:
+    articles:
+      text: Vignettes
+      menu:
+      - text: "1. Capacity and utilization"
+        href: articles/dobson-ranch.html
+      - text: "2. Heatmap: Month and Days"
+        href: articles/operational-opportunities.html
+      - text: "3. Forecasting observed demand"
+        href: articles/demand-forecast.html
+      - text: "4. Revenue and golfers"
+        href: articles/revenue-and-golfers.html
+      - text: "5. Yield per round"
+        href: articles/dollars-per-golfer.html
+      - text: "6. Correlation: Daily Rounds Played vs Daily Revenues"
+        href: articles/correlations-and-relationships.html
+      - text: "7. Weather and playable capacity"
+        href: articles/weather-and-elasticity.html
+      - text: "8. Rate fences"
+        href: articles/rate-fences.html

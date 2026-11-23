@@ -7,9 +7,9 @@
 #' Monthly totals are not included.
 #'
 #' Zero-round days remain in the sample. Their status is unknown unless an
-#' operating calendar says otherwise. October zero-round days are course
-#' closures; this function does not mark them closed. Nothing in this function
-#' invents a tee sheet or the missing December day.
+#' operating calendar says otherwise. The October clusters are not a confirmed
+#' closure in this function. Nothing in this function invents a tee sheet or
+#' the missing December day.
 #'
 #' @param rounds Optional result of [prepare_dobson_rounds()].
 #' @return A `golfops_rounds` table with capacity columns from
@@ -43,7 +43,7 @@ dobson_operating_daily <- function(rounds = NULL) {
     "2022-04-24 was duplicated with identical operating values. One copy is kept.",
     "2024-12-10 is absent. It is not imputed and it is not recorded as zero rounds.",
     "A day with zero played rounds has status zero_rounds_unknown until an operating calendar says otherwise. It is not unused sellable capacity.",
-    "October zero-round days are course closures. This sample does not mark them closed. The capacity vignette supplies that calendar.",
+    "October zero-round days are not marked closed. The city file does not say the course was closed, and this sample does not supply a closure calendar.",
     "rounds_possible remains the city's daylight estimate. It is not tee-sheet inventory."
   )
   daily

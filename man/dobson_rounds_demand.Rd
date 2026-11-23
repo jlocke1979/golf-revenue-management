@@ -15,7 +15,7 @@ A \code{golfops_demand} table.
 }
 \description{
 Uses \code{\link[=dobson_operating_daily]{dobson_operating_daily()}}. Zero-round days stay in the series and out
-of the fit. October's are course closures. The extract does not label them
-closed. \code{capacity} is the city's daylight estimate. Days above that
-estimate remain observed play.
+of the fit. The extract does not label them closed, and this series does
+not mark them closed. \code{capacity} is the city's daylight estimate. Days above
+that estimate remain observed play.
 }

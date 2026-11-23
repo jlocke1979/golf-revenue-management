@@ -12,7 +12,9 @@ daypart. \code{sheet_name} is the course key on the sheet. The attribute
 \code{source} names the sheet.
 }
 \description{
-Ten products from the Peoria weekday and weekend price sheet, version 2:
+Ten products from the Peoria weekday and weekend price sheet, version 2.
+The sheet is transcribed here. The original file is not bundled, and these
+prices are not Dobson Ranch or City of Mesa rates.
 Kellogg, Madison, and Newman, each with an 18-hole course and a front nine
 and a back nine, plus Kellogg Executive. The sheet key for Newman is
 spelled Neuman. Dollars are the posted cells. Empty cells are omitted.

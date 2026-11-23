@@ -4,12 +4,15 @@
 \alias{plot_utilization_heatmap}
 \title{Calendar heatmap of utilization against resolved capacity}
 \usage{
-plot_utilization_heatmap(data, calendar = NULL)
+plot_utilization_heatmap(data, calendar = NULL, layout = c("month", "weekday"))
 }
 \arguments{
 \item{data}{Daily rows from \code{\link[=dobson_operating_daily]{dobson_operating_daily()}}.}
 
 \item{calendar}{Optional \code{\link[=operating_calendar]{operating_calendar()}}.}
+
+\item{layout}{\code{month} puts the day of the month on the horizontal axis.
+\code{weekday} uses a Monday-through-Sunday calendar, one week per row.}
 }
 \value{
 A ggplot object.
